@@ -14,3 +14,6 @@ Append-only. When a decision changes, add a new entry that supersedes the old on
 | D8 | 2026-09-29 | LLM explains engine output and never produces evals itself | Accuracy; LLMs are unreliable at calculation |
 | D9 | 2026-09-29 | Working name "ChessCoach" (package `chesscoach`) until the owner picks a name | Placeholder |
 | D10 | 2026-09-29 | One user can link several accounts per platform (owner has 2 Lichess accounts); stats aggregate across them, filterable per account | Owner has an alt account; common for other users too |
+| D11 | 2026-09-29 | Sync runs in-process in the background with a per-platform mutex and in-memory status; becomes a persistent job queue at M5 | Simple now; the mutex enforces API etiquette; the queue is needed only when many users sync |
+| D12 | 2026-09-29 | Games carry `accountId` (cascade on unlink) in addition to `userId` | Per-account cursors and filters (owner has 2 Lichess accounts) |
+| D13 | 2026-09-29 | Importers silently skip games they can't normalize (variants, custom starts, unknown speed, user not a player) | One odd game shouldn't abort a sync |

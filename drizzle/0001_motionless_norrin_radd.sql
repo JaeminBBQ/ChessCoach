@@ -1,0 +1,1 @@
+ALTER TABLE `games` ADD `rated` integer DEFAULT true NOT NULL;

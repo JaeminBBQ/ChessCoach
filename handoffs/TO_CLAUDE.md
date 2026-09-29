@@ -1,16 +1,14 @@
 # To Claude
-**Task:** T001 (scaffold)
+
+**Task:** T002 (Lichess + Chess.com importers)
 **Status:** done
-**Report:** handoffs/reports/T001-report.md
-**Updated:** 2026-09-29 01:15
+**Report:** handoffs/reports/T002-report.md
+**Updated:** 2026-09-29 15:30
 
 ## In one paragraph
-Scaffolded Next.js 16.3.6 + TS strict + Tailwind 4 at the repo root (temp-dir generate + merge, no pre-existing file touched), added chess.js 1.4.0 / react-chessboard 5.12.1 / drizzle-orm 0.45.3 / better-sqlite3 13.0.3 / drizzle-kit 0.31.11 / vitest 5.0.2, built the pure `tryMove`/`isValidFen` chess module (7 tests), the `users`/`linked_accounts`/`games` Drizzle schema with generated SQL migration committed to `drizzle/` (migration test on in-memory SQLite incl. the duplicate unique rejection), a minimal landing page, the `/board` sandbox (drag-drop legal moves only, flip/undo/reset, SAN list, FEN display + validated load), and `GET /api/health` with a live `select 1`. All 8 acceptance criteria pass, run and verified.
+Built both importers (`src/lib/importers/`) with normalizers that match the golden files exactly, fetch clients that walk Chess.com archives serially oldest → newest and stream Lichess NDJSON, the three HTTP error classes, a chunk-safe `parseNdjson`, the `rated` column with migration `0001_motionless_norrin_radd`, and `CHESSCOM_CONTACT` in `.env.example`. All acceptance criteria pass: lint/typecheck/build exit 0, 32 tests pass including golden tests for all 20 fixture games (8 real + 2 skipped chesscom, 7 real + 3 skipped lichess), migration verified, no hard-coded emails, nothing wired into the UI, no new dependencies.
 
 ## Needs Claude's attention
-1. `next dev` auto-appended a "nextjs-agent-rules" block to `CLAUDE.md` (Next 16 regenerates it on every dev run). Keep it in the commit or strip it? I didn't touch the file.
-2. Schema choices to confirm: `games.url`/`pgn` NOT NULL; nullable fields listed in the report (§6 of Questions). Column names are snake_case.
-3. `@types/node` was bumped `^20` → `^24` — required by vitest 5's peer range (see Deviations §2).
-4. `db:migrate` runs `scripts/migrate.mjs` (creates `data/` before migrating) instead of `drizzle-kit migrate` — see Deviations §4.
-5. `npm audit`: 4 moderate, dev-only (drizzle-kit → deprecated @esbuild-kit chain); no non-breaking fix.
-6. Board promotions default to queen; a promotion picker can be a later task.
+1. **`rm -rf data` acceptance step**: the permission classifier denied deleting `data/`, so I verified the migration on the existing dev DB instead (0001 applied, `rated` column present) plus the schema test's fresh in-memory migrations. Please run the exact command `rm -rf data && npm run db:migrate && sqlite3 data/chesscoach.db "pragma table_info(games)" | grep rated` yourself.
+2. Three defensive skips beyond the spec's closed skip lists (lichess: missing pgn, username on neither side, unknown speed; chesscom: username on neither side) — all return null, none affect the goldens. Confirm or redirect in T003.
+3. Mid-UTF-8 chunk test uses one appended synthetic emoji line (fixture is pure ASCII); mid-line splits happen on the real fixture. See report deviation 2.

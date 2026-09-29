@@ -3,8 +3,8 @@
 | ID | Task | Owner | Status | Depends on |
 |---|---|---|---|---|
 | T001 | Scaffold, tooling, `/board` sandbox, DB schema (users, linked_accounts, games) | DeepSeek | done | — |
-| T002 | Lichess + Chess.com importers (pure, fixture-tested); `rated` column | DeepSeek | ready | T001 |
-| T003 | Sync service + link-account and game-list UI | DeepSeek | planned | T002 |
+| T002 | Lichess + Chess.com importers (pure, fixture-tested); `rated` column | DeepSeek | done | T001 |
+| T003 | Sync service, Accounts + Games pages, `accountId` on games | DeepSeek | ready | T002 |
 | T004 | Stockfish Web Worker + batch analysis runner | Claude | planned | T001 |
 | T005 | Moment classification, phases, game review page + eval graph | Claude spec / DeepSeek | planned | T003, T004 |
 | T006 | Tactic motif tagging | Claude | planned | T005 |

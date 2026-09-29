@@ -32,8 +32,8 @@ public/engine/         Stockfish worker assets (added in the engine task)
 
 ## Data model (grows per task; `userId` on every user-owned row)
 - `users`: id, displayName, createdAt
-- `linked_accounts`: id, userId, platform (`lichess` | `chesscom`), username, lastSyncedAt; unique (platform, username, userId)
-- `games`: id, userId, platform, externalId (unique per platform + userId), url, pgn, playedAt, timeControl, rated, speed (`bullet` | `blitz` | `rapid` | `classical` | `daily`), userColor, result (`win` | `loss` | `draw`), termination, userRating, opponentName, opponentRating, openingEco, openingName, importedAt
+- `linked_accounts`: id, userId, platform (`lichess` | `chesscom`), username, createdAt, lastSyncedAt; unique (platform, username, userId)
+- `games`: id, userId, accountId (→ linked_accounts, cascade), platform, externalId (unique per platform + userId), url, pgn, playedAt, timeControl, rated, speed (`bullet` | `blitz` | `rapid` | `classical` | `daily`), userColor, result (`win` | `loss` | `draw`), termination, userRating, opponentName, opponentRating, openingEco, openingName, importedAt
 - *(planned)* `analyses`: gameId, engine + version, depth, per-ply evals (JSON), accuracy per side
 - *(planned)* `moments`: gameId, ply, fen, played, best, evalBefore, evalAfter, class (`blunder` | `mistake` | `inaccuracy` | `missed_win`), phase, motifs[]
 - *(planned)* `repertoire_nodes`: userId, color, parentId, fen, san, comment, isMainLine, tags (trap, plan)
@@ -51,6 +51,10 @@ public/engine/         Stockfish worker assets (added in the engine task)
 **Chess.com PubAPI** (https://api.chess.com/pub)
 - `GET /player/{u}/games/archives` → a list of monthly URLs → `GET /player/{u}/games/{YYYY}/{MM}`.
 - Read-only, no auth. Requests are serial with a descriptive User-Agent. Archive months that are already fully imported are immutable, so we never re-fetch them.
+
+## Sync (T003)
+- The Sync button starts an in-process background sync with live status. There's one sync per platform at a time (keyed mutex). The cursor is the latest `playedAt` per account: Chess.com re-reads that month; Lichess uses `since` = cursor − 3 days. Inserts are idempotent (`onConflictDoNothing`).
+- `getCurrentUserId()` in `src/lib/server/session.ts` is the only no-auth seam; services always take `userId`.
 
 ## Analysis pipeline (planned, engine milestone)
 1. Games sync into `games` (server).

@@ -48,6 +48,7 @@ export const games = sqliteTable(
     pgn: text('pgn').notNull(),
     playedAt: integer('played_at').notNull(),
     timeControl: text('time_control'),
+    rated: integer('rated', { mode: 'boolean' }).notNull().default(true),
     speed: text('speed', { enum: speeds }).notNull(),
     userColor: text('user_color', { enum: userColors }).notNull(),
     result: text('result', { enum: results }).notNull(),
