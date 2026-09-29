@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it, vi } from 'vitest'
 
-import { fetchLichessGames, normalizeLichessGame, type LichessGame } from './lichess'
+import { checkLichessUser, fetchLichessGames, normalizeLichessGame, type LichessGame } from './lichess'
 import { RateLimitedError, UserNotFoundError, type ImportedGame } from './types'
 
 const fixture = (name: string) =>
@@ -45,6 +45,49 @@ describe('normalizeLichessGame', () => {
     const normalized = normalizeLichessGame(fixtureGames[0], 'POIP0I333')
     expect(normalized!.userColor).toBe('white')
     expect(normalized).toMatchObject(expected[fixtureGames[0].id]!)
+  })
+})
+
+describe('checkLichessUser', () => {
+  function jsonResponse(body: unknown, init: ResponseInit = {}): Response {
+    return new Response(JSON.stringify(body), { status: 200, ...init })
+  }
+
+  it('requests the user endpoint and resolves the canonical username', async () => {
+    const fetch = vi.fn(async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+      expect(String(input)).toBe('https://lichess.org/api/user/poip0i333')
+      expect(new Headers(init?.headers).get('Accept')).toBe('application/json')
+      return jsonResponse({ id: 'poip0i333', username: 'Poip0i333' })
+    })
+    await expect(checkLichessUser('poip0i333', { fetch })).resolves.toEqual({ username: 'Poip0i333' })
+  })
+
+  it('throws UserNotFoundError on 404', async () => {
+    const fetch = vi.fn(async (): Promise<Response> => new Response(null, { status: 404 }))
+    await expect(checkLichessUser('ghost', { fetch })).rejects.toSatisfy(
+      (e) => e instanceof UserNotFoundError && e.platform === 'lichess' && e.username === 'ghost',
+    )
+  })
+
+  it('throws UserNotFoundError for disabled accounts', async () => {
+    const fetch = vi.fn(async (): Promise<Response> => jsonResponse({ username: 'Old', disabled: true }))
+    await expect(checkLichessUser('old', { fetch })).rejects.toSatisfy(
+      (e) => e instanceof UserNotFoundError && e.username === 'old',
+    )
+  })
+
+  it('throws UserNotFoundError for closed accounts', async () => {
+    const fetch = vi.fn(async (): Promise<Response> => jsonResponse({ username: 'Old', closed: true }))
+    await expect(checkLichessUser('old', { fetch })).rejects.toSatisfy(
+      (e) => e instanceof UserNotFoundError && e.username === 'old',
+    )
+  })
+
+  it('throws RateLimitedError on 429', async () => {
+    const fetch = vi.fn(async (): Promise<Response> => new Response(null, { status: 429, headers: { 'Retry-After': '8' } }))
+    await expect(checkLichessUser('poip0i333', { fetch })).rejects.toSatisfy(
+      (e) => e instanceof RateLimitedError && e.retryAfterMs === 8000,
+    )
   })
 })
 

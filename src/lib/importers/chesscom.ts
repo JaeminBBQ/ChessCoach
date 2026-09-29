@@ -18,6 +18,9 @@ export const CHESSCOM_USER_AGENT = process.env.CHESSCOM_CONTACT
 /** Result codes Chess.com reports on both sides of a drawn game. */
 const DRAW_CODES = new Set(['agreed', 'repetition', 'stalemate', 'insufficient', '50move', 'timevsinsufficient'])
 
+/** `time_class` values we support; anything else is skipped (T002 Q2). */
+const TIME_CLASSES = new Set<Speed>(['bullet', 'blitz', 'rapid', 'daily'])
+
 export interface ChesscomGame {
   uuid: string
   url: string
@@ -46,6 +49,7 @@ export interface ChesscomPlayer {
 export function normalizeChesscomGame(raw: ChesscomGame, username: string): ImportedGame | null {
   if (raw.rules !== 'chess') return null
   if (raw.initial_setup !== undefined && raw.initial_setup !== START_FEN) return null
+  if (!TIME_CLASSES.has(raw.time_class as Speed)) return null
 
   const userColor = sideOf(raw, username)
   if (!userColor) return null
@@ -75,6 +79,23 @@ export function normalizeChesscomGame(raw: ChesscomGame, username: string): Impo
     openingEco: pgnEco(raw.pgn),
     openingName: raw.eco ? openingNameFromUrl(raw.eco) : null,
   }
+}
+
+/**
+ * Checks that a Chess.com player exists; resolves the canonical casing of the
+ * username as stored by the platform.
+ */
+export async function checkChesscomUser(
+  username: string,
+  deps: FetchDeps = {},
+): Promise<{ username: string }> {
+  const url = `${API_BASE}/player/${username.toLowerCase()}`
+  const response = await (deps.fetch ?? globalThis.fetch)(url, {
+    headers: { 'User-Agent': CHESSCOM_USER_AGENT },
+  })
+  if (!response.ok) throwForUserEndpoint(response, url, username)
+  const json = (await response.json()) as { username?: string }
+  return { username: json.username ?? username }
 }
 
 /** Lists the player's monthly archive URLs. */

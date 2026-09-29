@@ -15,6 +15,13 @@
       "when": 1790720553533,
       "tag": "0001_motionless_norrin_radd",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1790721630191,
+      "tag": "0002_loving_power_man",
+      "breakpoints": true
     }
   ]
 }

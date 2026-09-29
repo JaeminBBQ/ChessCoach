@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 import {
   CHESSCOM_USER_AGENT,
+  checkChesscomUser,
   fetchChesscomGames,
   listChesscomArchives,
   normalizeChesscomGame,
@@ -57,6 +58,11 @@ describe('normalizeChesscomGame', () => {
     expect(normalized!.userColor).toBe('white')
     expect(normalized).toMatchObject(expected[raw.uuid]!)
   })
+
+  it('skips games whose time_class is not bullet/blitz/rapid/daily', () => {
+    const raw = { ...archiveFixture.games[0], time_class: 'gimmick' }
+    expect(normalizeChesscomGame(raw, 'poip0i333')).toBeNull()
+  })
 })
 
 describe('listChesscomArchives', () => {
@@ -94,6 +100,31 @@ describe('listChesscomArchives', () => {
     const fetch = vi.fn(async (): Promise<Response> => new Response(null, { status: 500 }))
     await expect(listChesscomArchives('poip0i333', { fetch })).rejects.toSatisfy(
       (e) => e instanceof ImporterHttpError && e.status === 500,
+    )
+  })
+})
+
+describe('checkChesscomUser', () => {
+  it('requests the player endpoint with the User-Agent and resolves the canonical username', async () => {
+    const fetch = vi.fn(async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+      expect(String(input)).toBe('https://api.chess.com/pub/player/poip0i333')
+      expect(new Headers(init?.headers).get('User-Agent')).toBe(CHESSCOM_USER_AGENT)
+      return jsonResponse({ username: 'Poip0i333' })
+    })
+    await expect(checkChesscomUser('poip0i333', { fetch })).resolves.toEqual({ username: 'Poip0i333' })
+  })
+
+  it('throws UserNotFoundError on 404', async () => {
+    const fetch = vi.fn(async (): Promise<Response> => new Response(null, { status: 404 }))
+    await expect(checkChesscomUser('ghost', { fetch })).rejects.toSatisfy(
+      (e) => e instanceof UserNotFoundError && e.platform === 'chesscom' && e.username === 'ghost',
+    )
+  })
+
+  it('throws RateLimitedError on 429', async () => {
+    const fetch = vi.fn(async (): Promise<Response> => new Response(null, { status: 429, headers: { 'Retry-After': '7' } }))
+    await expect(checkChesscomUser('poip0i333', { fetch })).rejects.toSatisfy(
+      (e) => e instanceof RateLimitedError && e.retryAfterMs === 7000,
     )
   })
 })

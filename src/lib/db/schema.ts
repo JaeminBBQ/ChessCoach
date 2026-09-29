@@ -29,6 +29,7 @@ export const linkedAccounts = sqliteTable(
       .references(() => users.id),
     platform: text('platform', { enum: platforms }).notNull(),
     username: text('username').notNull(),
+    createdAt: integer('created_at').notNull().default(0),
     // Null until the first sync.
     lastSyncedAt: integer('last_synced_at'),
   },
@@ -42,6 +43,11 @@ export const games = sqliteTable(
     userId: integer('user_id')
       .notNull()
       .references(() => users.id),
+    // The linked account the game was imported through; deleting the account
+    // deletes its games.
+    accountId: integer('account_id')
+      .notNull()
+      .references(() => linkedAccounts.id, { onDelete: 'cascade' }),
     platform: text('platform', { enum: platforms }).notNull(),
     externalId: text('external_id').notNull(),
     url: text('url').notNull(),

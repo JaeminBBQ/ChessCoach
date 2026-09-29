@@ -32,13 +32,16 @@ describe('schema', () => {
       .returning()
       .all()
 
-    db.insert(schema.linkedAccounts)
+    const [account] = db
+      .insert(schema.linkedAccounts)
       .values({ userId: user.id, platform: 'lichess', username: 'jaemin', lastSyncedAt: NOW })
-      .run()
+      .returning()
+      .all()
 
     db.insert(schema.games)
       .values({
         userId: user.id,
+        accountId: account.id,
         platform: 'lichess',
         externalId: 'abc123',
         url: 'https://lichess.org/abc123',
@@ -70,8 +73,15 @@ describe('schema', () => {
       .returning()
       .all()
 
+    const [account] = db
+      .insert(schema.linkedAccounts)
+      .values({ userId: user.id, platform: 'lichess', username: 'jaemin' })
+      .returning()
+      .all()
+
     const game = {
       userId: user.id,
+      accountId: account.id,
       platform: 'lichess' as const,
       externalId: 'dup-id',
       url: 'https://lichess.org/dup-id',

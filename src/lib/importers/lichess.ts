@@ -89,6 +89,25 @@ export function normalizeLichessGame(raw: LichessGame, username: string): Import
 }
 
 /**
+ * Checks that a Lichess user exists; resolves the canonical casing of the
+ * username as stored by the platform. Closed and disabled accounts count as
+ * not found.
+ */
+export async function checkLichessUser(
+  username: string,
+  deps: FetchDeps = {},
+): Promise<{ username: string }> {
+  const url = `https://lichess.org/api/user/${username}`
+  const response = await (deps.fetch ?? globalThis.fetch)(url, {
+    headers: { Accept: 'application/json' },
+  })
+  if (!response.ok) throwForUserEndpoint(response, url, username)
+  const json = (await response.json()) as { username?: string; disabled?: boolean; closed?: boolean }
+  if (json.disabled || json.closed) throw new UserNotFoundError('lichess', username)
+  return { username: json.username ?? username }
+}
+
+/**
  * Streams the user's finished games, oldest first. There is no pagination;
  * incremental syncs pass `since` (epoch ms). `token` is sent as a Bearer
  * header only when given.

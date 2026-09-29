@@ -40,7 +40,8 @@ Use `--kind done` for finished milestones and `--kind blocked` for blockers. The
 - Never print, log, or commit secrets. `.env` is gitignored.
 
 ## Environment notes
-- Node 24 / npm 11 (no pnpm). Git branch `main`; the user commits.
+- Node 24 / npm 11 (no pnpm). Git branch `main`; the user commits **and pushes**.
+- GitHub: `origin` = `git@github.com:JaeminBBQ/ChessCoach.git`, using the repo-local `core.sshCommand` with `~/.ssh/id_ed25519_github` (same key as LeagueApp). Identity: `JaeminBBQ <jaeminl@unr.edu>`. No `gh` CLI is installed.
 - DeepSeek runs inside Claude Code, so it also loads this file and the auto-memory; that's why the redirect at the top matters.
 - Next.js 16: its APIs differ from older training data. Check `node_modules/next/dist/docs/` before writing Next-specific code. `AGENTS.md` holds the block that `next dev` manages; leave it there so `next dev` stops rewriting CLAUDE.md.
 - Sibling project `~/Projects/LeagueApp` uses the same protocol, and its files are a good reference for format.
