@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { createTestDb, type TestDb } from '../../../test/helpers/db'
 import { ANALYSIS_VERSION, replayPgn, type GameAnalysis } from '../analysis/game-analysis'
 import { analyses, games, linkedAccounts, users } from '../db/schema'
-import { analysisCounts, analysisQueue, getAnalysis, saveAnalysis } from './analyses'
+import { analysisCounts, analysisQueue, getAnalysis, saveAnalysis, summariesForGames } from './analyses'
 
 const PGN = '1. e4 e5 2. Nf3 Nc6 *'
 
@@ -104,5 +104,48 @@ describe('analysisQueue / analysisCounts', () => {
     expect(analysisQueue(db, userId, { speed: 'blitz' }, 1)).toEqual({ gameIds: [newest], remaining: 2 })
     expect(analysisQueue(db, otherUserId, {}, 10)).toEqual({ gameIds: [], remaining: 0 })
     expect(analysisCounts(db, userId)).toEqual({ analyzed: 1, total: 4 })
+  })
+})
+
+describe('summariesForGames', () => {
+  /** An analysis whose White moves swing 74.9 → 53.7 → 50 → 50 win % (a mistake, then perfect). */
+  function controlledAnalysis(): GameAnalysis {
+    const evals = [300, 40, 0, 0, 40]
+    return {
+      version: ANALYSIS_VERSION,
+      engine: 'test',
+      nodes: 1,
+      plies: replayPgn(PGN).map((p, ply) => ({
+        ply,
+        fen: p.fen,
+        move: p.move,
+        eval: { type: 'cp', value: evals[ply] },
+        terminal: null,
+        best: null,
+        second: null,
+        depth: 1,
+      })),
+    }
+  }
+
+  it('returns the user\'s accuracy and mistake counts, rounded for display', () => {
+    const gameId = addGame(1)
+    saveAnalysis(db, userId, gameId, controlledAnalysis())
+    const map = summariesForGames(db, userId, [gameId])
+    const summary = map.get(gameId)!
+    // White: one ~21% drop (mistake, accuracy ≈ 38) and one perfect move.
+    expect(summary.accuracy).toBe(69)
+    expect(summary.blunders).toBe(0)
+    expect(summary.mistakes).toBe(1)
+  })
+
+  it('returns nothing for unanalyzed or foreign games and an empty id list', () => {
+    const analyzed = addGame(1)
+    const unanalyzed = addGame(2)
+    saveAnalysis(db, userId, analyzed, controlledAnalysis())
+    expect(summariesForGames(db, userId, [unanalyzed]).size).toBe(0)
+    expect(summariesForGames(db, otherUserId, [analyzed]).size).toBe(0)
+    expect(summariesForGames(db, userId, [unanalyzed, analyzed]).size).toBe(1)
+    expect(summariesForGames(db, userId, []).size).toBe(0)
   })
 })

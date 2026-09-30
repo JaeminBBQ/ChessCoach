@@ -1,5 +1,6 @@
-import { and, count, desc, eq, isNull } from 'drizzle-orm'
+import { and, count, desc, eq, inArray, isNull } from 'drizzle-orm'
 
+import { classifyMoves, gameSummary } from '../analysis/classify'
 import { validateAnalysis, type GameAnalysis } from '../analysis/game-analysis'
 import type { getDb } from '../db/client'
 import { analyses, games, type Speed } from '../db/schema'
@@ -83,4 +84,36 @@ export function analysisCounts(db: Db, userId: number): { analyzed: number; tota
   const total = db.select({ n: count() }).from(games).where(eq(games.userId, userId)).get()?.n ?? 0
   const analyzed = db.select({ n: count() }).from(analyses).where(eq(analyses.userId, userId)).get()?.n ?? 0
   return { analyzed, total }
+}
+
+export interface GameAnalysisSummary {
+  /** User accuracy, rounded to a whole number for list display. */
+  accuracy: number
+  blunders: number
+  mistakes: number
+}
+
+/**
+ * The user's accuracy and blunder/mistake counts for the given games, one row
+ * per analyzed game. Classification runs here, once per visible row.
+ */
+export function summariesForGames(
+  db: Db,
+  userId: number,
+  gameIds: number[],
+): Map<number, GameAnalysisSummary> {
+  const map = new Map<number, GameAnalysisSummary>()
+  if (gameIds.length === 0) return map
+  const rows = db
+    .select({ gameId: games.id, userColor: games.userColor, data: analyses.data })
+    .from(games)
+    .innerJoin(analyses, eq(analyses.gameId, games.id))
+    .where(and(eq(games.userId, userId), inArray(games.id, gameIds)))
+    .all()
+  for (const row of rows) {
+    const analysis = JSON.parse(row.data) as GameAnalysis
+    const summary = gameSummary(classifyMoves(analysis), row.userColor)
+    map.set(row.gameId, { accuracy: Math.round(summary.accuracy), blunders: summary.blunders, mistakes: summary.mistakes })
+  }
+  return map
 }

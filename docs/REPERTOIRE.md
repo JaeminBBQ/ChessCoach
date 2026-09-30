@@ -39,3 +39,13 @@ This fits together: 2...Nf6 is the single choice that leads to both the Stafford
 - **Stafford:** 4.Nxc6 dxc6. The traps after 5.d3 Bc5 and 5.e5, the Oh-No-My-Queen trap, and the sound defensive setups White uses to refute it.
 - **Traxler:** 5.Nxf7 Bxf2+ and 5.Bxf7+ Ke7. Heavy calculation; know the forcing lines cold.
 - **Englund:** 2.dxe5 Nc6 3.Nf3 Qe7 4.Bf4? Qb4+ (the famous trap). What to do after White's correct 4.Qd5 or 4.Nc3.
+
+## Engine-verified notes (Stockfish 19 lite, 3M nodes, depth 19–22; 2026-09-29)
+**Traxler** (1.e4 e5 2.Nf3 Nf6 3.Bc4 Nc6 4.Ng5 Bc5):
+- The objective eval after 4...Bc5 is **+1.23** for White (5.Nxf7). It's a gamble, as expected.
+- 5.Nxf7: **5...Bxf2+! is the only move** (+0.55). 5...Qe7 is +2.04 and 5...Nxe4 is +4.12.
+- 5.Bxf7+: **5...Ke7!** (+0.86), not 5...Kf8 (+1.31).
+- 5.Bxf7+ Kf8 6.Bd5?: **6...Nxd5!**, and Black is better (−0.97). The owner played 6...Bxf2+? in game 5711 and lost in 10 moves.
+- 5.Bxf7+ Ke7 6.Bd5: 6...Rf8 (+0.73) or 6...d6.
+
+**Stafford** (1.e4 e5 2.Nf3 Nf6 3.Nxe5 Nc6): after 4.Nxc6 the eval is **+1.59** (depth 14). The gambit is objectively lost, so the coaching question is how often opponents find the refutation (T010 score by line and rating band).

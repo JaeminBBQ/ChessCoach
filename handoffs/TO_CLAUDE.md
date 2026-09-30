@@ -1,14 +1,14 @@
 # To Claude
-**Task:** T015 (insights-v0)
+**Task:** T005 (game-review)
 **Status:** done
-**Report:** handoffs/reports/T015-report.md
-**Updated:** 2026-09-29 16:15
+**Report:** handoffs/reports/T005-report.md
+**Updated:** 2026-09-29 20:40
 
 ## In one paragraph
-`/insights` is built and all acceptance criteria pass: pure aggregation module (firstMoves, scoreOf, byOpening + byOpeningTree drill-down, byTermination, byRatingDiff bands, sessions/tilt, ratingSeries, byColor), user-scoped `loadInsightGames` with account/speed/rated/range filters, and a Server Component page with a hand-rolled SVG rating chart, opening drill-down via `line=`/`color=` with breadcrumb, termination tables with time/abandon highlighting, rating-diff bands, and session bars — each section with a computed one-line takeaway. 114 tests pass (incl. a 6,000-game perf guard and real PGN fixtures from both platforms); lint/typecheck/build clean; warm `/insights?range=all` in 0.30s. Real-data takeaways for range=all blitz are in the report for your sanity check (e.g. the Petrov 2...Nf6 line scores 48% over 722 games, and the 3.d4 Steinitz reply is the owner's weakest common line at 36% — consistent with REPERTOIRE.md).
+Move classification and the review page are done and all acceptance criteria pass. `classify.ts` implements your formulas exactly (win%, position win incl. checkmate/stalemate via FEN, the fixed judgement bands, Lichess accuracy, summaries, key moments incl. missed chances, eval series) with 25 tests including the real-engine Scholar's mate case; `/games/[id]` now shows the full review (board oriented to the user with last-move highlight and best-move arrow, nav buttons + ←/→/Home/End, current-move panel, inline-SVG eval graph with click-to-jump and ●/◆ mistake markers, marked move list, clickable key moments); `/games` has the `acc 78 · 1??` column via one `inArray` query. 141 tests, lint/typecheck/build clean, all 15 analyzed game pages 200. The sanity table (user/opponent accuracy + B/M/I for all 15 games) and 5711's key moments are in the report for your independent recomputation.
 
 ## Needs Claude's attention
-1. **Deviation outside the spec:** I converted the home page's three `<a href>` internal links (`src/app/page.tsx`) to `<Link>`. Your T004 dynamic route `src/app/games/[id]/` made `@next/next/no-html-link-for-pages` flag `<a href="/games">` on the home page (the rule's dynamic-route regex matches the bare path; it didn't before the route existed, which is why lint was green at T003). Without this, criterion 1 (lint exit 0) fails. Easy to revert if you'd rather fix it differently.
-2. **Sessions cross accounts** — I split purely by time (spec was silent). Say the word if they should split per account.
-3. The working tree mixes my T015 files with your uncommitted T004 work; I touched none of your files. The diff you inspect will include both.
-4. Minor: `byOpening` skips games shorter than the requested ply, and `firstMoves` strips trailing `+ # ! ?` from SAN tokens so `Nc7+` groups with `Nc7`.
+1. **5711 key moment** flags the owner's Traxler move 6...Bxf2+ as the losing blunder (54% → 24%, best 6...Nxd5 at 150k nodes) — engine truth, but it's coaching-relevant chess content, so your call (report, Q1).
+2. **`judgeDrop` is exported** beyond the spec's API so the required exact-threshold tests (drop = 10/20/30 and the lost/won exceptions) are possible; real evals can't produce those exactly. Formulas unchanged — details in report deviations.
+3. The owner still needs to do the visual pass (board orientation/arrows, graph, keyboard, 375px width).
+4. Missed chances in `keyMoments` are uncapped (only the mistakes list takes n=3), and a ply that is both a blunder and a missed chance shows once as the blunder.

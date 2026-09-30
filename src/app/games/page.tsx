@@ -4,6 +4,7 @@ import { connection } from 'next/server'
 import GamesFilters from '@/components/games-filters'
 import { getDb } from '@/lib/db/client'
 import { results, speeds, userColors, type Result } from '@/lib/db/schema'
+import { summariesForGames, type GameAnalysisSummary } from '@/lib/server/analyses'
 import {
   GAMES_PAGE_SIZE,
   gameStats,
@@ -44,6 +45,7 @@ export default async function GamesPage({
   const page = Math.min(pages, Math.max(1, toNumber(sp.page) ?? 1))
 
   const pageGames = page === 1 ? games : listGames(db, userId, filters, page).games
+  const summaries = summariesForGames(db, userId, pageGames.map((game) => game.id))
   const hasFilters = Object.values(filters).some((value) => value !== undefined)
 
   return (
@@ -124,6 +126,7 @@ export default async function GamesPage({
                   <th className="px-3 py-2 font-medium">Speed</th>
                   <th className="px-3 py-2 font-medium">Opening</th>
                   <th className="px-3 py-2 font-medium">End</th>
+                  <th className="px-3 py-2 font-medium">Analysis</th>
                   <th className="px-3 py-2" />
                 </tr>
               </thead>
@@ -167,6 +170,9 @@ export default async function GamesPage({
                     </td>
                     <td className="px-3 py-2 whitespace-nowrap text-zinc-500 dark:text-zinc-400">
                       {game.termination ?? '—'}
+                    </td>
+                    <td className="px-3 py-2 whitespace-nowrap tabular-nums">
+                      {analysisText(summaries.get(game.id))}
                     </td>
                     <td className="px-3 py-2">
                       <a
@@ -239,6 +245,12 @@ function resultClass(result: Result): string {
   if (result === 'win') return 'text-emerald-600 dark:text-emerald-400'
   if (result === 'loss') return 'text-red-600 dark:text-red-400'
   return 'text-zinc-500 dark:text-zinc-400'
+}
+
+/** `acc 78 · 1??` for analyzed games, `—` otherwise. */
+function analysisText(summary: GameAnalysisSummary | undefined): string {
+  if (!summary) return '—'
+  return `acc ${summary.accuracy} · ${summary.blunders}??`
 }
 
 function pageHref(filters: GameFilters, page: number): string {
