@@ -217,6 +217,13 @@ function FindingBody({ finding }: { finding: Finding }) {
         </div>
         <p className="mt-1 text-sm text-zinc-700 dark:text-zinc-200">{finding.training}</p>
       </div>
+      {(finding.id === 'missed-chances' || finding.id.startsWith('mistakes-')) && (
+        <p className="mt-3 text-sm">
+          <Link href="/train" className="font-medium underline underline-offset-2">
+            Train these positions →
+          </Link>
+        </p>
+      )}
     </>
   )
 }

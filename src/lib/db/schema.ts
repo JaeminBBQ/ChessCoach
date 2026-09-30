@@ -1,4 +1,4 @@
-import { integer, sqliteTable, text, unique } from 'drizzle-orm/sqlite-core'
+import { integer, real, sqliteTable, text, unique } from 'drizzle-orm/sqlite-core'
 
 export const platforms = ['lichess', 'chesscom'] as const
 export type Platform = (typeof platforms)[number]
@@ -88,3 +88,59 @@ export const analyses = sqliteTable(
   },
   (t) => [unique('analyses_game_id_unique').on(t.gameId)],
 )
+
+export const cardKinds = ['missed', 'blunder'] as const
+export type CardKind = (typeof cardKinds)[number]
+
+export const grades = ['again', 'good', 'easy'] as const
+export type Grade = (typeof grades)[number]
+
+// One training puzzle cut from the user's own game, scheduled with spaced repetition.
+export const drillCards = sqliteTable(
+  'drill_cards',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    userId: integer('user_id')
+      .notNull()
+      .references(() => users.id),
+    gameId: integer('game_id')
+      .notNull()
+      .references(() => games.id, { onDelete: 'cascade' }),
+    /** The user's move index; the position to solve is plies[ply-1] of the analysis. */
+    ply: integer('ply').notNull(),
+    kind: text('kind', { enum: cardKinds }).notNull(),
+    fen: text('fen').notNull(),
+    solutionUci: text('solution_uci').notNull(),
+    solutionSan: text('solution_san').notNull(),
+    /** Win % after the solution, from the user's point of view. */
+    solutionWin: real('solution_win').notNull(),
+    /** The move the user actually played, and the win % after it (user POV). */
+    playedSan: text('played_san').notNull(),
+    playedWin: real('played_win').notNull(),
+    /** The opponent's move that led to the position, for highlighting. */
+    lastMoveUci: text('last_move_uci'),
+    ease: real('ease').notNull(),
+    intervalDays: real('interval_days').notNull(),
+    reps: integer('reps').notNull(),
+    lapses: integer('lapses').notNull(),
+    /** Next review time (epoch ms). New cards are due at creation. */
+    due: integer('due').notNull(),
+    lastReviewedAt: integer('last_reviewed_at'),
+    createdAt: integer('created_at').notNull(),
+  },
+  (t) => [unique('drill_cards_gameId_ply_unique').on(t.gameId, t.ply)],
+)
+
+// Review history, kept for the future progress chart.
+export const drillReviews = sqliteTable('drill_reviews', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
+  cardId: integer('card_id')
+    .notNull()
+    .references(() => drillCards.id, { onDelete: 'cascade' }),
+  grade: text('grade', { enum: grades }).notNull(),
+  correct: integer('correct', { mode: 'boolean' }).notNull(),
+  reviewedAt: integer('reviewed_at').notNull(),
+})

@@ -1,14 +1,17 @@
 # To DeepSeek
 
-**Current task:** T009: Train, puzzles from your own games (spaced repetition)
-**Spec:** `handoffs/tasks/T009-train-own-mistakes.md`
+**Current task:** T012: Game plan, weekly tasks + progress tracking (`/plan`)
+**Spec:** `handoffs/tasks/T012-game-plan.md`
 
 1. Re-read `DEEPSEEK.md` (unchanged).
-2. Execute the spec. The card gates and SRS numbers are fixed; report real-data surprises instead of changing them.
-3. When finished: write the report, overwrite `handoffs/TO_CLAUDE.md`, set T009 to `review`, **send the Discord notification**, and tell the user.
+2. Execute the spec. The plan rules and copy are fixed; report data surprises instead of changing them.
+3. When finished: write the report, overwrite `handoffs/TO_CLAUDE.md`, set T012 to `review`, **send the Discord notification**, and tell the user.
 
-## Feedback on T011 (accepted, with one fix by Claude)
-Claude reran everything and **independently recomputed every detector in Python on 265 analyzed games**. The counts and pts/100 all match, except one thing.
-- **Bug (fixed by Claude):** the hanging share used `j.bestSan` (the *user's* best move before the mistake) instead of `plies[i].best.san` (the *opponent's* best reply after it). The real numbers moved from 14–28% to **42–59%**. The fix is in `coach.ts` (a `hanging` flag computed where mistakes are collected), and the test now has a distinct `replySan` so the two can't be confused again. Take a look at the diff; the same "which ply's `best`?" question comes up in T009's card rules.
-- Answers: 1. adding `platform` to `CoachGame` was right. 2. The conversion example fallback is fine. 3. Coach as outline + Games primary on the home page is fine. 4. Overlap between findings is fine (ranking, not a sum).
-- Minor, no action needed: `parsePly` ended up in `game-analysis.ts`, which the spec said not to change. It's harmless; next time put new helpers in their own module and ask.
+## Feedback on T009 (accepted, with one fix by Claude)
+Claude reran everything (193 tests, lint, typecheck, build), confirmed 52 + 69 = 121 cards in the DB, and **re-solved your 5 example cards at 1M nodes (depth 18–22). All 5 solutions hold, with clear gaps** (e.g. 2250/31 Bxe7 86% vs 52%).
+- **Fix by Claude:** `syncDrillCards` inserts now use `.onConflictDoNothing()`. Two concurrent saves (two tabs, or Claude's parallel re-analysis) could both see a game without cards and the second would throw on the unique index. Note for later: the sync re-parses every analyzed game that produced **zero** cards on every save. That's fine at this size; flag it if you touch that code again.
+- Answers: 1. Client-side grading is fine for a self-training tool. 2. The gap gate stays at 15 for now; quality over quantity (the owner complained puzzles don't transfer). 3. Leave cards when re-analyzing (T006's re-analysis will keep existing cards).
+- The extra exports, `nextDue`, the third empty state, and the `.backup` approach are all good calls.
+
+## Heads-up
+Claude's T006 work is in the tree too (`src/lib/analysis/motifs.ts`, `motifs.test.ts`, the optional `pv` field in `game-analysis.ts`). There's also a background re-analysis; see the note at the end of the spec.

@@ -4,6 +4,7 @@ import { classifyMoves, gameSummary } from '../analysis/classify'
 import { validateAnalysis, type GameAnalysis } from '../analysis/game-analysis'
 import type { getDb } from '../db/client'
 import { analyses, games, type Speed } from '../db/schema'
+import { syncDrillCards } from './training'
 
 type Db = ReturnType<typeof getDb>
 
@@ -44,6 +45,8 @@ export function saveAnalysis(db: Db, userId: number, gameId: number, analysis: u
     .values({ userId, gameId, ...row })
     .onConflictDoUpdate({ target: analyses.gameId, set: row })
     .run()
+  // A fresh analysis feeds the training deck.
+  syncDrillCards(db, userId, now)
   return { ok: true }
 }
 

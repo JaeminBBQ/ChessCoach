@@ -7,15 +7,20 @@
 | T003 | Sync service, Accounts + Games pages, `accountId` on games | DeepSeek | done | T002 |
 | T004 | Stockfish Web Worker + batch analysis runner, `analyses` table, `/analyze`, `/games/[id]` | Claude | done | T001 |
 | T005 | Move classification (win %), accuracy, key moments, review page (board, graph, move list) | Claude spec / DeepSeek | done | T004, T015 |
-| T006 | Tactic motif tagging | Claude | planned | T005 |
-| T007 | Verified repertoire trees for the owner's openings | Claude | planned | T001 |
+| T006 | Motif tagging of mistakes/missed chances + Lichess theme links (motifs.ts + tests done; engine lines now stored; re-analysis of the 265 games runs after T009 migrates the dev DB; Coach integration spec after that) | Claude | in-progress | T005, T009 |
+| T007 | Verified repertoire trees for the owner's openings (content for the opening test) | Claude | next | T001 |
 | T008 | Repertoire explorer + deviation detection | DeepSeek | planned | T003, T007 |
-| T009 | Train: puzzles from own mistakes + missed chances, SM-2 spaced repetition, `/train` | Claude spec / DeepSeek | ready | T011 |
-| T009b | Repertoire drills (SRS) | DeepSeek | planned | T007, T009 |
+| T009 | Train: puzzles from own mistakes + missed chances, SM-2 spaced repetition, `/train` | Claude spec / DeepSeek | done | T011 |
+| T009b | Opening test: repertoire drills (SRS), registers a plan task | DeepSeek | planned | T007, T012 |
 | T010 | Gap finder + score per line by rating band | DeepSeek | planned | T008 |
 | T015 | Insights v0: openings by moves, terminations, rating bands, sessions/tilt, rating trend | DeepSeek | done | T003 |
 | T016 | Polish: show `queued` while a sync waits on the platform lock | DeepSeek | planned | T003 |
 | T011 | Coach page: ranked weaknesses (pts/100 games), evidence, example positions, training copy; `?ply=` deep links | Claude spec / DeepSeek | done | T005, T015 |
-| T012–T014 | Weekly plan, LLM coach explanations, opponent scouting | mixed | planned | T011 |
+| T016 | Inline replay boards on Coach examples | DeepSeek | planned | T011 |
+| T017 | Notation trainer (squares, reading moves), registers a plan task | DeepSeek | planned | T012 |
+| T018 | Progress + correlation page (weakness trends vs training vs rating) | Claude spec / DeepSeek | planned | T006, T009, T019 |
+| T019 | Auto-analyze new games after sync (folded into T012's Sync & analyze) | DeepSeek | done-in-T012 | T004 |
+| T012 | Game plan `/plan`: weekly auto-tracked tasks (play/review/train/analyze), focus habit + metric, Sync & analyze, 8-week scorecard | Claude spec / DeepSeek | ready | T009, T011 |
+| T013–T014 | LLM coach explanations, opponent scouting | mixed | planned | T012 |
 
 Only `ready` tasks have full specs in `tasks/`. Claude writes the next spec after reviewing the previous task, so later specs can take what was learned into account. See `docs/ROADMAP.md`.
