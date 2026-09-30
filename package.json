@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "node scripts/migrate.mjs"
+    "db:migrate": "node scripts/migrate.mjs",
+    "content:repertoire": "vitest run --config vitest.content.config.mts"
   },
   "dependencies": {
     "better-sqlite3": "^13.0.3",

@@ -1,0 +1,3342 @@
+{
+ "id": "white-vs-scandinavian",
+ "name": "White: against the Scandinavian (1.e4 d5)",
+ "color": "white",
+ "root": [
+  "e4",
+  "d5"
+ ],
+ "engine": "stockfish-19-lite-wasm",
+ "nodesPerPosition": 800000,
+ "generatedAt": "2026-09-30T18:53:34.667Z",
+ "seconds": 336,
+ "nodes": [
+  {
+   "path": "e4 d5 exd5",
+   "san": "exd5",
+   "by": "user",
+   "fen": "rnbqkbnr/ppp1pppp/8/3P4/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2",
+   "eval": {
+    "type": "cp",
+    "value": 69
+   },
+   "freq": {
+    "n": 345,
+    "score": 0.572
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5",
+   "san": "Qxd5",
+   "by": "opponent",
+   "fen": "rnb1kbnr/ppp1pppp/8/3q4/8/8/PPPP1PPP/RNBQKBNR w KQkq - 0 3",
+   "eval": {
+    "type": "cp",
+    "value": 77
+   },
+   "freq": {
+    "n": 298,
+    "score": 0.601
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3",
+   "san": "Nc3",
+   "by": "user",
+   "fen": "rnb1kbnr/ppp1pppp/8/3q4/8/2N5/PPPP1PPP/R1BQKBNR b KQkq - 1 3",
+   "eval": {
+    "type": "cp",
+    "value": 53
+   },
+   "freq": {
+    "n": 296,
+    "score": 0.601
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd6",
+   "san": "Qd6",
+   "by": "opponent",
+   "fen": "rnb1kbnr/ppp1pppp/3q4/8/8/2N5/PPPP1PPP/R1BQKBNR w KQkq - 2 4",
+   "eval": {
+    "type": "cp",
+    "value": 72
+   },
+   "freq": {
+    "n": 19,
+    "score": 0.684
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd6 d4",
+   "san": "d4",
+   "by": "user",
+   "fen": "rnb1kbnr/ppp1pppp/3q4/8/3P4/2N5/PPP2PPP/R1BQKBNR b KQkq - 0 4",
+   "eval": {
+    "type": "cp",
+    "value": 66
+   },
+   "freq": {
+    "n": 11,
+    "score": 0.818
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd6 d4 Nf6",
+   "san": "Nf6",
+   "by": "opponent",
+   "fen": "rnb1kb1r/ppp1pppp/3q1n2/8/3P4/2N5/PPP2PPP/R1BQKBNR w KQkq - 1 5",
+   "eval": {
+    "type": "cp",
+    "value": 60
+   },
+   "freq": {
+    "n": 3,
+    "score": 1
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd6 d4 Nf6 Nf3",
+   "san": "Nf3",
+   "by": "user",
+   "fen": "rnb1kb1r/ppp1pppp/3q1n2/8/3P4/2N2N2/PPP2PPP/R1BQKB1R b KQkq - 2 5",
+   "eval": {
+    "type": "cp",
+    "value": 63
+   },
+   "freq": {
+    "n": 3,
+    "score": 1
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd6 d4 Nf6 Nf3 c6",
+   "san": "c6",
+   "by": "opponent",
+   "fen": "rnb1kb1r/pp2pppp/2pq1n2/8/3P4/2N2N2/PPP2PPP/R1BQKB1R w KQkq - 0 6",
+   "eval": {
+    "type": "cp",
+    "value": 60
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd6 d4 Nf6 Nf3 c6 Ne5",
+   "san": "Ne5",
+   "by": "user",
+   "fen": "rnb1kb1r/pp2pppp/2pq1n2/4N3/3P4/2N5/PPP2PPP/R1BQKB1R b KQkq - 1 6",
+   "eval": {
+    "type": "cp",
+    "value": 58
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd6 d4 Nf6 Nf3 c6 Ne5 Nbd7",
+   "san": "Nbd7",
+   "by": "opponent",
+   "fen": "r1b1kb1r/pp1npppp/2pq1n2/4N3/3P4/2N5/PPP2PPP/R1BQKB1R w KQkq - 2 7",
+   "eval": {
+    "type": "cp",
+    "value": 48
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd6 d4 Nf6 Nf3 c6 Ne5 g6",
+   "san": "g6",
+   "by": "opponent",
+   "fen": "rnb1kb1r/pp2pp1p/2pq1np1/4N3/3P4/2N5/PPP2PPP/R1BQKB1R w KQkq - 0 7",
+   "eval": {
+    "type": "cp",
+    "value": 77
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd6 d4 Nf6 Nf3 g6",
+   "san": "g6",
+   "by": "opponent",
+   "fen": "rnb1kb1r/ppp1pp1p/3q1np1/8/3P4/2N2N2/PPP2PPP/R1BQKB1R w KQkq - 0 6",
+   "eval": {
+    "type": "cp",
+    "value": 69
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd6 d4 Nf6 Nf3 g6 Nb5",
+   "san": "Nb5",
+   "by": "user",
+   "fen": "rnb1kb1r/ppp1pp1p/3q1np1/1N6/3P4/5N2/PPP2PPP/R1BQKB1R b KQkq - 1 6",
+   "eval": {
+    "type": "cp",
+    "value": 64
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd6 d4 Nf6 Nf3 g6 Nb5 Qd8",
+   "san": "Qd8",
+   "by": "opponent",
+   "fen": "rnbqkb1r/ppp1pp1p/5np1/1N6/3P4/5N2/PPP2PPP/R1BQKB1R w KQkq - 2 7",
+   "eval": {
+    "type": "cp",
+    "value": 68
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd6 d4 Nf6 Nf3 g6 Nb5 Qb6",
+   "san": "Qb6",
+   "by": "opponent",
+   "fen": "rnb1kb1r/ppp1pp1p/1q3np1/1N6/3P4/5N2/PPP2PPP/R1BQKB1R w KQkq - 2 7",
+   "eval": {
+    "type": "cp",
+    "value": 72
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd6 d4 c6",
+   "san": "c6",
+   "by": "opponent",
+   "fen": "rnb1kbnr/pp2pppp/2pq4/8/3P4/2N5/PPP2PPP/R1BQKBNR w KQkq - 0 5",
+   "eval": {
+    "type": "cp",
+    "value": 70
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd6 d4 c6 Nge2",
+   "san": "Nge2",
+   "by": "user",
+   "fen": "rnb1kbnr/pp2pppp/2pq4/8/3P4/2N5/PPP1NPPP/R1BQKB1R b KQkq - 1 5",
+   "eval": {
+    "type": "cp",
+    "value": 72
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd6 d4 c6 Nge2 Nd7",
+   "san": "Nd7",
+   "by": "opponent",
+   "fen": "r1b1kbnr/pp1npppp/2pq4/8/3P4/2N5/PPP1NPPP/R1BQKB1R w KQkq - 2 6",
+   "eval": {
+    "type": "cp",
+    "value": 72
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd6 d4 c6 Nge2 Nd7 Bf4",
+   "san": "Bf4",
+   "by": "user",
+   "fen": "r1b1kbnr/pp1npppp/2pq4/8/3P1B2/2N5/PPP1NPPP/R2QKB1R b KQkq - 3 6",
+   "eval": {
+    "type": "cp",
+    "value": 62
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd6 d4 c6 Nge2 Nd7 Bf4 e5",
+   "san": "e5",
+   "by": "opponent",
+   "fen": "r1b1kbnr/pp1n1ppp/2pq4/4p3/3P1B2/2N5/PPP1NPPP/R2QKB1R w KQkq - 0 7",
+   "eval": {
+    "type": "cp",
+    "value": 73
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd6 d4 c6 Nge2 Nd7 Bf4 Qb4",
+   "san": "Qb4",
+   "by": "opponent",
+   "fen": "r1b1kbnr/pp1npppp/2p5/8/1q1P1B2/2N5/PPP1NPPP/R2QKB1R w KQkq - 4 7",
+   "eval": {
+    "type": "cp",
+    "value": 83
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8",
+   "san": "Qd8",
+   "by": "opponent",
+   "fen": "rnbqkbnr/ppp1pppp/8/8/8/2N5/PPPP1PPP/R1BQKBNR w KQkq - 2 4",
+   "eval": {
+    "type": "cp",
+    "value": 59
+   },
+   "freq": {
+    "n": 83,
+    "score": 0.596
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4",
+   "san": "d4",
+   "by": "user",
+   "fen": "rnbqkbnr/ppp1pppp/8/8/3P4/2N5/PPP2PPP/R1BQKBNR b KQkq - 0 4",
+   "eval": {
+    "type": "cp",
+    "value": 70
+   },
+   "freq": {
+    "n": 67,
+    "score": 0.597
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 Nf6",
+   "san": "Nf6",
+   "by": "opponent",
+   "fen": "rnbqkb1r/ppp1pppp/5n2/8/3P4/2N5/PPP2PPP/R1BQKBNR w KQkq - 1 5",
+   "eval": {
+    "type": "cp",
+    "value": 71
+   },
+   "freq": {
+    "n": 21,
+    "score": 0.667
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 Nf6 Bf4",
+   "san": "Bf4",
+   "by": "user",
+   "fen": "rnbqkb1r/ppp1pppp/5n2/8/3P1B2/2N5/PPP2PPP/R2QKBNR b KQkq - 2 5",
+   "eval": {
+    "type": "cp",
+    "value": 52
+   },
+   "freq": {
+    "n": 15,
+    "score": 0.733
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 Nf6 Bf4 c6",
+   "san": "c6",
+   "by": "opponent",
+   "fen": "rnbqkb1r/pp2pppp/2p2n2/8/3P1B2/2N5/PPP2PPP/R2QKBNR w KQkq - 0 6",
+   "eval": {
+    "type": "cp",
+    "value": 50
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 Nf6 Bf4 c6 Nf3",
+   "san": "Nf3",
+   "by": "user",
+   "fen": "rnbqkb1r/pp2pppp/2p2n2/8/3P1B2/2N2N2/PPP2PPP/R2QKB1R b KQkq - 1 6",
+   "eval": {
+    "type": "cp",
+    "value": 48
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 Nf6 Bf4 c6 Nf3 Bf5",
+   "san": "Bf5",
+   "by": "opponent",
+   "fen": "rn1qkb1r/pp2pppp/2p2n2/5b2/3P1B2/2N2N2/PPP2PPP/R2QKB1R w KQkq - 2 7",
+   "eval": {
+    "type": "cp",
+    "value": 50
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 Nf6 Bf4 c6 Nf3 Bg4",
+   "san": "Bg4",
+   "by": "opponent",
+   "fen": "rn1qkb1r/pp2pppp/2p2n2/8/3P1Bb1/2N2N2/PPP2PPP/R2QKB1R w KQkq - 2 7",
+   "eval": {
+    "type": "cp",
+    "value": 59
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 Nf6 Bf4 Nc6",
+   "san": "Nc6",
+   "by": "opponent",
+   "fen": "r1bqkb1r/ppp1pppp/2n2n2/8/3P1B2/2N5/PPP2PPP/R2QKBNR w KQkq - 3 6",
+   "eval": {
+    "type": "cp",
+    "value": 56
+   },
+   "freq": {
+    "n": 6,
+    "score": 0.583
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 Nf6 Bf4 Nc6 Nf3",
+   "san": "Nf3",
+   "by": "user",
+   "fen": "r1bqkb1r/ppp1pppp/2n2n2/8/3P1B2/2N2N2/PPP2PPP/R2QKB1R b KQkq - 4 6",
+   "eval": {
+    "type": "cp",
+    "value": 55
+   },
+   "freq": {
+    "n": 1,
+    "score": 1
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 Nf6 Bf4 Nc6 Nf3 e6",
+   "san": "e6",
+   "by": "opponent",
+   "fen": "r1bqkb1r/ppp2ppp/2n1pn2/8/3P1B2/2N2N2/PPP2PPP/R2QKB1R w KQkq - 0 7",
+   "eval": {
+    "type": "cp",
+    "value": 53
+   },
+   "freq": {
+    "n": 1,
+    "score": 1
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 Nf6 Bf4 Nc6 Nf3 a6",
+   "san": "a6",
+   "by": "opponent",
+   "fen": "r1bqkb1r/1pp1pppp/p1n2n2/8/3P1B2/2N2N2/PPP2PPP/R2QKB1R w KQkq - 0 7",
+   "eval": {
+    "type": "cp",
+    "value": 63
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 g6",
+   "san": "g6",
+   "by": "opponent",
+   "fen": "rnbqkbnr/ppp1pp1p/6p1/8/3P4/2N5/PPP2PPP/R1BQKBNR w KQkq - 0 5",
+   "eval": {
+    "type": "cp",
+    "value": 78
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 g6 Bf4",
+   "san": "Bf4",
+   "by": "user",
+   "fen": "rnbqkbnr/ppp1pp1p/6p1/8/3P1B2/2N5/PPP2PPP/R2QKBNR b KQkq - 1 5",
+   "eval": {
+    "type": "cp",
+    "value": 64
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 g6 Bf4 Bg7",
+   "san": "Bg7",
+   "by": "opponent",
+   "fen": "rnbqk1nr/ppp1ppbp/6p1/8/3P1B2/2N5/PPP2PPP/R2QKBNR w KQkq - 2 6",
+   "eval": {
+    "type": "cp",
+    "value": 75
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 g6 Bf4 Bg7 Qd2",
+   "san": "Qd2",
+   "by": "user",
+   "fen": "rnbqk1nr/ppp1ppbp/6p1/8/3P1B2/2N5/PPPQ1PPP/R3KBNR b KQkq - 3 6",
+   "eval": {
+    "type": "cp",
+    "value": 63
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 g6 Bf4 Bg7 Qd2 Nf6",
+   "san": "Nf6",
+   "by": "opponent",
+   "fen": "rnbqk2r/ppp1ppbp/5np1/8/3P1B2/2N5/PPPQ1PPP/R3KBNR w KQkq - 4 7",
+   "eval": {
+    "type": "cp",
+    "value": 77
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 g6 Bf4 Bg7 Qd2 c6",
+   "san": "c6",
+   "by": "opponent",
+   "fen": "rnbqk1nr/pp2ppbp/2p3p1/8/3P1B2/2N5/PPPQ1PPP/R3KBNR w KQkq - 0 7",
+   "eval": {
+    "type": "cp",
+    "value": 66
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 g6 Bf4 Nf6",
+   "san": "Nf6",
+   "by": "opponent",
+   "fen": "rnbqkb1r/ppp1pp1p/5np1/8/3P1B2/2N5/PPP2PPP/R2QKBNR w KQkq - 2 6",
+   "eval": {
+    "type": "cp",
+    "value": 62
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 g6 Bf4 Nf6 Qd2",
+   "san": "Qd2",
+   "by": "user",
+   "fen": "rnbqkb1r/ppp1pp1p/5np1/8/3P1B2/2N5/PPPQ1PPP/R3KBNR b KQkq - 3 6",
+   "eval": {
+    "type": "cp",
+    "value": 59
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 g6 Bf4 Nf6 Qd2 Bg7",
+   "san": "Bg7",
+   "by": "opponent",
+   "fen": "rnbqk2r/ppp1ppbp/5np1/8/3P1B2/2N5/PPPQ1PPP/R3KBNR w KQkq - 4 7",
+   "eval": {
+    "type": "cp",
+    "value": 57
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 g6 Bf4 Nf6 Qd2 c6",
+   "san": "c6",
+   "by": "opponent",
+   "fen": "rnbqkb1r/pp2pp1p/2p2np1/8/3P1B2/2N5/PPPQ1PPP/R3KBNR w KQkq - 0 7",
+   "eval": {
+    "type": "cp",
+    "value": 64
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 Nc6",
+   "san": "Nc6",
+   "by": "opponent",
+   "fen": "r1bqkbnr/ppp1pppp/2n5/8/3P4/2N5/PPP2PPP/R1BQKBNR w KQkq - 1 5",
+   "eval": {
+    "type": "cp",
+    "value": 147
+   },
+   "freq": {
+    "n": 10,
+    "score": 0.6
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 Nc6 d5",
+   "san": "d5",
+   "by": "user",
+   "fen": "r1bqkbnr/ppp1pppp/2n5/3P4/8/2N5/PPP2PPP/R1BQKBNR b KQkq - 0 5",
+   "eval": {
+    "type": "cp",
+    "value": 149
+   },
+   "freq": {
+    "n": 4,
+    "score": 0.5
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 Nc6 d5 Nb8",
+   "san": "Nb8",
+   "by": "opponent",
+   "fen": "rnbqkbnr/ppp1pppp/8/3P4/8/2N5/PPP2PPP/R1BQKBNR w KQkq - 1 6",
+   "eval": {
+    "type": "cp",
+    "value": 157
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 Nc6 d5 Nb8 Bf4",
+   "san": "Bf4",
+   "by": "user",
+   "fen": "rnbqkbnr/ppp1pppp/8/3P4/5B2/2N5/PPP2PPP/R2QKBNR b KQkq - 2 6",
+   "eval": {
+    "type": "cp",
+    "value": 165
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 Nc6 d5 Nb8 Bf4 Nf6",
+   "san": "Nf6",
+   "by": "opponent",
+   "fen": "rnbqkb1r/ppp1pppp/5n2/3P4/5B2/2N5/PPP2PPP/R2QKBNR w KQkq - 3 7",
+   "eval": {
+    "type": "cp",
+    "value": 149
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 Nc6 d5 Nb8 Bf4 a6",
+   "san": "a6",
+   "by": "opponent",
+   "fen": "rnbqkbnr/1pp1pppp/p7/3P4/5B2/2N5/PPP2PPP/R2QKBNR w KQkq - 0 7",
+   "eval": {
+    "type": "cp",
+    "value": 211
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 Nc6 d5 Ne5",
+   "san": "Ne5",
+   "by": "opponent",
+   "fen": "r1bqkbnr/ppp1pppp/8/3Pn3/8/2N5/PPP2PPP/R1BQKBNR w KQkq - 1 6",
+   "eval": {
+    "type": "cp",
+    "value": 220
+   },
+   "freq": {
+    "n": 2,
+    "score": 0
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 Nc6 d5 Ne5 Qe2",
+   "san": "Qe2",
+   "by": "user",
+   "fen": "r1bqkbnr/ppp1pppp/8/3Pn3/8/2N5/PPP1QPPP/R1B1KBNR b KQkq - 2 6",
+   "eval": {
+    "type": "cp",
+    "value": 222
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 Nc6 d5 Ne5 Qe2 Ng6",
+   "san": "Ng6",
+   "by": "opponent",
+   "fen": "r1bqkbnr/ppp1pppp/6n1/3P4/8/2N5/PPP1QPPP/R1B1KBNR w KQkq - 3 7",
+   "eval": {
+    "type": "cp",
+    "value": 235
+   },
+   "freq": null,
+   "punish": true
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 Nc6 d5 Ne5 Qe2 f6",
+   "san": "f6",
+   "by": "opponent",
+   "fen": "r1bqkbnr/ppp1p1pp/5p2/3Pn3/8/2N5/PPP1QPPP/R1B1KBNR w KQkq - 0 7",
+   "eval": {
+    "type": "cp",
+    "value": 291
+   },
+   "freq": null,
+   "punish": true
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 e6",
+   "san": "e6",
+   "by": "opponent",
+   "fen": "rnbqkbnr/ppp2ppp/4p3/8/3P4/2N5/PPP2PPP/R1BQKBNR w KQkq - 0 5",
+   "eval": {
+    "type": "cp",
+    "value": 60
+   },
+   "freq": {
+    "n": 16,
+    "score": 0.375
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 e6 Bf4",
+   "san": "Bf4",
+   "by": "user",
+   "fen": "rnbqkbnr/ppp2ppp/4p3/8/3P1B2/2N5/PPP2PPP/R2QKBNR b KQkq - 1 5",
+   "eval": {
+    "type": "cp",
+    "value": 57
+   },
+   "freq": {
+    "n": 14,
+    "score": 0.357
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 e6 Bf4 Nc6",
+   "san": "Nc6",
+   "by": "opponent",
+   "fen": "r1bqkbnr/ppp2ppp/2n1p3/8/3P1B2/2N5/PPP2PPP/R2QKBNR w KQkq - 2 6",
+   "eval": {
+    "type": "cp",
+    "value": 56
+   },
+   "freq": {
+    "n": 1,
+    "score": 1
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 e6 Bf4 Nc6 Bb5",
+   "san": "Bb5",
+   "by": "user",
+   "fen": "r1bqkbnr/ppp2ppp/2n1p3/1B6/3P1B2/2N5/PPP2PPP/R2QK1NR b KQkq - 3 6",
+   "eval": {
+    "type": "cp",
+    "value": 54
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 e6 Bf4 Nc6 Bb5 Nf6",
+   "san": "Nf6",
+   "by": "opponent",
+   "fen": "r1bqkb1r/ppp2ppp/2n1pn2/1B6/3P1B2/2N5/PPP2PPP/R2QK1NR w KQkq - 4 7",
+   "eval": {
+    "type": "cp",
+    "value": 65
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 e6 Bf4 Nc6 Bb5 Bd6",
+   "san": "Bd6",
+   "by": "opponent",
+   "fen": "r1bqk1nr/ppp2ppp/2nbp3/1B6/3P1B2/2N5/PPP2PPP/R2QK1NR w KQkq - 4 7",
+   "eval": {
+    "type": "cp",
+    "value": 90
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 e6 Bf4 Be7",
+   "san": "Be7",
+   "by": "opponent",
+   "fen": "rnbqk1nr/ppp1bppp/4p3/8/3P1B2/2N5/PPP2PPP/R2QKBNR w KQkq - 2 6",
+   "eval": {
+    "type": "cp",
+    "value": 58
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 e6 Bf4 Be7 Nb5",
+   "san": "Nb5",
+   "by": "user",
+   "fen": "rnbqk1nr/ppp1bppp/4p3/1N6/3P1B2/8/PPP2PPP/R2QKBNR b KQkq - 3 6",
+   "eval": {
+    "type": "cp",
+    "value": 45
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 e6 Bf4 Be7 Nb5 Na6",
+   "san": "Na6",
+   "by": "opponent",
+   "fen": "r1bqk1nr/ppp1bppp/n3p3/1N6/3P1B2/8/PPP2PPP/R2QKBNR w KQkq - 4 7",
+   "eval": {
+    "type": "cp",
+    "value": 48
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qd8 d4 e6 Bf4 Be7 Nb5 Bd6",
+   "san": "Bd6",
+   "by": "opponent",
+   "fen": "rnbqk1nr/ppp2ppp/3bp3/1N6/3P1B2/8/PPP2PPP/R2QKBNR w KQkq - 4 7",
+   "eval": {
+    "type": "cp",
+    "value": 97
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+",
+   "san": "Qe6+",
+   "by": "opponent",
+   "fen": "rnb1kbnr/ppp1pppp/4q3/8/8/2N5/PPPP1PPP/R1BQKBNR w KQkq - 2 4",
+   "eval": {
+    "type": "cp",
+    "value": 101
+   },
+   "freq": {
+    "n": 56,
+    "score": 0.563
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2",
+   "san": "Be2",
+   "by": "user",
+   "fen": "rnb1kbnr/ppp1pppp/4q3/8/8/2N5/PPPPBPPP/R1BQK1NR b KQkq - 3 4",
+   "eval": {
+    "type": "cp",
+    "value": 105
+   },
+   "freq": {
+    "n": 56,
+    "score": 0.563
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 Qd6",
+   "san": "Qd6",
+   "by": "opponent",
+   "fen": "rnb1kbnr/ppp1pppp/3q4/8/8/2N5/PPPPBPPP/R1BQK1NR w KQkq - 4 5",
+   "eval": {
+    "type": "cp",
+    "value": 102
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 Qd6 d4",
+   "san": "d4",
+   "by": "user",
+   "fen": "rnb1kbnr/ppp1pppp/3q4/8/3P4/2N5/PPP1BPPP/R1BQK1NR b KQkq - 0 5",
+   "eval": {
+    "type": "cp",
+    "value": 106
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 Qd6 d4 c6",
+   "san": "c6",
+   "by": "opponent",
+   "fen": "rnb1kbnr/pp2pppp/2pq4/8/3P4/2N5/PPP1BPPP/R1BQK1NR w KQkq - 0 6",
+   "eval": {
+    "type": "cp",
+    "value": 102
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 Qd6 d4 c6 Nf3",
+   "san": "Nf3",
+   "by": "user",
+   "fen": "rnb1kbnr/pp2pppp/2pq4/8/3P4/2N2N2/PPP1BPPP/R1BQK2R b KQkq - 1 6",
+   "eval": {
+    "type": "cp",
+    "value": 107
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 Qd6 d4 c6 Nf3 Bf5",
+   "san": "Bf5",
+   "by": "opponent",
+   "fen": "rn2kbnr/pp2pppp/2pq4/5b2/3P4/2N2N2/PPP1BPPP/R1BQK2R w KQkq - 2 7",
+   "eval": {
+    "type": "cp",
+    "value": 99
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 Qd6 d4 c6 Nf3 g6",
+   "san": "g6",
+   "by": "opponent",
+   "fen": "rnb1kbnr/pp2pp1p/2pq2p1/8/3P4/2N2N2/PPP1BPPP/R1BQK2R w KQkq - 0 7",
+   "eval": {
+    "type": "cp",
+    "value": 117
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 Qd6 d4 e6",
+   "san": "e6",
+   "by": "opponent",
+   "fen": "rnb1kbnr/ppp2ppp/3qp3/8/3P4/2N5/PPP1BPPP/R1BQK1NR w KQkq - 0 6",
+   "eval": {
+    "type": "cp",
+    "value": 111
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 Qd6 d4 e6 Nb5",
+   "san": "Nb5",
+   "by": "user",
+   "fen": "rnb1kbnr/ppp2ppp/3qp3/1N6/3P4/8/PPP1BPPP/R1BQK1NR b KQkq - 1 6",
+   "eval": {
+    "type": "cp",
+    "value": 115
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 Qd6 d4 e6 Nb5 Qd8",
+   "san": "Qd8",
+   "by": "opponent",
+   "fen": "rnbqkbnr/ppp2ppp/4p3/1N6/3P4/8/PPP1BPPP/R1BQK1NR w KQkq - 2 7",
+   "eval": {
+    "type": "cp",
+    "value": 106
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 Qd6 d4 e6 Nb5 Qb6",
+   "san": "Qb6",
+   "by": "opponent",
+   "fen": "rnb1kbnr/ppp2ppp/1q2p3/1N6/3P4/8/PPP1BPPP/R1BQK1NR w KQkq - 2 7",
+   "eval": {
+    "type": "cp",
+    "value": 133
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 c6",
+   "san": "c6",
+   "by": "opponent",
+   "fen": "rnb1kbnr/pp2pppp/2p1q3/8/8/2N5/PPPPBPPP/R1BQK1NR w KQkq - 0 5",
+   "eval": {
+    "type": "cp",
+    "value": 101
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 c6 d4",
+   "san": "d4",
+   "by": "user",
+   "fen": "rnb1kbnr/pp2pppp/2p1q3/8/3P4/2N5/PPP1BPPP/R1BQK1NR b KQkq - 0 5",
+   "eval": {
+    "type": "cp",
+    "value": 98
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 c6 d4 Qd6",
+   "san": "Qd6",
+   "by": "opponent",
+   "fen": "rnb1kbnr/pp2pppp/2pq4/8/3P4/2N5/PPP1BPPP/R1BQK1NR w KQkq - 1 6",
+   "eval": {
+    "type": "cp",
+    "value": 91
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 c6 d4 Qd6 Nf3",
+   "san": "Nf3",
+   "by": "user",
+   "fen": "rnb1kbnr/pp2pppp/2pq4/8/3P4/2N2N2/PPP1BPPP/R1BQK2R b KQkq - 2 6",
+   "eval": {
+    "type": "cp",
+    "value": 98
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 c6 d4 Qd6 Nf3 Bf5",
+   "san": "Bf5",
+   "by": "opponent",
+   "fen": "rn2kbnr/pp2pppp/2pq4/5b2/3P4/2N2N2/PPP1BPPP/R1BQK2R w KQkq - 3 7",
+   "eval": {
+    "type": "cp",
+    "value": 113
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 c6 d4 Qd6 Nf3 g6",
+   "san": "g6",
+   "by": "opponent",
+   "fen": "rnb1kbnr/pp2pp1p/2pq2p1/8/3P4/2N2N2/PPP1BPPP/R1BQK2R w KQkq - 0 7",
+   "eval": {
+    "type": "cp",
+    "value": 124
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 c6 d4 Nf6",
+   "san": "Nf6",
+   "by": "opponent",
+   "fen": "rnb1kb1r/pp2pppp/2p1qn2/8/3P4/2N5/PPP1BPPP/R1BQK1NR w KQkq - 1 6",
+   "eval": {
+    "type": "cp",
+    "value": 128
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 c6 d4 Nf6 Nf3",
+   "san": "Nf3",
+   "by": "user",
+   "fen": "rnb1kb1r/pp2pppp/2p1qn2/8/3P4/2N2N2/PPP1BPPP/R1BQK2R b KQkq - 2 6",
+   "eval": {
+    "type": "cp",
+    "value": 120
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 c6 d4 Nf6 Nf3 g6",
+   "san": "g6",
+   "by": "opponent",
+   "fen": "rnb1kb1r/pp2pp1p/2p1qnp1/8/3P4/2N2N2/PPP1BPPP/R1BQK2R w KQkq - 0 7",
+   "eval": {
+    "type": "cp",
+    "value": 124
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 c6 d4 Nf6 Nf3 Qd6",
+   "san": "Qd6",
+   "by": "opponent",
+   "fen": "rnb1kb1r/pp2pppp/2pq1n2/8/3P4/2N2N2/PPP1BPPP/R1BQK2R w KQkq - 3 7",
+   "eval": {
+    "type": "cp",
+    "value": 125
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 Nc6",
+   "san": "Nc6",
+   "by": "opponent",
+   "fen": "r1b1kbnr/ppp1pppp/2n1q3/8/8/2N5/PPPPBPPP/R1BQK1NR w KQkq - 4 5",
+   "eval": {
+    "type": "cp",
+    "value": 192
+   },
+   "freq": {
+    "n": 21,
+    "score": 0.643
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 Nc6 d4",
+   "san": "d4",
+   "by": "user",
+   "fen": "r1b1kbnr/ppp1pppp/2n1q3/8/3P4/2N5/PPP1BPPP/R1BQK1NR b KQkq - 0 5",
+   "eval": {
+    "type": "cp",
+    "value": 221
+   },
+   "freq": {
+    "n": 1,
+    "score": 0
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 Nc6 d4 Nb4",
+   "san": "Nb4",
+   "by": "opponent",
+   "fen": "r1b1kbnr/ppp1pppp/4q3/8/1n1P4/2N5/PPP1BPPP/R1BQK1NR w KQkq - 1 6",
+   "eval": {
+    "type": "cp",
+    "value": 250
+   },
+   "freq": null,
+   "punish": true
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 Nc6 d4 Nb4 Nf3",
+   "san": "Nf3",
+   "by": "user",
+   "fen": "r1b1kbnr/ppp1pppp/4q3/8/1n1P4/2N2N2/PPP1BPPP/R1BQK2R b KQkq - 2 6",
+   "eval": {
+    "type": "cp",
+    "value": 225
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 Nc6 d4 Nb4 Nf3 Qd6",
+   "san": "Qd6",
+   "by": "opponent",
+   "fen": "r1b1kbnr/ppp1pppp/3q4/8/1n1P4/2N2N2/PPP1BPPP/R1BQK2R w KQkq - 3 7",
+   "eval": {
+    "type": "cp",
+    "value": 275
+   },
+   "freq": null,
+   "punish": true
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 Nc6 d4 Nb4 Nf3 Nf6",
+   "san": "Nf6",
+   "by": "opponent",
+   "fen": "r1b1kb1r/ppp1pppp/4qn2/8/1n1P4/2N2N2/PPP1BPPP/R1BQK2R w KQkq - 3 7",
+   "eval": {
+    "type": "cp",
+    "value": 254
+   },
+   "freq": null,
+   "punish": true
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 Nc6 d4 Nd8",
+   "san": "Nd8",
+   "by": "opponent",
+   "fen": "r1bnkbnr/ppp1pppp/4q3/8/3P4/2N5/PPP1BPPP/R1BQK1NR w KQkq - 1 6",
+   "eval": {
+    "type": "cp",
+    "value": 288
+   },
+   "freq": null,
+   "punish": true
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 Nc6 d4 Nd8 d5",
+   "san": "d5",
+   "by": "user",
+   "fen": "r1bnkbnr/ppp1pppp/4q3/3P4/8/2N5/PPP1BPPP/R1BQK1NR b KQkq - 0 6",
+   "eval": {
+    "type": "cp",
+    "value": 264
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 Nc6 d4 Nd8 d5 Qd7",
+   "san": "Qd7",
+   "by": "opponent",
+   "fen": "r1bnkbnr/pppqpppp/8/3P4/8/2N5/PPP1BPPP/R1BQK1NR w KQkq - 1 7",
+   "eval": {
+    "type": "cp",
+    "value": 260
+   },
+   "freq": null,
+   "punish": true
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 Nc6 d4 Nd8 d5 Qb6",
+   "san": "Qb6",
+   "by": "opponent",
+   "fen": "r1bnkbnr/ppp1pppp/1q6/3P4/8/2N5/PPP1BPPP/R1BQK1NR w KQkq - 1 7",
+   "eval": {
+    "type": "cp",
+    "value": 432
+   },
+   "freq": null,
+   "punish": true
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 Qg6",
+   "san": "Qg6",
+   "by": "opponent",
+   "fen": "rnb1kbnr/ppp1pppp/6q1/8/8/2N5/PPPPBPPP/R1BQK1NR w KQkq - 4 5",
+   "eval": {
+    "type": "cp",
+    "value": 179
+   },
+   "freq": {
+    "n": 11,
+    "score": 0.364
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 Qg6 Nf3",
+   "san": "Nf3",
+   "by": "user",
+   "fen": "rnb1kbnr/ppp1pppp/6q1/8/8/2N2N2/PPPPBPPP/R1BQK2R b KQkq - 5 5",
+   "eval": {
+    "type": "cp",
+    "value": 166
+   },
+   "freq": {
+    "n": 6,
+    "score": 0.5
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 Qg6 Nf3 Qb6",
+   "san": "Qb6",
+   "by": "opponent",
+   "fen": "rnb1kbnr/ppp1pppp/1q6/8/8/2N2N2/PPPPBPPP/R1BQK2R w KQkq - 6 6",
+   "eval": {
+    "type": "cp",
+    "value": 181
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 Qg6 Nf3 Qb6 O-O",
+   "san": "O-O",
+   "by": "user",
+   "fen": "rnb1kbnr/ppp1pppp/1q6/8/8/2N2N2/PPPPBPPP/R1BQ1RK1 b kq - 7 6",
+   "eval": {
+    "type": "cp",
+    "value": 172
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 Qg6 Nf3 Qb6 O-O c6",
+   "san": "c6",
+   "by": "opponent",
+   "fen": "rnb1kbnr/pp2pppp/1qp5/8/8/2N2N2/PPPPBPPP/R1BQ1RK1 w kq - 0 7",
+   "eval": {
+    "type": "cp",
+    "value": 186
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 Qg6 Nf3 Qb6 O-O Nf6",
+   "san": "Nf6",
+   "by": "opponent",
+   "fen": "rnb1kb1r/ppp1pppp/1q3n2/8/8/2N2N2/PPPPBPPP/R1BQ1RK1 w kq - 8 7",
+   "eval": {
+    "type": "cp",
+    "value": 184
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 Qg6 Nf3 Qd6",
+   "san": "Qd6",
+   "by": "opponent",
+   "fen": "rnb1kbnr/ppp1pppp/3q4/8/8/2N2N2/PPPPBPPP/R1BQK2R w KQkq - 6 6",
+   "eval": {
+    "type": "cp",
+    "value": 182
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 Qg6 Nf3 Qd6 d4",
+   "san": "d4",
+   "by": "user",
+   "fen": "rnb1kbnr/ppp1pppp/3q4/8/3P4/2N2N2/PPP1BPPP/R1BQK2R b KQkq - 0 6",
+   "eval": {
+    "type": "cp",
+    "value": 179
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 Qg6 Nf3 Qd6 d4 c6",
+   "san": "c6",
+   "by": "opponent",
+   "fen": "rnb1kbnr/pp2pppp/2pq4/8/3P4/2N2N2/PPP1BPPP/R1BQK2R w KQkq - 0 7",
+   "eval": {
+    "type": "cp",
+    "value": 209
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe6+ Be2 Qg6 Nf3 Qd6 d4 Nf6",
+   "san": "Nf6",
+   "by": "opponent",
+   "fen": "rnb1kb1r/ppp1pppp/3q1n2/8/3P4/2N2N2/PPP1BPPP/R1BQK2R w KQkq - 1 7",
+   "eval": {
+    "type": "cp",
+    "value": 183
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe5+",
+   "san": "Qe5+",
+   "by": "opponent",
+   "fen": "rnb1kbnr/ppp1pppp/8/4q3/8/2N5/PPPP1PPP/R1BQKBNR w KQkq - 2 4",
+   "eval": {
+    "type": "cp",
+    "value": 99
+   },
+   "freq": {
+    "n": 40,
+    "score": 0.675
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe5+ Be2",
+   "san": "Be2",
+   "by": "user",
+   "fen": "rnb1kbnr/ppp1pppp/8/4q3/8/2N5/PPPPBPPP/R1BQK1NR b KQkq - 3 4",
+   "eval": {
+    "type": "cp",
+    "value": 88
+   },
+   "freq": {
+    "n": 36,
+    "score": 0.694
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe5+ Be2 c6",
+   "san": "c6",
+   "by": "opponent",
+   "fen": "rnb1kbnr/pp2pppp/2p5/4q3/8/2N5/PPPPBPPP/R1BQK1NR w KQkq - 0 5",
+   "eval": {
+    "type": "cp",
+    "value": 90
+   },
+   "freq": {
+    "n": 3,
+    "score": 0
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe5+ Be2 c6 d4",
+   "san": "d4",
+   "by": "user",
+   "fen": "rnb1kbnr/pp2pppp/2p5/4q3/3P4/2N5/PPP1BPPP/R1BQK1NR b KQkq - 0 5",
+   "eval": {
+    "type": "cp",
+    "value": 84
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe5+ Be2 c6 d4 Qa5",
+   "san": "Qa5",
+   "by": "opponent",
+   "fen": "rnb1kbnr/pp2pppp/2p5/q7/3P4/2N5/PPP1BPPP/R1BQK1NR w KQkq - 1 6",
+   "eval": {
+    "type": "cp",
+    "value": 81
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe5+ Be2 c6 d4 Qa5 Bd2",
+   "san": "Bd2",
+   "by": "user",
+   "fen": "rnb1kbnr/pp2pppp/2p5/q7/3P4/2N5/PPPBBPPP/R2QK1NR b KQkq - 2 6",
+   "eval": {
+    "type": "cp",
+    "value": 85
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe5+ Be2 c6 d4 Qa5 Bd2 Nf6",
+   "san": "Nf6",
+   "by": "opponent",
+   "fen": "rnb1kb1r/pp2pppp/2p2n2/q7/3P4/2N5/PPPBBPPP/R2QK1NR w KQkq - 3 7",
+   "eval": {
+    "type": "cp",
+    "value": 75
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe5+ Be2 c6 d4 Qa5 Bd2 Qd8",
+   "san": "Qd8",
+   "by": "opponent",
+   "fen": "rnbqkbnr/pp2pppp/2p5/8/3P4/2N5/PPPBBPPP/R2QK1NR w KQkq - 3 7",
+   "eval": {
+    "type": "cp",
+    "value": 79
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe5+ Be2 c6 d4 Qc7",
+   "san": "Qc7",
+   "by": "opponent",
+   "fen": "rnb1kbnr/ppq1pppp/2p5/8/3P4/2N5/PPP1BPPP/R1BQK1NR w KQkq - 1 6",
+   "eval": {
+    "type": "cp",
+    "value": 95
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe5+ Be2 c6 d4 Qc7 Nf3",
+   "san": "Nf3",
+   "by": "user",
+   "fen": "rnb1kbnr/ppq1pppp/2p5/8/3P4/2N2N2/PPP1BPPP/R1BQK2R b KQkq - 2 6",
+   "eval": {
+    "type": "cp",
+    "value": 103
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe5+ Be2 c6 d4 Qc7 Nf3 Nf6",
+   "san": "Nf6",
+   "by": "opponent",
+   "fen": "rnb1kb1r/ppq1pppp/2p2n2/8/3P4/2N2N2/PPP1BPPP/R1BQK2R w KQkq - 3 7",
+   "eval": {
+    "type": "cp",
+    "value": 119
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe5+ Be2 c6 d4 Qc7 Nf3 Bf5",
+   "san": "Bf5",
+   "by": "opponent",
+   "fen": "rn2kbnr/ppq1pppp/2p5/5b2/3P4/2N2N2/PPP1BPPP/R1BQK2R w KQkq - 3 7",
+   "eval": {
+    "type": "cp",
+    "value": 121
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe5+ Be2 Qa5",
+   "san": "Qa5",
+   "by": "opponent",
+   "fen": "rnb1kbnr/ppp1pppp/8/q7/8/2N5/PPPPBPPP/R1BQK1NR w KQkq - 4 5",
+   "eval": {
+    "type": "cp",
+    "value": 83
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe5+ Be2 Qa5 d4",
+   "san": "d4",
+   "by": "user",
+   "fen": "rnb1kbnr/ppp1pppp/8/q7/3P4/2N5/PPP1BPPP/R1BQK1NR b KQkq - 0 5",
+   "eval": {
+    "type": "cp",
+    "value": 84
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe5+ Be2 Qa5 d4 c6",
+   "san": "c6",
+   "by": "opponent",
+   "fen": "rnb1kbnr/pp2pppp/2p5/q7/3P4/2N5/PPP1BPPP/R1BQK1NR w KQkq - 0 6",
+   "eval": {
+    "type": "cp",
+    "value": 84
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe5+ Be2 Qa5 d4 c6 Nf3",
+   "san": "Nf3",
+   "by": "user",
+   "fen": "rnb1kbnr/pp2pppp/2p5/q7/3P4/2N2N2/PPP1BPPP/R1BQK2R b KQkq - 1 6",
+   "eval": {
+    "type": "cp",
+    "value": 90
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe5+ Be2 Qa5 d4 c6 Nf3 Bf5",
+   "san": "Bf5",
+   "by": "opponent",
+   "fen": "rn2kbnr/pp2pppp/2p5/q4b2/3P4/2N2N2/PPP1BPPP/R1BQK2R w KQkq - 2 7",
+   "eval": {
+    "type": "cp",
+    "value": 89
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe5+ Be2 Qa5 d4 c6 Nf3 Nf6",
+   "san": "Nf6",
+   "by": "opponent",
+   "fen": "rnb1kb1r/pp2pppp/2p2n2/q7/3P4/2N2N2/PPP1BPPP/R1BQK2R w KQkq - 2 7",
+   "eval": {
+    "type": "cp",
+    "value": 118
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe5+ Be2 Qa5 d4 Bf5",
+   "san": "Bf5",
+   "by": "opponent",
+   "fen": "rn2kbnr/ppp1pppp/8/q4b2/3P4/2N5/PPP1BPPP/R1BQK1NR w KQkq - 1 6",
+   "eval": {
+    "type": "cp",
+    "value": 84
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe5+ Be2 Qa5 d4 Bf5 Nf3",
+   "san": "Nf3",
+   "by": "user",
+   "fen": "rn2kbnr/ppp1pppp/8/q4b2/3P4/2N2N2/PPP1BPPP/R1BQK2R b KQkq - 2 6",
+   "eval": {
+    "type": "cp",
+    "value": 91
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe5+ Be2 Qa5 d4 Bf5 Nf3 c6",
+   "san": "c6",
+   "by": "opponent",
+   "fen": "rn2kbnr/pp2pppp/2p5/q4b2/3P4/2N2N2/PPP1BPPP/R1BQK2R w KQkq - 0 7",
+   "eval": {
+    "type": "cp",
+    "value": 91
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe5+ Be2 Qa5 d4 Bf5 Nf3 e6",
+   "san": "e6",
+   "by": "opponent",
+   "fen": "rn2kbnr/ppp2ppp/4p3/q4b2/3P4/2N2N2/PPP1BPPP/R1BQK2R w KQkq - 0 7",
+   "eval": {
+    "type": "cp",
+    "value": 112
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe5+ Be2 Bg4",
+   "san": "Bg4",
+   "by": "opponent",
+   "fen": "rn2kbnr/ppp1pppp/8/4q3/6b1/2N5/PPPPBPPP/R1BQK1NR w KQkq - 4 5",
+   "eval": {
+    "type": "cp",
+    "value": 105
+   },
+   "freq": {
+    "n": 12,
+    "score": 0.833
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe5+ Be2 Bg4 d4",
+   "san": "d4",
+   "by": "user",
+   "fen": "rn2kbnr/ppp1pppp/8/4q3/3P2b1/2N5/PPP1BPPP/R1BQK1NR b KQkq - 0 5",
+   "eval": {
+    "type": "cp",
+    "value": 98
+   },
+   "freq": {
+    "n": 3,
+    "score": 0.667
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe5+ Be2 Bg4 d4 Bxe2",
+   "san": "Bxe2",
+   "by": "opponent",
+   "fen": "rn2kbnr/ppp1pppp/8/4q3/3P4/2N5/PPP1bPPP/R1BQK1NR w KQkq - 0 6",
+   "eval": {
+    "type": "cp",
+    "value": 101
+   },
+   "freq": {
+    "n": 2,
+    "score": 0.5
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe5+ Be2 Bg4 d4 Bxe2 Ngxe2",
+   "san": "Ngxe2",
+   "by": "user",
+   "fen": "rn2kbnr/ppp1pppp/8/4q3/3P4/2N5/PPP1NPPP/R1BQK2R b KQkq - 0 6",
+   "eval": {
+    "type": "cp",
+    "value": 87
+   },
+   "freq": {
+    "n": 1,
+    "score": 1
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe5+ Be2 Bg4 d4 Bxe2 Ngxe2 Qa5",
+   "san": "Qa5",
+   "by": "opponent",
+   "fen": "rn2kbnr/ppp1pppp/8/q7/3P4/2N5/PPP1NPPP/R1BQK2R w KQkq - 1 7",
+   "eval": {
+    "type": "cp",
+    "value": 89
+   },
+   "freq": {
+    "n": 1,
+    "score": 1
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe5+ Be2 Bg4 d4 Bxe2 Ngxe2 Qf5",
+   "san": "Qf5",
+   "by": "opponent",
+   "fen": "rn2kbnr/ppp1pppp/8/5q2/3P4/2N5/PPP1NPPP/R1BQK2R w KQkq - 1 7",
+   "eval": {
+    "type": "cp",
+    "value": 115
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe5+ Be2 Bg4 d4 Qe6",
+   "san": "Qe6",
+   "by": "opponent",
+   "fen": "rn2kbnr/ppp1pppp/4q3/8/3P2b1/2N5/PPP1BPPP/R1BQK1NR w KQkq - 1 6",
+   "eval": {
+    "type": "cp",
+    "value": 220
+   },
+   "freq": {
+    "n": 1,
+    "score": 1
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe5+ Be2 Bg4 d4 Qe6 f3",
+   "san": "f3",
+   "by": "user",
+   "fen": "rn2kbnr/ppp1pppp/4q3/8/3P2b1/2N2P2/PPP1B1PP/R1BQK1NR b KQkq - 0 6",
+   "eval": {
+    "type": "cp",
+    "value": 218
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe5+ Be2 Bg4 d4 Qe6 f3 Bh5",
+   "san": "Bh5",
+   "by": "opponent",
+   "fen": "rn2kbnr/ppp1pppp/4q3/7b/3P4/2N2P2/PPP1B1PP/R1BQK1NR w KQkq - 1 7",
+   "eval": {
+    "type": "cp",
+    "value": 228
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qe5+ Be2 Bg4 d4 Qe6 f3 Bf5",
+   "san": "Bf5",
+   "by": "opponent",
+   "fen": "rn2kbnr/ppp1pppp/4q3/5b2/3P4/2N2P2/PPP1B1PP/R1BQK1NR w KQkq - 1 7",
+   "eval": {
+    "type": "cp",
+    "value": 220
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5",
+   "san": "Qa5",
+   "by": "opponent",
+   "fen": "rnb1kbnr/ppp1pppp/8/q7/8/2N5/PPPP1PPP/R1BQKBNR w KQkq - 2 4",
+   "eval": {
+    "type": "cp",
+    "value": 61
+   },
+   "freq": {
+    "n": 81,
+    "score": 0.543
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4",
+   "san": "d4",
+   "by": "user",
+   "fen": "rnb1kbnr/ppp1pppp/8/q7/3P4/2N5/PPP2PPP/R1BQKBNR b KQkq - 0 4",
+   "eval": {
+    "type": "cp",
+    "value": 63
+   },
+   "freq": {
+    "n": 75,
+    "score": 0.533
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Nf6",
+   "san": "Nf6",
+   "by": "opponent",
+   "fen": "rnb1kb1r/ppp1pppp/5n2/q7/3P4/2N5/PPP2PPP/R1BQKBNR w KQkq - 1 5",
+   "eval": {
+    "type": "cp",
+    "value": 59
+   },
+   "freq": {
+    "n": 22,
+    "score": 0.636
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Nf6 Bd2",
+   "san": "Bd2",
+   "by": "user",
+   "fen": "rnb1kb1r/ppp1pppp/5n2/q7/3P4/2N5/PPPB1PPP/R2QKBNR b KQkq - 2 5",
+   "eval": {
+    "type": "cp",
+    "value": 55
+   },
+   "freq": {
+    "n": 19,
+    "score": 0.632
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Nf6 Bd2 Bg4",
+   "san": "Bg4",
+   "by": "opponent",
+   "fen": "rn2kb1r/ppp1pppp/5n2/q7/3P2b1/2N5/PPPB1PPP/R2QKBNR w KQkq - 3 6",
+   "eval": {
+    "type": "cp",
+    "value": 50
+   },
+   "freq": {
+    "n": 1,
+    "score": 0
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Nf6 Bd2 Bg4 f3",
+   "san": "f3",
+   "by": "user",
+   "fen": "rn2kb1r/ppp1pppp/5n2/q7/3P2b1/2N2P2/PPPB2PP/R2QKBNR b KQkq - 0 6",
+   "eval": {
+    "type": "cp",
+    "value": 41
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Nf6 Bd2 Bg4 f3 Bd7",
+   "san": "Bd7",
+   "by": "opponent",
+   "fen": "rn2kb1r/pppbpppp/5n2/q7/3P4/2N2P2/PPPB2PP/R2QKBNR w KQkq - 1 7",
+   "eval": {
+    "type": "cp",
+    "value": 43
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Nf6 Bd2 Bg4 f3 Be6",
+   "san": "Be6",
+   "by": "opponent",
+   "fen": "rn2kb1r/ppp1pppp/4bn2/q7/3P4/2N2P2/PPPB2PP/R2QKBNR w KQkq - 1 7",
+   "eval": {
+    "type": "cp",
+    "value": 88
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Nf6 Bd2 Qb6",
+   "san": "Qb6",
+   "by": "opponent",
+   "fen": "rnb1kb1r/ppp1pppp/1q3n2/8/3P4/2N5/PPPB1PPP/R2QKBNR w KQkq - 3 6",
+   "eval": {
+    "type": "cp",
+    "value": 71
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Nf6 Bd2 Qb6 Nf3",
+   "san": "Nf3",
+   "by": "user",
+   "fen": "rnb1kb1r/ppp1pppp/1q3n2/8/3P4/2N2N2/PPPB1PPP/R2QKB1R b KQkq - 4 6",
+   "eval": {
+    "type": "cp",
+    "value": 66
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Nf6 Bd2 Qb6 Nf3 Bf5",
+   "san": "Bf5",
+   "by": "opponent",
+   "fen": "rn2kb1r/ppp1pppp/1q3n2/5b2/3P4/2N2N2/PPPB1PPP/R2QKB1R w KQkq - 5 7",
+   "eval": {
+    "type": "cp",
+    "value": 61
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Nf6 Bd2 Qb6 Nf3 c6",
+   "san": "c6",
+   "by": "opponent",
+   "fen": "rnb1kb1r/pp2pppp/1qp2n2/8/3P4/2N2N2/PPPB1PPP/R2QKB1R w KQkq - 0 7",
+   "eval": {
+    "type": "cp",
+    "value": 81
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Nf6 Bd2 c6",
+   "san": "c6",
+   "by": "opponent",
+   "fen": "rnb1kb1r/pp2pppp/2p2n2/q7/3P4/2N5/PPPB1PPP/R2QKBNR w KQkq - 0 6",
+   "eval": {
+    "type": "cp",
+    "value": 84
+   },
+   "freq": {
+    "n": 10,
+    "score": 0.5
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Nf6 Bd2 c6 h3",
+   "san": "h3",
+   "by": "user",
+   "fen": "rnb1kb1r/pp2pppp/2p2n2/q7/3P4/2N4P/PPPB1PP1/R2QKBNR b KQkq - 0 6",
+   "eval": {
+    "type": "cp",
+    "value": 90
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Nf6 Bd2 c6 h3 g6",
+   "san": "g6",
+   "by": "opponent",
+   "fen": "rnb1kb1r/pp2pp1p/2p2np1/q7/3P4/2N4P/PPPB1PP1/R2QKBNR w KQkq - 0 7",
+   "eval": {
+    "type": "cp",
+    "value": 86
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Nf6 Bd2 c6 h3 Qb6",
+   "san": "Qb6",
+   "by": "opponent",
+   "fen": "rnb1kb1r/pp2pppp/1qp2n2/8/3P4/2N4P/PPPB1PP1/R2QKBNR w KQkq - 1 7",
+   "eval": {
+    "type": "cp",
+    "value": 68
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Bf5",
+   "san": "Bf5",
+   "by": "opponent",
+   "fen": "rn2kbnr/ppp1pppp/8/q4b2/3P4/2N5/PPP2PPP/R1BQKBNR w KQkq - 1 5",
+   "eval": {
+    "type": "cp",
+    "value": 72
+   },
+   "freq": {
+    "n": 5,
+    "score": 0.6
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Bf5 Qf3",
+   "san": "Qf3",
+   "by": "user",
+   "fen": "rn2kbnr/ppp1pppp/8/q4b2/3P4/2N2Q2/PPP2PPP/R1B1KBNR b KQkq - 2 5",
+   "eval": {
+    "type": "cp",
+    "value": 77
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Bf5 Qf3 Nc6",
+   "san": "Nc6",
+   "by": "opponent",
+   "fen": "r3kbnr/ppp1pppp/2n5/q4b2/3P4/2N2Q2/PPP2PPP/R1B1KBNR w KQkq - 3 6",
+   "eval": {
+    "type": "cp",
+    "value": 70
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Bf5 Qf3 Nc6 Bb5",
+   "san": "Bb5",
+   "by": "user",
+   "fen": "r3kbnr/ppp1pppp/2n5/qB3b2/3P4/2N2Q2/PPP2PPP/R1B1K1NR b KQkq - 4 6",
+   "eval": {
+    "type": "cp",
+    "value": 74
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Bf5 Qf3 Nc6 Bb5 Bd7",
+   "san": "Bd7",
+   "by": "opponent",
+   "fen": "r3kbnr/pppbpppp/2n5/qB6/3P4/2N2Q2/PPP2PPP/R1B1K1NR w KQkq - 5 7",
+   "eval": {
+    "type": "cp",
+    "value": 82
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Bf5 Qf3 Nc6 Bb5 O-O-O",
+   "san": "O-O-O",
+   "by": "opponent",
+   "fen": "2kr1bnr/ppp1pppp/2n5/qB3b2/3P4/2N2Q2/PPP2PPP/R1B1K1NR w KQ - 5 7",
+   "eval": {
+    "type": "cp",
+    "value": 483
+   },
+   "freq": null,
+   "punish": true
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Bf5 Qf3 c6",
+   "san": "c6",
+   "by": "opponent",
+   "fen": "rn2kbnr/pp2pppp/2p5/q4b2/3P4/2N2Q2/PPP2PPP/R1B1KBNR w KQkq - 0 6",
+   "eval": {
+    "type": "cp",
+    "value": 106
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Bf5 Qf3 c6 b4",
+   "san": "b4",
+   "by": "user",
+   "fen": "rn2kbnr/pp2pppp/2p5/q4b2/1P1P4/2N2Q2/P1P2PPP/R1B1KBNR b KQkq - 0 6",
+   "eval": {
+    "type": "cp",
+    "value": 95
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Bf5 Qf3 c6 b4 Qxb4",
+   "san": "Qxb4",
+   "by": "opponent",
+   "fen": "rn2kbnr/pp2pppp/2p5/5b2/1q1P4/2N2Q2/P1P2PPP/R1B1KBNR w KQkq - 0 7",
+   "eval": {
+    "type": "cp",
+    "value": 93
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Bf5 Qf3 c6 b4 Qd8",
+   "san": "Qd8",
+   "by": "opponent",
+   "fen": "rn1qkbnr/pp2pppp/2p5/5b2/1P1P4/2N2Q2/P1P2PPP/R1B1KBNR w KQkq - 1 7",
+   "eval": {
+    "type": "cp",
+    "value": 500
+   },
+   "freq": null,
+   "punish": true
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Nc6",
+   "san": "Nc6",
+   "by": "opponent",
+   "fen": "r1b1kbnr/ppp1pppp/2n5/q7/3P4/2N5/PPP2PPP/R1BQKBNR w KQkq - 1 5",
+   "eval": {
+    "type": "cp",
+    "value": 145
+   },
+   "freq": {
+    "n": 10,
+    "score": 0.45
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Nc6 d5",
+   "san": "d5",
+   "by": "user",
+   "fen": "r1b1kbnr/ppp1pppp/2n5/q2P4/8/2N5/PPP2PPP/R1BQKBNR b KQkq - 0 5",
+   "eval": {
+    "type": "cp",
+    "value": 131
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Nc6 d5 Nd8",
+   "san": "Nd8",
+   "by": "opponent",
+   "fen": "r1bnkbnr/ppp1pppp/8/q2P4/8/2N5/PPP2PPP/R1BQKBNR w KQkq - 1 6",
+   "eval": {
+    "type": "cp",
+    "value": 193
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Nc6 d5 Nd8 a3",
+   "san": "a3",
+   "by": "user",
+   "fen": "r1bnkbnr/ppp1pppp/8/q2P4/8/P1N5/1PP2PPP/R1BQKBNR b KQkq - 0 6",
+   "eval": {
+    "type": "cp",
+    "value": 163
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Nc6 d5 Nd8 a3 e6",
+   "san": "e6",
+   "by": "opponent",
+   "fen": "r1bnkbnr/ppp2ppp/4p3/q2P4/8/P1N5/1PP2PPP/R1BQKBNR w KQkq - 0 7",
+   "eval": {
+    "type": "cp",
+    "value": 208
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Nc6 d5 Nd8 a3 a6",
+   "san": "a6",
+   "by": "opponent",
+   "fen": "r1bnkbnr/1pp1pppp/p7/q2P4/8/P1N5/1PP2PPP/R1BQKBNR w KQkq - 0 7",
+   "eval": {
+    "type": "cp",
+    "value": 227
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Nc6 d5 Nb8",
+   "san": "Nb8",
+   "by": "opponent",
+   "fen": "rnb1kbnr/ppp1pppp/8/q2P4/8/2N5/PPP2PPP/R1BQKBNR w KQkq - 1 6",
+   "eval": {
+    "type": "cp",
+    "value": 155
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Nc6 d5 Nb8 Nf3",
+   "san": "Nf3",
+   "by": "user",
+   "fen": "rnb1kbnr/ppp1pppp/8/q2P4/8/2N2N2/PPP2PPP/R1BQKB1R b KQkq - 2 6",
+   "eval": {
+    "type": "cp",
+    "value": 163
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Nc6 d5 Nb8 Nf3 Nf6",
+   "san": "Nf6",
+   "by": "opponent",
+   "fen": "rnb1kb1r/ppp1pppp/5n2/q2P4/8/2N2N2/PPP2PPP/R1BQKB1R w KQkq - 3 7",
+   "eval": {
+    "type": "cp",
+    "value": 163
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Nc6 d5 Nb8 Nf3 c6",
+   "san": "c6",
+   "by": "opponent",
+   "fen": "rnb1kbnr/pp2pppp/2p5/q2P4/8/2N2N2/PPP2PPP/R1BQKB1R w KQkq - 0 7",
+   "eval": {
+    "type": "cp",
+    "value": 167
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 c6",
+   "san": "c6",
+   "by": "opponent",
+   "fen": "rnb1kbnr/pp2pppp/2p5/q7/3P4/2N5/PPP2PPP/R1BQKBNR w KQkq - 0 5",
+   "eval": {
+    "type": "cp",
+    "value": 98
+   },
+   "freq": {
+    "n": 13,
+    "score": 0.385
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 c6 Bd2",
+   "san": "Bd2",
+   "by": "user",
+   "fen": "rnb1kbnr/pp2pppp/2p5/q7/3P4/2N5/PPPB1PPP/R2QKBNR b KQkq - 1 5",
+   "eval": {
+    "type": "cp",
+    "value": 92
+   },
+   "freq": {
+    "n": 12,
+    "score": 0.417
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 c6 Bd2 Nf6",
+   "san": "Nf6",
+   "by": "opponent",
+   "fen": "rnb1kb1r/pp2pppp/2p2n2/q7/3P4/2N5/PPPB1PPP/R2QKBNR w KQkq - 2 6",
+   "eval": {
+    "type": "cp",
+    "value": 84
+   },
+   "freq": {
+    "n": 2,
+    "score": 1
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 c6 Bd2 Nf6 h3",
+   "san": "h3",
+   "by": "user",
+   "fen": "rnb1kb1r/pp2pppp/2p2n2/q7/3P4/2N4P/PPPB1PP1/R2QKBNR b KQkq - 0 6",
+   "eval": {
+    "type": "cp",
+    "value": 83
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 c6 Bd2 Nf6 h3 Qb6",
+   "san": "Qb6",
+   "by": "opponent",
+   "fen": "rnb1kb1r/pp2pppp/1qp2n2/8/3P4/2N4P/PPPB1PP1/R2QKBNR w KQkq - 1 7",
+   "eval": {
+    "type": "cp",
+    "value": 69
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 c6 Bd2 Nf6 h3 g6",
+   "san": "g6",
+   "by": "opponent",
+   "fen": "rnb1kb1r/pp2pp1p/2p2np1/q7/3P4/2N4P/PPPB1PP1/R2QKBNR w KQkq - 0 7",
+   "eval": {
+    "type": "cp",
+    "value": 91
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 c6 Bd2 Qd8",
+   "san": "Qd8",
+   "by": "opponent",
+   "fen": "rnbqkbnr/pp2pppp/2p5/8/3P4/2N5/PPPB1PPP/R2QKBNR w KQkq - 2 6",
+   "eval": {
+    "type": "cp",
+    "value": 78
+   },
+   "freq": {
+    "n": 1,
+    "score": 1
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 c6 Bd2 Qd8 h3",
+   "san": "h3",
+   "by": "user",
+   "fen": "rnbqkbnr/pp2pppp/2p5/8/3P4/2N4P/PPPB1PP1/R2QKBNR b KQkq - 0 6",
+   "eval": {
+    "type": "cp",
+    "value": 88
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 c6 Bd2 Qd8 h3 g6",
+   "san": "g6",
+   "by": "opponent",
+   "fen": "rnbqkbnr/pp2pp1p/2p3p1/8/3P4/2N4P/PPPB1PP1/R2QKBNR w KQkq - 0 7",
+   "eval": {
+    "type": "cp",
+    "value": 108
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 c6 Bd2 Qd8 h3 Qxd4",
+   "san": "Qxd4",
+   "by": "opponent",
+   "fen": "rnb1kbnr/pp2pppp/2p5/8/3q4/2N4P/PPPB1PP1/R2QKBNR w KQkq - 0 7",
+   "eval": {
+    "type": "cp",
+    "value": 98
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 e5",
+   "san": "e5",
+   "by": "opponent",
+   "fen": "rnb1kbnr/ppp2ppp/8/q3p3/3P4/2N5/PPP2PPP/R1BQKBNR w KQkq - 0 5",
+   "eval": {
+    "type": "cp",
+    "value": 105
+   },
+   "freq": {
+    "n": 11,
+    "score": 0.545
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 e5 Nf3",
+   "san": "Nf3",
+   "by": "user",
+   "fen": "rnb1kbnr/ppp2ppp/8/q3p3/3P4/2N2N2/PPP2PPP/R1BQKB1R b KQkq - 1 5",
+   "eval": {
+    "type": "cp",
+    "value": 103
+   },
+   "freq": {
+    "n": 1,
+    "score": 1
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 e5 Nf3 exd4",
+   "san": "exd4",
+   "by": "opponent",
+   "fen": "rnb1kbnr/ppp2ppp/8/q7/3p4/2N2N2/PPP2PPP/R1BQKB1R w KQkq - 0 6",
+   "eval": {
+    "type": "cp",
+    "value": 120
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 e5 Nf3 exd4 Nxd4",
+   "san": "Nxd4",
+   "by": "user",
+   "fen": "rnb1kbnr/ppp2ppp/8/q7/3N4/2N5/PPP2PPP/R1BQKB1R b KQkq - 0 6",
+   "eval": {
+    "type": "cp",
+    "value": 104
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 e5 Nf3 exd4 Nxd4 Nf6",
+   "san": "Nf6",
+   "by": "opponent",
+   "fen": "rnb1kb1r/ppp2ppp/5n2/q7/3N4/2N5/PPP2PPP/R1BQKB1R w KQkq - 1 7",
+   "eval": {
+    "type": "cp",
+    "value": 93
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 e5 Nf3 exd4 Nxd4 Bb4",
+   "san": "Bb4",
+   "by": "opponent",
+   "fen": "rnb1k1nr/ppp2ppp/8/q7/1b1N4/2N5/PPP2PPP/R1BQKB1R w KQkq - 1 7",
+   "eval": {
+    "type": "cp",
+    "value": 125
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 e5 Nf3 Bb4",
+   "san": "Bb4",
+   "by": "opponent",
+   "fen": "rnb1k1nr/ppp2ppp/8/q3p3/1b1P4/2N2N2/PPP2PPP/R1BQKB1R w KQkq - 2 6",
+   "eval": {
+    "type": "cp",
+    "value": 130
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 e5 Nf3 Bb4 Bd2",
+   "san": "Bd2",
+   "by": "user",
+   "fen": "rnb1k1nr/ppp2ppp/8/q3p3/1b1P4/2N2N2/PPPB1PPP/R2QKB1R b KQkq - 3 6",
+   "eval": {
+    "type": "cp",
+    "value": 133
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 e5 Nf3 Bb4 Bd2 exd4",
+   "san": "exd4",
+   "by": "opponent",
+   "fen": "rnb1k1nr/ppp2ppp/8/q7/1b1p4/2N2N2/PPPB1PPP/R2QKB1R w KQkq - 0 7",
+   "eval": {
+    "type": "cp",
+    "value": 121
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 e5 Nf3 Bb4 Bd2 Nc6",
+   "san": "Nc6",
+   "by": "opponent",
+   "fen": "r1b1k1nr/ppp2ppp/2n5/q3p3/1b1P4/2N2N2/PPPB1PPP/R2QKB1R w KQkq - 4 7",
+   "eval": {
+    "type": "cp",
+    "value": 195
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6",
+   "san": "Nf6",
+   "by": "opponent",
+   "fen": "rnbqkb1r/ppp1pppp/5n2/3P4/8/8/PPPP1PPP/RNBQKBNR w KQkq - 1 3",
+   "eval": {
+    "type": "cp",
+    "value": 67
+   },
+   "freq": {
+    "n": 24,
+    "score": 0.375
+   }
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4",
+   "san": "d4",
+   "by": "user",
+   "fen": "rnbqkb1r/ppp1pppp/5n2/3P4/3P4/8/PPP2PPP/RNBQKBNR b KQkq - 0 3",
+   "eval": {
+    "type": "cp",
+    "value": 63
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Qxd5",
+   "san": "Qxd5",
+   "by": "opponent",
+   "fen": "rnb1kb1r/ppp1pppp/5n2/3q4/3P4/8/PPP2PPP/RNBQKBNR w KQkq - 0 4",
+   "eval": {
+    "type": "cp",
+    "value": 59
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Qxd5 c4",
+   "san": "c4",
+   "by": "user",
+   "fen": "rnb1kb1r/ppp1pppp/5n2/3q4/2PP4/8/PP3PPP/RNBQKBNR b KQkq - 0 4",
+   "eval": {
+    "type": "cp",
+    "value": 59
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Qxd5 c4 Qe4+",
+   "san": "Qe4+",
+   "by": "opponent",
+   "fen": "rnb1kb1r/ppp1pppp/5n2/8/2PPq3/8/PP3PPP/RNBQKBNR w KQkq - 1 5",
+   "eval": {
+    "type": "cp",
+    "value": 69
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Qxd5 c4 Qe4+ Ne2",
+   "san": "Ne2",
+   "by": "user",
+   "fen": "rnb1kb1r/ppp1pppp/5n2/8/2PPq3/8/PP2NPPP/RNBQKB1R b KQkq - 2 5",
+   "eval": {
+    "type": "cp",
+    "value": 69
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Qxd5 c4 Qe4+ Ne2 e5",
+   "san": "e5",
+   "by": "opponent",
+   "fen": "rnb1kb1r/ppp2ppp/5n2/4p3/2PPq3/8/PP2NPPP/RNBQKB1R w KQkq - 0 6",
+   "eval": {
+    "type": "cp",
+    "value": 68
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Qxd5 c4 Qe4+ Ne2 e5 Nc3",
+   "san": "Nc3",
+   "by": "user",
+   "fen": "rnb1kb1r/ppp2ppp/5n2/4p3/2PPq3/2N5/PP2NPPP/R1BQKB1R b KQkq - 1 6",
+   "eval": {
+    "type": "cp",
+    "value": 66
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Qxd5 c4 Qe4+ Ne2 e5 Nc3 Bb4",
+   "san": "Bb4",
+   "by": "opponent",
+   "fen": "rnb1k2r/ppp2ppp/5n2/4p3/1bPPq3/2N5/PP2NPPP/R1BQKB1R w KQkq - 2 7",
+   "eval": {
+    "type": "cp",
+    "value": 59
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Qxd5 c4 Qe4+ Ne2 e5 Nc3 Qc6",
+   "san": "Qc6",
+   "by": "opponent",
+   "fen": "rnb1kb1r/ppp2ppp/2q2n2/4p3/2PP4/2N5/PP2NPPP/R1BQKB1R w KQkq - 2 7",
+   "eval": {
+    "type": "cp",
+    "value": 152
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Qxd5 c4 Qe4+ Ne2 Bf5",
+   "san": "Bf5",
+   "by": "opponent",
+   "fen": "rn2kb1r/ppp1pppp/5n2/5b2/2PPq3/8/PP2NPPP/RNBQKB1R w KQkq - 3 6",
+   "eval": {
+    "type": "cp",
+    "value": 60
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Qxd5 c4 Qe4+ Ne2 Bf5 Bf4",
+   "san": "Bf4",
+   "by": "user",
+   "fen": "rn2kb1r/ppp1pppp/5n2/5b2/2PPqB2/8/PP2NPPP/RN1QKB1R b KQkq - 4 6",
+   "eval": {
+    "type": "cp",
+    "value": 57
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Qxd5 c4 Qe4+ Ne2 Bf5 Bf4 e6",
+   "san": "e6",
+   "by": "opponent",
+   "fen": "rn2kb1r/ppp2ppp/4pn2/5b2/2PPqB2/8/PP2NPPP/RN1QKB1R w KQkq - 0 7",
+   "eval": {
+    "type": "cp",
+    "value": 68
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Qxd5 c4 Qe4+ Ne2 Bf5 Bf4 Qd3",
+   "san": "Qd3",
+   "by": "opponent",
+   "fen": "rn2kb1r/ppp1pppp/5n2/5b2/2PP1B2/3q4/PP2NPPP/RN1QKB1R w KQkq - 5 7",
+   "eval": {
+    "type": "cp",
+    "value": 87
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Qxd5 c4 Qd8",
+   "san": "Qd8",
+   "by": "opponent",
+   "fen": "rnbqkb1r/ppp1pppp/5n2/8/2PP4/8/PP3PPP/RNBQKBNR w KQkq - 1 5",
+   "eval": {
+    "type": "cp",
+    "value": 66
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Qxd5 c4 Qd8 Nf3",
+   "san": "Nf3",
+   "by": "user",
+   "fen": "rnbqkb1r/ppp1pppp/5n2/8/2PP4/5N2/PP3PPP/RNBQKB1R b KQkq - 2 5",
+   "eval": {
+    "type": "cp",
+    "value": 64
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Qxd5 c4 Qd8 Nf3 c5",
+   "san": "c5",
+   "by": "opponent",
+   "fen": "rnbqkb1r/pp2pppp/5n2/2p5/2PP4/5N2/PP3PPP/RNBQKB1R w KQkq - 0 6",
+   "eval": {
+    "type": "cp",
+    "value": 80
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Qxd5 c4 Qd8 Nf3 c5 d5",
+   "san": "d5",
+   "by": "user",
+   "fen": "rnbqkb1r/pp2pppp/5n2/2pP4/2P5/5N2/PP3PPP/RNBQKB1R b KQkq - 0 6",
+   "eval": {
+    "type": "cp",
+    "value": 79
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Qxd5 c4 Qd8 Nf3 c5 d5 e6",
+   "san": "e6",
+   "by": "opponent",
+   "fen": "rnbqkb1r/pp3ppp/4pn2/2pP4/2P5/5N2/PP3PPP/RNBQKB1R w KQkq - 0 7",
+   "eval": {
+    "type": "cp",
+    "value": 82
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Qxd5 c4 Qd8 Nf3 c5 d5 Na6",
+   "san": "Na6",
+   "by": "opponent",
+   "fen": "r1bqkb1r/pp2pppp/n4n2/2pP4/2P5/5N2/PP3PPP/RNBQKB1R w KQkq - 1 7",
+   "eval": {
+    "type": "cp",
+    "value": 87
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Qxd5 c4 Qd8 Nf3 e6",
+   "san": "e6",
+   "by": "opponent",
+   "fen": "rnbqkb1r/ppp2ppp/4pn2/8/2PP4/5N2/PP3PPP/RNBQKB1R w KQkq - 0 6",
+   "eval": {
+    "type": "cp",
+    "value": 84
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Qxd5 c4 Qd8 Nf3 e6 Nc3",
+   "san": "Nc3",
+   "by": "user",
+   "fen": "rnbqkb1r/ppp2ppp/4pn2/8/2PP4/2N2N2/PP3PPP/R1BQKB1R b KQkq - 1 6",
+   "eval": {
+    "type": "cp",
+    "value": 75
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Qxd5 c4 Qd8 Nf3 e6 Nc3 c5",
+   "san": "c5",
+   "by": "opponent",
+   "fen": "rnbqkb1r/pp3ppp/4pn2/2p5/2PP4/2N2N2/PP3PPP/R1BQKB1R w KQkq - 0 7",
+   "eval": {
+    "type": "cp",
+    "value": 73
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Qxd5 c4 Qd8 Nf3 e6 Nc3 Bb4",
+   "san": "Bb4",
+   "by": "opponent",
+   "fen": "rnbqk2r/ppp2ppp/4pn2/8/1bPP4/2N2N2/PP3PPP/R1BQKB1R w KQkq - 2 7",
+   "eval": {
+    "type": "cp",
+    "value": 110
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Nxd5",
+   "san": "Nxd5",
+   "by": "opponent",
+   "fen": "rnbqkb1r/ppp1pppp/8/3n4/3P4/8/PPP2PPP/RNBQKBNR w KQkq - 0 4",
+   "eval": {
+    "type": "cp",
+    "value": 76
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Nxd5 Nf3",
+   "san": "Nf3",
+   "by": "user",
+   "fen": "rnbqkb1r/ppp1pppp/8/3n4/3P4/5N2/PPP2PPP/RNBQKB1R b KQkq - 1 4",
+   "eval": {
+    "type": "cp",
+    "value": 59
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Nxd5 Nf3 Bf5",
+   "san": "Bf5",
+   "by": "opponent",
+   "fen": "rn1qkb1r/ppp1pppp/8/3n1b2/3P4/5N2/PPP2PPP/RNBQKB1R w KQkq - 2 5",
+   "eval": {
+    "type": "cp",
+    "value": 66
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Nxd5 Nf3 Bf5 Nh4",
+   "san": "Nh4",
+   "by": "user",
+   "fen": "rn1qkb1r/ppp1pppp/8/3n1b2/3P3N/8/PPP2PPP/RNBQKB1R b KQkq - 3 5",
+   "eval": {
+    "type": "cp",
+    "value": 62
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Nxd5 Nf3 Bf5 Nh4 Bd7",
+   "san": "Bd7",
+   "by": "opponent",
+   "fen": "rn1qkb1r/pppbpppp/8/3n4/3P3N/8/PPP2PPP/RNBQKB1R w KQkq - 4 6",
+   "eval": {
+    "type": "cp",
+    "value": 56
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Nxd5 Nf3 Bf5 Nh4 Bd7 g3",
+   "san": "g3",
+   "by": "user",
+   "fen": "rn1qkb1r/pppbpppp/8/3n4/3P3N/6P1/PPP2P1P/RNBQKB1R b KQkq - 0 6",
+   "eval": {
+    "type": "cp",
+    "value": 56
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Nxd5 Nf3 Bf5 Nh4 Bd7 g3 e6",
+   "san": "e6",
+   "by": "opponent",
+   "fen": "rn1qkb1r/pppb1ppp/4p3/3n4/3P3N/6P1/PPP2P1P/RNBQKB1R w KQkq - 0 7",
+   "eval": {
+    "type": "cp",
+    "value": 58
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Nxd5 Nf3 Bf5 Nh4 Bd7 g3 Nb6",
+   "san": "Nb6",
+   "by": "opponent",
+   "fen": "rn1qkb1r/pppbpppp/1n6/8/3P3N/6P1/PPP2P1P/RNBQKB1R w KQkq - 1 7",
+   "eval": {
+    "type": "cp",
+    "value": 67
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Nxd5 Nf3 Bf5 Nh4 Bc8",
+   "san": "Bc8",
+   "by": "opponent",
+   "fen": "rnbqkb1r/ppp1pppp/8/3n4/3P3N/8/PPP2PPP/RNBQKB1R w KQkq - 4 6",
+   "eval": {
+    "type": "cp",
+    "value": 78
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Nxd5 Nf3 Bf5 Nh4 Bc8 Nf3",
+   "san": "Nf3",
+   "by": "user",
+   "fen": "rnbqkb1r/ppp1pppp/8/3n4/3P4/5N2/PPP2PPP/RNBQKB1R b KQkq - 5 6",
+   "eval": {
+    "type": "cp",
+    "value": 63
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Nxd5 Nf3 Bf5 Nh4 Bc8 Nf3 Bf5",
+   "san": "Bf5",
+   "by": "opponent",
+   "fen": "rn1qkb1r/ppp1pppp/8/3n1b2/3P4/5N2/PPP2PPP/RNBQKB1R w KQkq - 6 7",
+   "eval": {
+    "type": "cp",
+    "value": 76
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Nxd5 Nf3 Bf5 Nh4 Bc8 Nf3 Nf6",
+   "san": "Nf6",
+   "by": "opponent",
+   "fen": "rnbqkb1r/ppp1pppp/5n2/8/3P4/5N2/PPP2PPP/RNBQKB1R w KQkq - 6 7",
+   "eval": {
+    "type": "cp",
+    "value": 72
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Nxd5 Nf3 e6",
+   "san": "e6",
+   "by": "opponent",
+   "fen": "rnbqkb1r/ppp2ppp/4p3/3n4/3P4/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 5",
+   "eval": {
+    "type": "cp",
+    "value": 77
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Nxd5 Nf3 e6 c4",
+   "san": "c4",
+   "by": "user",
+   "fen": "rnbqkb1r/ppp2ppp/4p3/3n4/2PP4/5N2/PP3PPP/RNBQKB1R b KQkq - 0 5",
+   "eval": {
+    "type": "cp",
+    "value": 72
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Nxd5 Nf3 e6 c4 Nf6",
+   "san": "Nf6",
+   "by": "opponent",
+   "fen": "rnbqkb1r/ppp2ppp/4pn2/8/2PP4/5N2/PP3PPP/RNBQKB1R w KQkq - 1 6",
+   "eval": {
+    "type": "cp",
+    "value": 78
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Nxd5 Nf3 e6 c4 Nf6 Nc3",
+   "san": "Nc3",
+   "by": "user",
+   "fen": "rnbqkb1r/ppp2ppp/4pn2/8/2PP4/2N2N2/PP3PPP/R1BQKB1R b KQkq - 2 6",
+   "eval": {
+    "type": "cp",
+    "value": 78
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Nxd5 Nf3 e6 c4 Nf6 Nc3 c5",
+   "san": "c5",
+   "by": "opponent",
+   "fen": "rnbqkb1r/pp3ppp/4pn2/2p5/2PP4/2N2N2/PP3PPP/R1BQKB1R w KQkq - 0 7",
+   "eval": {
+    "type": "cp",
+    "value": 67
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Nxd5 Nf3 e6 c4 Nf6 Nc3 Bb4",
+   "san": "Bb4",
+   "by": "opponent",
+   "fen": "rnbqk2r/ppp2ppp/4pn2/8/1bPP4/2N2N2/PP3PPP/R1BQKB1R w KQkq - 3 7",
+   "eval": {
+    "type": "cp",
+    "value": 108
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Nxd5 Nf3 e6 c4 Bb4+",
+   "san": "Bb4+",
+   "by": "opponent",
+   "fen": "rnbqk2r/ppp2ppp/4p3/3n4/1bPP4/5N2/PP3PPP/RNBQKB1R w KQkq - 1 6",
+   "eval": {
+    "type": "cp",
+    "value": 102
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Nxd5 Nf3 e6 c4 Bb4+ Bd2",
+   "san": "Bd2",
+   "by": "user",
+   "fen": "rnbqk2r/ppp2ppp/4p3/3n4/1bPP4/5N2/PP1B1PPP/RN1QKB1R b KQkq - 2 6",
+   "eval": {
+    "type": "cp",
+    "value": 107
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Nxd5 Nf3 e6 c4 Bb4+ Bd2 Bxd2+",
+   "san": "Bxd2+",
+   "by": "opponent",
+   "fen": "rnbqk2r/ppp2ppp/4p3/3n4/2PP4/5N2/PP1b1PPP/RN1QKB1R w KQkq - 0 7",
+   "eval": {
+    "type": "cp",
+    "value": 110
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 Nf6 d4 Nxd5 Nf3 e6 c4 Bb4+ Bd2 Bd6",
+   "san": "Bd6",
+   "by": "opponent",
+   "fen": "rnbqk2r/ppp2ppp/3bp3/3n4/2PP4/5N2/PP1B1PPP/RN1QKB1R w KQkq - 3 7",
+   "eval": {
+    "type": "cp",
+    "value": 548
+   },
+   "freq": null,
+   "punish": true
+  },
+  {
+   "path": "e4 d5 exd5 c6",
+   "san": "c6",
+   "by": "opponent",
+   "fen": "rnbqkbnr/pp2pppp/2p5/3P4/8/8/PPPP1PPP/RNBQKBNR w KQkq - 0 3",
+   "eval": {
+    "type": "cp",
+    "value": 64
+   },
+   "freq": {
+    "n": 12,
+    "score": 0.375
+   }
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6",
+   "san": "dxc6",
+   "by": "user",
+   "fen": "rnbqkbnr/pp2pppp/2P5/8/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 3",
+   "eval": {
+    "type": "cp",
+    "value": 74
+   },
+   "freq": {
+    "n": 10,
+    "score": 0.4
+   }
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 Nxc6",
+   "san": "Nxc6",
+   "by": "opponent",
+   "fen": "r1bqkbnr/pp2pppp/2n5/8/8/8/PPPP1PPP/RNBQKBNR w KQkq - 0 4",
+   "eval": {
+    "type": "cp",
+    "value": 72
+   },
+   "freq": {
+    "n": 6,
+    "score": 0.167
+   }
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 Nxc6 Nf3",
+   "san": "Nf3",
+   "by": "user",
+   "fen": "r1bqkbnr/pp2pppp/2n5/8/8/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 4",
+   "eval": {
+    "type": "cp",
+    "value": 78
+   },
+   "freq": {
+    "n": 2,
+    "score": 0.5
+   }
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 Nxc6 Nf3 e5",
+   "san": "e5",
+   "by": "opponent",
+   "fen": "r1bqkbnr/pp3ppp/2n5/4p3/8/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 5",
+   "eval": {
+    "type": "cp",
+    "value": 76
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 Nxc6 Nf3 e5 Nc3",
+   "san": "Nc3",
+   "by": "user",
+   "fen": "r1bqkbnr/pp3ppp/2n5/4p3/8/2N2N2/PPPP1PPP/R1BQKB1R b KQkq - 1 5",
+   "eval": {
+    "type": "cp",
+    "value": 65
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 Nxc6 Nf3 e5 Nc3 Bc5",
+   "san": "Bc5",
+   "by": "opponent",
+   "fen": "r1bqk1nr/pp3ppp/2n5/2b1p3/8/2N2N2/PPPP1PPP/R1BQKB1R w KQkq - 2 6",
+   "eval": {
+    "type": "cp",
+    "value": 77
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 Nxc6 Nf3 e5 Nc3 Bc5 Bc4",
+   "san": "Bc4",
+   "by": "user",
+   "fen": "r1bqk1nr/pp3ppp/2n5/2b1p3/2B5/2N2N2/PPPP1PPP/R1BQK2R b KQkq - 3 6",
+   "eval": {
+    "type": "cp",
+    "value": 79
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 Nxc6 Nf3 e5 Nc3 Bc5 Bc4 Nf6",
+   "san": "Nf6",
+   "by": "opponent",
+   "fen": "r1bqk2r/pp3ppp/2n2n2/2b1p3/2B5/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 4 7",
+   "eval": {
+    "type": "cp",
+    "value": 68
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 Nxc6 Nf3 e5 Nc3 Bc5 Bc4 h6",
+   "san": "h6",
+   "by": "opponent",
+   "fen": "r1bqk1nr/pp3pp1/2n4p/2b1p3/2B5/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 0 7",
+   "eval": {
+    "type": "cp",
+    "value": 97
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 Nxc6 Nf3 e5 Nc3 Nf6",
+   "san": "Nf6",
+   "by": "opponent",
+   "fen": "r1bqkb1r/pp3ppp/2n2n2/4p3/8/2N2N2/PPPP1PPP/R1BQKB1R w KQkq - 2 6",
+   "eval": {
+    "type": "cp",
+    "value": 73
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 Nxc6 Nf3 e5 Nc3 Nf6 Bb5",
+   "san": "Bb5",
+   "by": "user",
+   "fen": "r1bqkb1r/pp3ppp/2n2n2/1B2p3/8/2N2N2/PPPP1PPP/R1BQK2R b KQkq - 3 6",
+   "eval": {
+    "type": "cp",
+    "value": 79
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 Nxc6 Nf3 e5 Nc3 Nf6 Bb5 Bd6",
+   "san": "Bd6",
+   "by": "opponent",
+   "fen": "r1bqk2r/pp3ppp/2nb1n2/1B2p3/8/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 4 7",
+   "eval": {
+    "type": "cp",
+    "value": 90
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 Nxc6 Nf3 e5 Nc3 Nf6 Bb5 Bc5",
+   "san": "Bc5",
+   "by": "opponent",
+   "fen": "r1bqk2r/pp3ppp/2n2n2/1Bb1p3/8/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 4 7",
+   "eval": {
+    "type": "cp",
+    "value": 120
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 Nxc6 Nf3 Nf6",
+   "san": "Nf6",
+   "by": "opponent",
+   "fen": "r1bqkb1r/pp2pppp/2n2n2/8/8/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 5",
+   "eval": {
+    "type": "cp",
+    "value": 112
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 Nxc6 Nf3 Nf6 Bb5",
+   "san": "Bb5",
+   "by": "user",
+   "fen": "r1bqkb1r/pp2pppp/2n2n2/1B6/8/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 5",
+   "eval": {
+    "type": "cp",
+    "value": 121
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 Nxc6 Nf3 Nf6 Bb5 Qb6",
+   "san": "Qb6",
+   "by": "opponent",
+   "fen": "r1b1kb1r/pp2pppp/1qn2n2/1B6/8/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 6",
+   "eval": {
+    "type": "cp",
+    "value": 123
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 Nxc6 Nf3 Nf6 Bb5 Qb6 Ba4",
+   "san": "Ba4",
+   "by": "user",
+   "fen": "r1b1kb1r/pp2pppp/1qn2n2/8/B7/5N2/PPPP1PPP/RNBQK2R b KQkq - 5 6",
+   "eval": {
+    "type": "cp",
+    "value": 123
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 Nxc6 Nf3 Nf6 Bb5 Qb6 Ba4 Bg4",
+   "san": "Bg4",
+   "by": "opponent",
+   "fen": "r3kb1r/pp2pppp/1qn2n2/8/B5b1/5N2/PPPP1PPP/RNBQK2R w KQkq - 6 7",
+   "eval": {
+    "type": "cp",
+    "value": 117
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 Nxc6 Nf3 Nf6 Bb5 Qb6 Ba4 Bf5",
+   "san": "Bf5",
+   "by": "opponent",
+   "fen": "r3kb1r/pp2pppp/1qn2n2/5b2/B7/5N2/PPPP1PPP/RNBQK2R w KQkq - 6 7",
+   "eval": {
+    "type": "cp",
+    "value": 117
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 Nxc6 Nf3 Nf6 Bb5 Bg4",
+   "san": "Bg4",
+   "by": "opponent",
+   "fen": "r2qkb1r/pp2pppp/2n2n2/1B6/6b1/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 6",
+   "eval": {
+    "type": "cp",
+    "value": 122
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 Nxc6 Nf3 Nf6 Bb5 Bg4 h3",
+   "san": "h3",
+   "by": "user",
+   "fen": "r2qkb1r/pp2pppp/2n2n2/1B6/6b1/5N1P/PPPP1PP1/RNBQK2R b KQkq - 0 6",
+   "eval": {
+    "type": "cp",
+    "value": 111
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 Nxc6 Nf3 Nf6 Bb5 Bg4 h3 Bh5",
+   "san": "Bh5",
+   "by": "opponent",
+   "fen": "r2qkb1r/pp2pppp/2n2n2/1B5b/8/5N1P/PPPP1PP1/RNBQK2R w KQkq - 1 7",
+   "eval": {
+    "type": "cp",
+    "value": 120
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 Nxc6 Nf3 Nf6 Bb5 Bg4 h3 Bxf3",
+   "san": "Bxf3",
+   "by": "opponent",
+   "fen": "r2qkb1r/pp2pppp/2n2n2/1B6/8/5b1P/PPPP1PP1/RNBQK2R w KQkq - 0 7",
+   "eval": {
+    "type": "cp",
+    "value": 138
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 e5",
+   "san": "e5",
+   "by": "opponent",
+   "fen": "rnbqkbnr/pp3ppp/2P5/4p3/8/8/PPPP1PPP/RNBQKBNR w KQkq - 0 4",
+   "eval": {
+    "type": "cp",
+    "value": 172
+   },
+   "freq": {
+    "n": 1,
+    "score": 1
+   }
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 e5 cxb7",
+   "san": "cxb7",
+   "by": "user",
+   "fen": "rnbqkbnr/pP3ppp/8/4p3/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 4",
+   "eval": {
+    "type": "cp",
+    "value": 164
+   },
+   "freq": {
+    "n": 1,
+    "score": 1
+   }
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 e5 cxb7 Bxb7",
+   "san": "Bxb7",
+   "by": "opponent",
+   "fen": "rn1qkbnr/pb3ppp/8/4p3/8/8/PPPP1PPP/RNBQKBNR w KQkq - 0 5",
+   "eval": {
+    "type": "cp",
+    "value": 177
+   },
+   "freq": {
+    "n": 1,
+    "score": 1
+   }
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 e5 cxb7 Bxb7 Nf3",
+   "san": "Nf3",
+   "by": "user",
+   "fen": "rn1qkbnr/pb3ppp/8/4p3/8/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 5",
+   "eval": {
+    "type": "cp",
+    "value": 169
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 e5 cxb7 Bxb7 Nf3 Nc6",
+   "san": "Nc6",
+   "by": "opponent",
+   "fen": "r2qkbnr/pb3ppp/2n5/4p3/8/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 6",
+   "eval": {
+    "type": "cp",
+    "value": 175
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 e5 cxb7 Bxb7 Nf3 Nc6 d3",
+   "san": "d3",
+   "by": "user",
+   "fen": "r2qkbnr/pb3ppp/2n5/4p3/8/3P1N2/PPP2PPP/RNBQKB1R b KQkq - 0 6",
+   "eval": {
+    "type": "cp",
+    "value": 182
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 e5 cxb7 Bxb7 Nf3 Nc6 d3 Bc5",
+   "san": "Bc5",
+   "by": "opponent",
+   "fen": "r2qk1nr/pb3ppp/2n5/2b1p3/8/3P1N2/PPP2PPP/RNBQKB1R w KQkq - 1 7",
+   "eval": {
+    "type": "cp",
+    "value": 173
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 e5 cxb7 Bxb7 Nf3 Nc6 d3 Nf6",
+   "san": "Nf6",
+   "by": "opponent",
+   "fen": "r2qkb1r/pb3ppp/2n2n2/4p3/8/3P1N2/PPP2PPP/RNBQKB1R w KQkq - 1 7",
+   "eval": {
+    "type": "cp",
+    "value": 175
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 e5 cxb7 Bxb7 Nf3 Bd6",
+   "san": "Bd6",
+   "by": "opponent",
+   "fen": "rn1qk1nr/pb3ppp/3b4/4p3/8/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 6",
+   "eval": {
+    "type": "cp",
+    "value": 281
+   },
+   "freq": null,
+   "punish": true
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 e5 cxb7 Bxb7 Nf3 Bd6 d4",
+   "san": "d4",
+   "by": "user",
+   "fen": "rn1qk1nr/pb3ppp/3b4/4p3/3P4/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 6",
+   "eval": {
+    "type": "cp",
+    "value": 297
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 e5 cxb7 Bxb7 Nf3 Bd6 d4 exd4",
+   "san": "exd4",
+   "by": "opponent",
+   "fen": "rn1qk1nr/pb3ppp/3b4/8/3p4/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 7",
+   "eval": {
+    "type": "cp",
+    "value": 312
+   },
+   "freq": null,
+   "punish": true
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 e5 cxb7 Bxb7 Nf3 Bd6 d4 e4",
+   "san": "e4",
+   "by": "opponent",
+   "fen": "rn1qk1nr/pb3ppp/3b4/8/3Pp3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 7",
+   "eval": {
+    "type": "cp",
+    "value": 371
+   },
+   "freq": null,
+   "punish": true
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 e5 cxb7 Bg4",
+   "san": "Bg4",
+   "by": "opponent",
+   "fen": "rn1qkbnr/pP3ppp/8/4p3/6b1/8/PPPP1PPP/RNBQKBNR w KQkq - 1 5",
+   "eval": {
+    "type": "cp",
+    "value": 1023
+   },
+   "freq": null,
+   "punish": true
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 e5 cxb7 Bg4 bxa8=Q",
+   "san": "bxa8=Q",
+   "by": "user",
+   "fen": "Qn1qkbnr/p4ppp/8/4p3/6b1/8/PPPP1PPP/RNBQKBNR b KQk - 0 5",
+   "eval": {
+    "type": "cp",
+    "value": 1084
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 e5 cxb7 Bg4 bxa8=Q Bxd1",
+   "san": "Bxd1",
+   "by": "opponent",
+   "fen": "Qn1qkbnr/p4ppp/8/4p3/8/8/PPPP1PPP/RNBbKBNR w KQk - 0 6",
+   "eval": {
+    "type": "cp",
+    "value": 1040
+   },
+   "freq": null,
+   "punish": true
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 e5 cxb7 Bg4 bxa8=Q Bxd1 Bb5+",
+   "san": "Bb5+",
+   "by": "user",
+   "fen": "Qn1qkbnr/p4ppp/8/1B2p3/8/8/PPPP1PPP/RNBbK1NR b KQk - 1 6",
+   "eval": {
+    "type": "cp",
+    "value": 1047
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 e5 cxb7 Bg4 bxa8=Q Bxd1 Bb5+ Nd7",
+   "san": "Nd7",
+   "by": "opponent",
+   "fen": "Q2qkbnr/p2n1ppp/8/1B2p3/8/8/PPPP1PPP/RNBbK1NR w KQk - 2 7",
+   "eval": {
+    "type": "cp",
+    "value": 1060
+   },
+   "freq": null,
+   "punish": true
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 e5 cxb7 Bg4 bxa8=Q Bxd1 Bb5+ Ke7",
+   "san": "Ke7",
+   "by": "opponent",
+   "fen": "Qn1q1bnr/p3kppp/8/1B2p3/8/8/PPPP1PPP/RNBbK1NR w KQ - 2 7",
+   "eval": {
+    "type": "cp",
+    "value": 1251
+   },
+   "freq": null,
+   "punish": true
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 e5 cxb7 Bg4 bxa8=Q Bd7",
+   "san": "Bd7",
+   "by": "opponent",
+   "fen": "Qn1qkbnr/p2b1ppp/8/4p3/8/8/PPPP1PPP/RNBQKBNR w KQk - 1 6",
+   "eval": {
+    "type": "cp",
+    "value": 1842
+   },
+   "freq": null,
+   "punish": true
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 e5 cxb7 Bg4 bxa8=Q Bd7 Nf3",
+   "san": "Nf3",
+   "by": "user",
+   "fen": "Qn1qkbnr/p2b1ppp/8/4p3/8/5N2/PPPP1PPP/RNBQKB1R b KQk - 2 6",
+   "eval": {
+    "type": "cp",
+    "value": 1819
+   },
+   "freq": null
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 e5 cxb7 Bg4 bxa8=Q Bd7 Nf3 Qc7",
+   "san": "Qc7",
+   "by": "opponent",
+   "fen": "Qn2kbnr/p1qb1ppp/8/4p3/8/5N2/PPPP1PPP/RNBQKB1R w KQk - 3 7",
+   "eval": {
+    "type": "cp",
+    "value": 1900
+   },
+   "freq": null,
+   "punish": true
+  },
+  {
+   "path": "e4 d5 exd5 c6 dxc6 e5 cxb7 Bg4 bxa8=Q Bd7 Nf3 Bd6",
+   "san": "Bd6",
+   "by": "opponent",
+   "fen": "Qn1qk1nr/p2b1ppp/3b4/4p3/8/5N2/PPPP1PPP/RNBQKB1R w KQk - 3 7",
+   "eval": {
+    "type": "cp",
+    "value": 1974
+   },
+   "freq": null,
+   "punish": true
+  }
+ ]
+}

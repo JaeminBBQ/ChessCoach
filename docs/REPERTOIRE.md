@@ -49,3 +49,10 @@ This fits together: 2...Nf6 is the single choice that leads to both the Stafford
 - 5.Bxf7+ Ke7 6.Bd5: 6...Rf8 (+0.73) or 6...d6.
 
 **Stafford** (1.e4 e5 2.Nf3 Nf6 3.Nxe5 Nc6): after 4.Nxc6 the eval is **+1.59** (depth 14). The gambit is objectively lost, so the coaching question is how often opponents find the refutation (T010 score by line and rating band).
+
+## Generated trees (T007, 2026-09-30)
+Files: `content/repertoire/owner/*.json`, generated from `specs.json` by `npm run content:repertoire` (`REPERTOIRE_ONLY=<id,...>` regenerates specific trees). Stockfish 19 lite, 800k nodes per position, MultiPV 3. Frequencies come from all 5,712 of the owner's games.
+- **Rules:** the user's move is the engine's best, unless the user's habitual move (≥ 10 games) is within 3 win % of it, or the spec forces a move (`prefer`: the gambits and traps). Opponent replies are the engine's top 2 plus anything the owner faced ≥ 10 times. `include` lines (traps) are always present and continue past the depth limit without branching. Opponent moves that leave the owner at ≥ 70 % win are flagged `punish`.
+- **Trees:** Ponziani 461 nodes · vs Petrov/Stafford 211 · vs Scandinavian 285 · Black vs 1.e4 1,095 · Englund 339.
+- **Checks done:** every `prefer`/`include` line is present, with evals; the only user moves that cost more than 8 win % are the deliberate gambit choices (3...Nc6 Stafford +1.72, 5...Ne4 vs 5.e5 +2.28, 4...Bc5 Traxler +0.97). Traps verified: Stafford 5.d3 Bc5 6.Bg5? Nxe4! 7.Bxd8?? Bxf2+ 8.Ke2 Bg4#; Stafford 5.e5 Ne4 6.d3 Bc5 7.dxe4?? Bxf2+ 8.Ke2 Bg4+ (wins the queen); Englund 4.Bf4 Qb4+ 5.Bd2 Qxb2 6.Bc3? (−5.2) Bb4 7.Qd2 Bxc3 8.Qxc3?? Qc1#, with 8.Nxc3 as White's correct reply in the tree.
+- **Not yet:** coaching notes per position (`notes`), which the opening test (T009b) and the explorer (T008) will show. These get written against these trees, not from memory.
