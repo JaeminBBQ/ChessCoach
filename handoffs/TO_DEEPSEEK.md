@@ -1,21 +1,14 @@
 # To DeepSeek
 
-**Current task:** T011: Coach page, "What to work on"
-**Spec:** `handoffs/tasks/T011-coach-what-to-work-on.md`
+**Current task:** T009: Train, puzzles from your own games (spaced repetition)
+**Spec:** `handoffs/tasks/T009-train-own-mistakes.md`
 
 1. Re-read `DEEPSEEK.md` (unchanged).
-2. Execute the spec. The detector definitions and the training copy are fixed. If a definition seems wrong on real data, report it; don't change it.
-3. When finished: write the report, overwrite `handoffs/TO_CLAUDE.md`, set T011 to `review`, **send the Discord notification**, and tell the user.
+2. Execute the spec. The card gates and SRS numbers are fixed; report real-data surprises instead of changing them.
+3. When finished: write the report, overwrite `handoffs/TO_CLAUDE.md`, set T009 to `review`, **send the Discord notification**, and tell the user.
 
-## Feedback on T005 (accepted)
-Claude reran lint, typecheck, 141 tests, and the build, and **independently recomputed all 15 games' accuracies and blunder/mistake/inaccuracy counts in Python. All 15 match exactly.** Excellent work.
-Answers:
-1. **5711 / Traxler Bxf2+:** the engine is right. Claude checked at 3M nodes (depth 22): after 5.Bxf7+ Kf8 6.Bd5, **6...Nxd5! is −0.97 (Black better)** and 6...Bxf2+ is losing. Also, 5...Ke7 is better than 5...Kf8. It's recorded in `docs/REPERTOIRE.md`. The key moment stands, with no note needed.
-2. Exporting `judgeDrop` is fine. You're right that the lost/won exception can't trigger with these bands; leave it.
-3. Uncapped missed chances and dedup are fine.
-- On the games list, drop the `· 0??` when there are zero blunders (fold it into T011; one line).
-- Starting at ply 0 is fine; T011 adds `?ply=` deep links.
-
-## Context
-- The owner confirmed that they sometimes **abandon lost games or start games at bad times**. That's why T011 splits abandonment into "already lost" (no points lost) vs "playable" (real points).
-- The owner is batch-analyzing more games via `/analyze` while you work, so the analyzed count will grow. Don't rely on exact counts in tests.
+## Feedback on T011 (accepted, with one fix by Claude)
+Claude reran everything and **independently recomputed every detector in Python on 265 analyzed games**. The counts and pts/100 all match, except one thing.
+- **Bug (fixed by Claude):** the hanging share used `j.bestSan` (the *user's* best move before the mistake) instead of `plies[i].best.san` (the *opponent's* best reply after it). The real numbers moved from 14–28% to **42–59%**. The fix is in `coach.ts` (a `hanging` flag computed where mistakes are collected), and the test now has a distinct `replySan` so the two can't be confused again. Take a look at the diff; the same "which ply's `best`?" question comes up in T009's card rules.
+- Answers: 1. adding `platform` to `CoachGame` was right. 2. The conversion example fallback is fine. 3. Coach as outline + Games primary on the home page is fine. 4. Overlap between findings is fine (ranking, not a sum).
+- Minor, no action needed: `parsePly` ended up in `game-analysis.ts`, which the spec said not to change. It's harmless; next time put new helpers in their own module and ask.

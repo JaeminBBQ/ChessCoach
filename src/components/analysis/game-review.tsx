@@ -12,6 +12,8 @@ interface GameReviewProps {
   series: { ply: number; whiteWin: number | null }[]
   moments: KeyMoment[]
   userColor: 'white' | 'black'
+  /** The ply to open on (deep links); clamped to the game's range. */
+  initialPly?: number
 }
 
 const navButtonClass =
@@ -35,9 +37,9 @@ function round(value: number | null): string {
 }
 
 /** Interactive review: board, navigation, move list, eval graph, and key moments. */
-export default function GameReview({ plies, judgements, series, moments, userColor }: GameReviewProps) {
-  const [selectedPly, setSelectedPly] = useState(0)
+export default function GameReview({ plies, judgements, series, moments, userColor, initialPly = 0 }: GameReviewProps) {
   const maxPly = plies.length - 1
+  const [selectedPly, setSelectedPly] = useState(() => Math.min(Math.max(0, initialPly), maxPly))
   const judgementByPly = useMemo(() => new Map(judgements.map((j) => [j.ply, j])), [judgements])
 
   const judgement = selectedPly >= 1 ? judgementByPly.get(selectedPly) : undefined

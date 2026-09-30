@@ -247,10 +247,10 @@ function resultClass(result: Result): string {
   return 'text-zinc-500 dark:text-zinc-400'
 }
 
-/** `acc 78 · 1??` for analyzed games, `—` otherwise. */
+/** `acc 78 · 1??` for analyzed games, `acc 78` without blunders, `—` otherwise. */
 function analysisText(summary: GameAnalysisSummary | undefined): string {
   if (!summary) return '—'
-  return `acc ${summary.accuracy} · ${summary.blunders}??`
+  return summary.blunders === 0 ? `acc ${summary.accuracy}` : `acc ${summary.accuracy} · ${summary.blunders}??`
 }
 
 function pageHref(filters: GameFilters, page: number): string {

@@ -1,14 +1,14 @@
 # To Claude
-**Task:** T005 (game-review)
+**Task:** T011 (coach-what-to-work-on)
 **Status:** done
-**Report:** handoffs/reports/T005-report.md
-**Updated:** 2026-09-29 20:40
+**Report:** handoffs/reports/T011-report.md
+**Updated:** 2026-09-29 21:25
 
 ## In one paragraph
-Move classification and the review page are done and all acceptance criteria pass. `classify.ts` implements your formulas exactly (win%, position win incl. checkmate/stalemate via FEN, the fixed judgement bands, Lichess accuracy, summaries, key moments incl. missed chances, eval series) with 25 tests including the real-engine Scholar's mate case; `/games/[id]` now shows the full review (board oriented to the user with last-move highlight and best-move arrow, nav buttons + ←/→/Home/End, current-move panel, inline-SVG eval graph with click-to-jump and ●/◆ mistake markers, marked move list, clickable key moments); `/games` has the `acc 78 · 1??` column via one `inArray` query. 141 tests, lint/typecheck/build clean, all 15 analyzed game pages 200. The sanity table (user/opponent accuracy + B/M/I for all 15 games) and 5711's key moments are in the report for your independent recomputation.
+`/coach` is built and all acceptance criteria pass: lint, typecheck, 157 tests (18 files), and the build are clean; `/coach`, `/coach?range=all`, and `/games/5688?ply=12` all return 200 on the running dev server. The pure `coach()` implements all seven detectors per your definitions (phase from the pre-move FEN, both platforms' abandonment/time-loss codes, results-only vs analyzed samples, ≥ 5 evidence gate, ≥ 20 analyzed gate with the `needsAnalysis` flag), the page renders top-3 cards + expandable "Also noticed" rows with deep links and the fixed training copy, `?ply=` deep links work on the review page, and the games list no longer shows `· 0??`. Real-data output for the defaults and `range=all` is in the report (142 analyzed games at run time).
 
 ## Needs Claude's attention
-1. **5711 key moment** flags the owner's Traxler move 6...Bxf2+ as the losing blunder (54% → 24%, best 6...Nxd5 at 150k nodes) — engine truth, but it's coaching-relevant chess content, so your call (report, Q1).
-2. **`judgeDrop` is exported** beyond the spec's API so the required exact-threshold tests (drop = 10/20/30 and the lost/won exceptions) are possible; real evals can't produce those exactly. Formulas unchanged — details in report deviations.
-3. The owner still needs to do the visual pass (board orientation/arrows, graph, keyboard, 375px width).
-4. Missed chances in `keyMoments` are uncapped (only the mistakes list takes n=3), and a ply that is both a blunder and a missed chance shows once as the blunder.
+1. `CoachGame` gained a `platform` field (beyond "InsightGame fields + id") — the abandonment/time-loss definitions are impossible without it, since Chess.com `abandoned` = Lichess `timeout` and `timeout`/`outoftime` swap meanings between platforms. Loader selects `games.platform` directly.
+2. Conversion example fallback: if the win % never drops below 60 after the peak, the example is the final ply (spec only defined the drop case).
+3. Home page: Coach added as an outline link first, "Games →" kept as the filled primary. Say the word if Coach should be primary.
+4. Same game can appear in both `abandoned-playable` (engine points) and `early-abandon` (results-only estimate) — read as intended, flagging in case not.

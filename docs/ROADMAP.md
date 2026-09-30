@@ -15,7 +15,7 @@ Milestones are ordered; tasks inside them are refined as we learn. The live stat
 ## M3: Repertoire (openings you actually play)
 - T007 Verified repertoire trees for the owner's openings (Claude content)
 - T008 Repertoire explorer UI + "where did the game leave my repertoire" detection (DeepSeek)
-- T009 Drill trainer with spaced repetition, for repertoire lines and own-mistake puzzles (DeepSeek)
+- T009 Train: puzzles from your own mistakes and missed chances, spaced repetition (DeepSeek, Claude spec). T009b: repertoire drills
 - T010 Gap finder: openings faced with no prepared answer, plus score by line and rating band (DeepSeek)
 
 ## M4: Coach (know and train your weaknesses)

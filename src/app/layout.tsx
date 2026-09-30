@@ -38,6 +38,9 @@ export default function RootLayout({
             <span className="text-zinc-300 dark:text-zinc-700" aria-hidden>
               ·
             </span>
+            <Link href="/coach" className={navLinkClass}>
+              Coach
+            </Link>
             <Link href="/games" className={navLinkClass}>
               Games
             </Link>

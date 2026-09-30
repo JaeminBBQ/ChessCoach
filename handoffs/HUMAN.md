@@ -3,10 +3,10 @@
 Items Claude needs from the user. Claude adds items; the user answers inline or in chat.
 
 ## Open
-- [ ] **Commit T005** (verified by Claude):
-  `git add -A && git commit -m "T005: move classification, game review page; T011 spec" && git push`
-- [ ] **Hand T011 to DeepSeek:** tell it `read handoffs/TO_DEEPSEEK.md`.
-- [ ] **Analyze a real sample while DeepSeek works** (the Coach page needs ≥ 20 analyzed games; 250 gives solid stats): open http://localhost:3000/analyze, choose **Blitz · 250**, and click Analyze. That's about 25 minutes at your measured 6s/game. Keep the tab open (you can use other tabs).
+- [ ] **Commit T011** (verified by Claude, including Claude's hanging-share fix):
+  `git add -A && git commit -m "T011: coach page (ranked weaknesses), ?ply deep links; T009 spec" && git push`
+- [ ] **Hand T009 to DeepSeek:** tell it `read handoffs/TO_DEEPSEEK.md`.
+- [ ] **Read your Coach page**: http://localhost:3000/coach. Does the top 3 ring true? Click a few example moves. Is the training advice something you'd actually do?
 - [ ] **Visual pass of the review page**: open any game from `/games` (dates are links). Check board orientation (your color at the bottom), the best-move arrow, the ←/→ keys, clicking the graph and moves, and phone width. Try game **5711** (your Traxler loss): the key moment should be 6...Bxf2+.
 - [ ] **Look at your real data** (a dev server is running): http://localhost:3000/games and http://localhost:3000/accounts. Try the filters and the Sync button, and check phone width. Also check `/board` if you haven't yet. Reply with anything off.
 - [ ] *(optional)* Put a contact in `.env` as `CHESSCOM_CONTACT=<email or URL>`. Chess.com asks API clients to identify themselves; it's your call whether to share your email with them.
@@ -14,6 +14,7 @@ Items Claude needs from the user. Claude adds items; the user answers inline or 
 - [ ] **Visual check of `/board`** (whenever convenient; it doesn't block T002). Run `npm run dev` and open http://localhost:3000/board. Drag some moves, try an illegal move (it should snap back), Flip, Undo, Reset, paste a FEN and Load it, and check phone width (DevTools device toolbar, ~375px). Reply with anything that feels off.
 
 ## Done
+- [x] T005 committed; 265 blitz games analyzed in the browser (2026-09-29).
 - [x] T004 + T015 committed; abandonment question answered: the owner sometimes quits bad games or starts at bad times (2026-09-29).
 - [x] Discord webhook: same as LeagueApp; the test ping works (2026-09-29).
 - [x] T004 browser check: 10 blitz games analyzed in 63s; the game page shows the table (2026-09-29).

@@ -6,14 +6,22 @@ import AnalyzeButton from '@/components/analysis/analyze-button'
 import EngineCredit from '@/components/analysis/engine-credit'
 import GameReview from '@/components/analysis/game-review'
 import { classifyMoves, evalSeries, gameSummary, keyMoments } from '@/lib/analysis/classify'
+import { parsePly } from '@/lib/analysis/game-analysis'
 import { getDb } from '@/lib/db/client'
 import { getAnalysis, getGameForUser } from '@/lib/server/analyses'
 import { getCurrentUserId } from '@/lib/server/session'
 
 /** Game review: classification runs on the server; the client gets judgements, series, and plies. */
-export default async function GamePage({ params }: { params: Promise<{ id: string }> }) {
+export default async function GamePage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}) {
   await connection()
   const { id } = await params
+  const sp = await searchParams
   const db = getDb()
   const userId = getCurrentUserId(db)
   const game = getGameForUser(db, userId, Number(id))
@@ -25,6 +33,7 @@ export default async function GamePage({ params }: { params: Promise<{ id: strin
   const opponentSummary = analysis ? gameSummary(judgements, game.userColor === 'white' ? 'black' : 'white') : null
   const moments = analysis ? keyMoments(judgements, game.userColor) : []
   const series = analysis ? evalSeries(analysis) : []
+  const initialPly = analysis ? parsePly(sp.ply, analysis.plies.length - 1) : 0
 
   return (
     <main className="mx-auto w-full max-w-5xl space-y-4 px-4 py-6">
@@ -61,6 +70,7 @@ export default async function GamePage({ params }: { params: Promise<{ id: strin
           series={series}
           moments={moments}
           userColor={game.userColor}
+          initialPly={initialPly}
         />
       ) : (
         <p className="text-sm text-black/60 dark:text-white/60">

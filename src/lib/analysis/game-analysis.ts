@@ -114,6 +114,17 @@ function uciToSan(fen: string, uci: string): string {
 }
 
 /**
+ * The ply a review deep link (`?ply=N`) should open at: the value parsed and
+ * clamped to 0..lastPly, or 0 when it is absent, not an integer, or out of range.
+ */
+export function parsePly(value: string | string[] | undefined, lastPly: number): number {
+  if (typeof value !== 'string') return 0
+  const n = Number(value)
+  if (!Number.isInteger(n) || n < 0 || n > lastPly) return 0
+  return n
+}
+
+/**
  * Checks that an analysis (e.g. posted by a browser) matches the game: same
  * positions in the same order, the right shape, and a known version.
  * Returns an error message, or null when valid.

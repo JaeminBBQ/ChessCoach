@@ -10,11 +10,12 @@
 | T006 | Tactic motif tagging | Claude | planned | T005 |
 | T007 | Verified repertoire trees for the owner's openings | Claude | planned | T001 |
 | T008 | Repertoire explorer + deviation detection | DeepSeek | planned | T003, T007 |
-| T009 | Drill trainer (SRS): repertoire + own-mistake puzzles | DeepSeek | planned | T005, T008 |
+| T009 | Train: puzzles from own mistakes + missed chances, SM-2 spaced repetition, `/train` | Claude spec / DeepSeek | ready | T011 |
+| T009b | Repertoire drills (SRS) | DeepSeek | planned | T007, T009 |
 | T010 | Gap finder + score per line by rating band | DeepSeek | planned | T008 |
 | T015 | Insights v0: openings by moves, terminations, rating bands, sessions/tilt, rating trend | DeepSeek | done | T003 |
 | T016 | Polish: show `queued` while a sync waits on the platform lock | DeepSeek | planned | T003 |
-| T011 | Coach page: ranked weaknesses (pts/100 games), evidence, example positions, training copy; `?ply=` deep links | Claude spec / DeepSeek | ready | T005, T015 |
+| T011 | Coach page: ranked weaknesses (pts/100 games), evidence, example positions, training copy; `?ply=` deep links | Claude spec / DeepSeek | done | T005, T015 |
 | T012–T014 | Weekly plan, LLM coach explanations, opponent scouting | mixed | planned | T011 |
 
 Only `ready` tasks have full specs in `tasks/`. Claude writes the next spec after reviewing the previous task, so later specs can take what was learned into account. See `docs/ROADMAP.md`.

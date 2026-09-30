@@ -3,7 +3,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 import { createNodeEngine } from '../engine/node'
 import type { UciEngine } from '../engine/uci-engine'
-import { analyzeGame, replayPgn, validateAnalysis, type GameAnalysis } from './game-analysis'
+import { analyzeGame, parsePly, replayPgn, validateAnalysis, type GameAnalysis } from './game-analysis'
 
 const SCHOLARS_MATE = '1. e4 e5 2. Bc4 Nc6 3. Qh5 Nf6 4. Qxf7# 1-0'
 const STAFFORD = '1. e4 e5 2. Nf3 Nf6 3. Nxe5 Nc6 *'
@@ -33,6 +33,24 @@ describe('replayPgn', () => {
       expect(positions[0].move).toBeNull()
       expect(positions[1].move?.uci).toMatch(/^[a-h][1-8][a-h][1-8]/)
     }
+  })
+})
+
+describe('parsePly', () => {
+  it('parses and clamps a valid ply', () => {
+    expect(parsePly('0', 30)).toBe(0)
+    expect(parsePly('5', 30)).toBe(5)
+    expect(parsePly('30', 30)).toBe(30)
+  })
+
+  it('returns 0 for out-of-range, non-integer, and absent values', () => {
+    expect(parsePly('31', 30)).toBe(0)
+    expect(parsePly('-1', 30)).toBe(0)
+    expect(parsePly('12.5', 30)).toBe(0)
+    expect(parsePly('abc', 30)).toBe(0)
+    expect(parsePly(['5'], 30)).toBe(0)
+    expect(parsePly(undefined, 30)).toBe(0)
+    expect(parsePly('5', -1)).toBe(0)
   })
 })
 
