@@ -68,3 +68,23 @@ export const games = sqliteTable(
   },
   (t) => [unique('games_platform_externalId_userId_unique').on(t.platform, t.externalId, t.userId)],
 )
+
+// One engine analysis per game; `data` is the JSON GameAnalysis (src/lib/analysis/game-analysis.ts).
+export const analyses = sqliteTable(
+  'analyses',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    userId: integer('user_id')
+      .notNull()
+      .references(() => users.id),
+    gameId: integer('game_id')
+      .notNull()
+      .references(() => games.id, { onDelete: 'cascade' }),
+    engine: text('engine').notNull(),
+    nodes: integer('nodes').notNull(),
+    version: integer('version').notNull(),
+    data: text('data').notNull(),
+    createdAt: integer('created_at').notNull(),
+  },
+  (t) => [unique('analyses_game_id_unique').on(t.gameId)],
+)

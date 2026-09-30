@@ -48,7 +48,12 @@ export default async function GamesPage({
 
   return (
     <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6">
-      <h1 className="text-2xl font-semibold tracking-tight">Games</h1>
+      <div className="flex items-baseline justify-between gap-3">
+        <h1 className="text-2xl font-semibold tracking-tight">Games</h1>
+        <Link href="/analyze" className="text-sm underline underline-offset-2">
+          Analyze games →
+        </Link>
+      </div>
       <p className="mt-1 text-sm tabular-nums text-zinc-500 dark:text-zinc-400">
         {stats.total} games · {percent(stats.wins, stats.total)}% win ·{' '}
         {percent(stats.losses, stats.total)}% loss · {percent(stats.draws, stats.total)}% draw
@@ -129,11 +134,13 @@ export default async function GamesPage({
                     className="border-b border-black/5 align-middle last:border-0 dark:border-white/5"
                   >
                     <td className="px-3 py-2 whitespace-nowrap tabular-nums">
-                      {new Date(game.playedAt).toLocaleDateString(undefined, {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                      })}
+                      <Link href={`/games/${game.id}`} className="underline underline-offset-2">
+                        {new Date(game.playedAt).toLocaleDateString(undefined, {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                        })}
+                      </Link>
                     </td>
                     <td className="px-3 py-2" title={game.userColor === 'white' ? 'White' : 'Black'}>
                       {game.userColor === 'white' ? '●' : '○'}

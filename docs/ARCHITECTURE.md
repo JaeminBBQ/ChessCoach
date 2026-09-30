@@ -27,14 +27,14 @@ src/
 drizzle/               generated SQL migrations
 test/fixtures/         recorded API responses and PGNs (no network in tests)
 data/                  local SQLite db (gitignored)
-public/engine/         Stockfish worker assets (added in the engine task)
+public/engine/         vendored Stockfish WASM worker (GPLv3, unmodified)
 ```
 
 ## Data model (grows per task; `userId` on every user-owned row)
 - `users`: id, displayName, createdAt
 - `linked_accounts`: id, userId, platform (`lichess` | `chesscom`), username, createdAt, lastSyncedAt; unique (platform, username, userId)
 - `games`: id, userId, accountId (→ linked_accounts, cascade), platform, externalId (unique per platform + userId), url, pgn, playedAt, timeControl, rated, speed (`bullet` | `blitz` | `rapid` | `classical` | `daily`), userColor, result (`win` | `loss` | `draw`), termination, userRating, opponentName, opponentRating, openingEco, openingName, importedAt
-- *(planned)* `analyses`: gameId, engine + version, depth, per-ply evals (JSON), accuracy per side
+- `analyses`: id, userId, gameId (unique, cascade with the game), engine, nodes, version, data (JSON `GameAnalysis`), createdAt
 - *(planned)* `moments`: gameId, ply, fen, played, best, evalBefore, evalAfter, class (`blunder` | `mistake` | `inaccuracy` | `missed_win`), phase, motifs[]
 - *(planned)* `repertoire_nodes`: userId, color, parentId, fen, san, comment, isMainLine, tags (trap, plan)
 - *(planned)* `drill_cards`: userId, kind (`own_mistake` | `repertoire`), fen, solution moves, SRS state (ease, interval, due)
@@ -55,6 +55,16 @@ public/engine/         Stockfish worker assets (added in the engine task)
 ## Sync (T003)
 - The Sync button starts an in-process background sync with live status. There's one sync per platform at a time (keyed mutex). The cursor is the latest `playedAt` per account: Chess.com re-reads that month; Lichess uses `since` = cursor − 3 days. Inserts are idempotent (`onConflictDoNothing`).
 - `getCurrentUserId()` in `src/lib/server/session.ts` is the only no-auth seam; services always take `userId`.
+
+## Engine + analysis (T004)
+- **Engine:** Stockfish 19 lite single-threaded WASM, vendored unmodified in `public/engine/` (GPLv3; README has the source link and hashes). It doesn't need COOP/COEP headers. `ENGINE_ID` in `src/lib/engine/index.ts` identifies the build.
+- **Layers:**
+  - `engine/uci.ts`: pure UCI parsing and score helpers.
+  - `engine/uci-engine.ts`: a `UciEngine` over any `UciTransport` (handshake, one search at a time, MultiPV).
+  - `engine/browser.ts` (Web Worker) and `engine/node.ts` (in-process, for tests/tooling; it restores `globalThis.fetch`, which the Emscripten loader nulls under Node).
+- **Analysis:** `analysis/game-analysis.ts` `analyzeGame(pgn, engine)` replays the PGN and searches every non-terminal position at **150k nodes, MultiPV 2**. It stores per ply: fen, the move that led there, eval (**White POV**), best + second-best move with evals, depth, and terminal (checkmate/stalemate/draw). Fixed nodes keep effort deterministic across devices; it runs about 0.2 s/position in Node.
+- **Flow:** `/analyze` (batch, newest unanalyzed first) or the button on `/games/[id]` runs the engine in the browser, then `PUT /api/games/[id]/analysis`. The server re-validates the analysis against the stored PGN (ply count + every FEN) before saving, and a re-analysis replaces the old one.
+- **Next (T005):** win-probability conversion, move classification, and the review UI read `analyses.data`; no re-analysis is needed.
 
 ## Analysis pipeline (planned, engine milestone)
 1. Games sync into `games` (server).
