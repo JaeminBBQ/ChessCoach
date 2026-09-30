@@ -144,3 +144,50 @@ export const drillReviews = sqliteTable('drill_reviews', {
   correct: integer('correct', { mode: 'boolean' }).notNull(),
   reviewedAt: integer('reviewed_at').notNull(),
 })
+
+// Plan settings; one row per user, created lazily with defaults on first read.
+export const userSettings = sqliteTable('user_settings', {
+  userId: integer('user_id')
+    .primaryKey()
+    .references(() => users.id),
+  timezone: text('timezone').notNull().default('America/Los_Angeles'),
+  weeklyGames: integer('weekly_games').notNull().default(10),
+  planSpeed: text('plan_speed', { enum: speeds }).notNull().default('rapid'),
+  puzzlesPerWeek: integer('puzzles_per_week').notNull().default(50),
+  updatedAt: integer('updated_at').notNull(),
+})
+
+// One row per reviewed game (created by the "Mark reviewed" button or by
+// visiting every key moment of the review). The unique index makes it idempotent.
+export const gameReviews = sqliteTable(
+  'game_reviews',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    userId: integer('user_id')
+      .notNull()
+      .references(() => users.id),
+    gameId: integer('game_id')
+      .notNull()
+      .references(() => games.id, { onDelete: 'cascade' }),
+    reviewedAt: integer('reviewed_at').notNull(),
+  },
+  (t) => [unique('game_reviews_game_id_unique').on(t.gameId)],
+)
+
+// The weekly plan's focus, fixed once computed so it doesn't flip mid-week.
+// `baseline` is JSON: { focus: { id, title, habit }, metric: { value, kind, sample } | null }.
+export const plans = sqliteTable(
+  'plans',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    userId: integer('user_id')
+      .notNull()
+      .references(() => users.id),
+    /** Monday 00:00 (user time zone) of the plan's week, epoch ms. */
+    weekStart: integer('week_start').notNull(),
+    focusId: text('focus_id'),
+    baseline: text('baseline').notNull(),
+    createdAt: integer('created_at').notNull(),
+  },
+  (t) => [unique('plans_userId_weekStart_unique').on(t.userId, t.weekStart)],
+)

@@ -8,8 +8,8 @@
 | T004 | Stockfish Web Worker + batch analysis runner, `analyses` table, `/analyze`, `/games/[id]` | Claude | done | T001 |
 | T005 | Move classification (win %), accuracy, key moments, review page (board, graph, move list) | Claude spec / DeepSeek | done | T004, T015 |
 | T006 | Motif tagging (`motifs.ts`), engine lines stored in analyses, 265 games re-analyzed | Claude | done | T005 |
-| T006b | Patterns on Coach (table + Lichess links), Train `?motif=`, Plan focus/pattern task, review labels | DeepSeek | ready (after T012) | T006, T012 |
-| T007 | Verified repertoire trees for the owner's openings (content for the opening test) | Claude | next | T001 |
+| T006b | Patterns on Coach (table + Lichess links), Train `?motif=`, Plan focus/pattern task, review labels | DeepSeek | ready | T006, T012 |
+| T007 | Verified repertoire trees for the owner's openings (content for the opening test) | Claude | done | T001 |
 | T008 | Repertoire explorer + deviation detection | DeepSeek | planned | T003, T007 |
 | T009 | Train: puzzles from own mistakes + missed chances, SM-2 spaced repetition, `/train` | Claude spec / DeepSeek | done | T011 |
 | T009b | Opening test: repertoire drills (SRS), registers a plan task | DeepSeek | planned | T007, T012 |
@@ -21,7 +21,7 @@
 | T017 | Notation trainer (squares, reading moves), registers a plan task | DeepSeek | planned | T012 |
 | T018 | Progress + correlation page (weakness trends vs training vs rating) | Claude spec / DeepSeek | planned | T006, T009, T019 |
 | T019 | Auto-analyze new games after sync (folded into T012's Sync & analyze) | DeepSeek | done-in-T012 | T004 |
-| T012 | Game plan `/plan`: weekly auto-tracked tasks (play/review/train/analyze), focus habit + metric, Sync & analyze, 8-week scorecard | Claude spec / DeepSeek | ready | T009, T011 |
+| T012 | Game plan `/plan`: weekly auto-tracked tasks (play/review/train/analyze), focus habit + metric, Sync & analyze, 8-week scorecard | Claude spec / DeepSeek | done | T009, T011 |
 | T013–T014 | LLM coach explanations, opponent scouting | mixed | planned | T012 |
 
 Only `ready` tasks have full specs in `tasks/`. Claude writes the next spec after reviewing the previous task, so later specs can take what was learned into account. See `docs/ROADMAP.md`.

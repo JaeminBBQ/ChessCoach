@@ -4,11 +4,12 @@ import { connection } from 'next/server'
 
 import AnalyzeButton from '@/components/analysis/analyze-button'
 import EngineCredit from '@/components/analysis/engine-credit'
-import GameReview from '@/components/analysis/game-review'
+import ReviewPanel from '@/components/review/review-panel'
 import { classifyMoves, evalSeries, gameSummary, keyMoments } from '@/lib/analysis/classify'
 import { parsePly } from '@/lib/analysis/game-analysis'
 import { getDb } from '@/lib/db/client'
 import { getAnalysis, getGameForUser } from '@/lib/server/analyses'
+import { getReview } from '@/lib/server/plan'
 import { getCurrentUserId } from '@/lib/server/session'
 
 /** Game review: classification runs on the server; the client gets judgements, series, and plies. */
@@ -34,6 +35,7 @@ export default async function GamePage({
   const moments = analysis ? keyMoments(judgements, game.userColor) : []
   const series = analysis ? evalSeries(analysis) : []
   const initialPly = analysis ? parsePly(sp.ply, analysis.plies.length - 1) : 0
+  const reviewedAt = getReview(db, userId, game.id)
 
   return (
     <main className="mx-auto w-full max-w-5xl space-y-4 px-4 py-6">
@@ -63,16 +65,17 @@ export default async function GamePage({
 
       <AnalyzeButton gameId={game.id} label={analysis ? 'Re-analyze' : 'Analyze with Stockfish'} />
 
-      {analysis ? (
-        <GameReview
-          plies={analysis.plies}
-          judgements={judgements}
-          series={series}
-          moments={moments}
-          userColor={game.userColor}
-          initialPly={initialPly}
-        />
-      ) : (
+      <ReviewPanel
+        gameId={game.id}
+        reviewedAt={reviewedAt}
+        review={
+          analysis
+            ? { plies: analysis.plies, judgements, series, moments, userColor: game.userColor, initialPly }
+            : undefined
+        }
+      />
+
+      {!analysis && (
         <p className="text-sm text-black/60 dark:text-white/60">
           Analyze this game to get a move-by-move review with your mistakes and the moments that decided it.
         </p>

@@ -105,6 +105,16 @@ describe('analysisQueue / analysisCounts', () => {
     expect(analysisQueue(db, otherUserId, {}, 10)).toEqual({ gameIds: [], remaining: 0 })
     expect(analysisCounts(db, userId)).toEqual({ analyzed: 1, total: 4 })
   })
+
+  it('filters by playedAt with since', () => {
+    const old = addGame(1)
+    const mid = addGame(2)
+    const newest = addGame(4)
+    saveAnalysis(db, userId, newest, fakeAnalysis())
+    expect(analysisQueue(db, userId, { since: 3 }, 10)).toEqual({ gameIds: [], remaining: 0 })
+    expect(analysisQueue(db, userId, { since: 2 }, 10)).toEqual({ gameIds: [mid], remaining: 1 })
+    expect(analysisQueue(db, userId, { since: 1 }, 10)).toEqual({ gameIds: [mid, old], remaining: 2 })
+  })
 })
 
 describe('summariesForGames', () => {

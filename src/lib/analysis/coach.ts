@@ -10,6 +10,8 @@ import { byOpening, firstMoves, type InsightGame } from './insights'
 export interface CoachGame extends InsightGame {
   id: number
   platform: Platform
+  /** The opponent's display name, for plan task links. */
+  opponentName: string | null
   analysis: GameAnalysis | null
 }
 

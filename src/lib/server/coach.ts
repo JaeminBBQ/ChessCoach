@@ -31,6 +31,7 @@ export function loadCoachGames(db: Db, userId: number, filters: InsightFilters):
       rated: games.rated,
       userRating: games.userRating,
       opponentRating: games.opponentRating,
+      opponentName: games.opponentName,
       accountId: games.accountId,
       pgn: games.pgn,
       data: analyses.data,

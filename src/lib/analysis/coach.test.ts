@@ -55,6 +55,7 @@ function game(overrides: Partial<CoachGame> = {}): CoachGame {
     rated: true,
     userRating: 1200,
     opponentRating: 1200,
+    opponentName: null,
     accountId: 1,
     pgn: '1. e4 e5 2. Nf3 Nc6 1-0',
     analysis: null,

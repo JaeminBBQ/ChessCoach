@@ -38,6 +38,9 @@ export default function RootLayout({
             <span className="text-zinc-300 dark:text-zinc-700" aria-hidden>
               ·
             </span>
+            <Link href="/plan" className={navLinkClass}>
+              Plan
+            </Link>
             <Link href="/coach" className={navLinkClass}>
               Coach
             </Link>
@@ -49,6 +52,9 @@ export default function RootLayout({
             </Link>
             <Link href="/insights" className={navLinkClass}>
               Insights
+            </Link>
+            <Link href="/analyze" className={navLinkClass}>
+              Analyze
             </Link>
             <Link href="/accounts" className={navLinkClass}>
               Accounts

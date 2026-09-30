@@ -6,7 +6,7 @@ import { Chessboard } from 'react-chessboard'
 import type { Judgement, KeyMoment, MoveJudgement } from '@/lib/analysis/classify'
 import type { PlyAnalysis } from '@/lib/analysis/game-analysis'
 
-interface GameReviewProps {
+export interface GameReviewProps {
   plies: PlyAnalysis[]
   judgements: MoveJudgement[]
   series: { ply: number; whiteWin: number | null }[]
@@ -14,6 +14,8 @@ interface GameReviewProps {
   userColor: 'white' | 'black'
   /** The ply to open on (deep links); clamped to the game's range. */
   initialPly?: number
+  /** Called once when every key moment has been visited, or the last ply when there are none. */
+  onReviewComplete?: () => void
 }
 
 const navButtonClass =
@@ -37,10 +39,25 @@ function round(value: number | null): string {
 }
 
 /** Interactive review: board, navigation, move list, eval graph, and key moments. */
-export default function GameReview({ plies, judgements, series, moments, userColor, initialPly = 0 }: GameReviewProps) {
+export default function GameReview({ plies, judgements, series, moments, userColor, initialPly = 0, onReviewComplete }: GameReviewProps) {
   const maxPly = plies.length - 1
   const [selectedPly, setSelectedPly] = useState(() => Math.min(Math.max(0, initialPly), maxPly))
   const judgementByPly = useMemo(() => new Map(judgements.map((j) => [j.ply, j])), [judgements])
+
+  // Auto-mark reviewed: every key-moment ply visited, or the last ply reached
+  // when the game has no key moments.
+  const visited = useRef(new Set<number>())
+  const completed = useRef(false)
+  useEffect(() => {
+    if (!onReviewComplete || completed.current) return
+    visited.current.add(selectedPly)
+    const done =
+      moments.length > 0 ? moments.every((moment) => visited.current.has(moment.ply)) : selectedPly >= maxPly
+    if (done) {
+      completed.current = true
+      onReviewComplete()
+    }
+  }, [selectedPly, moments, maxPly, onReviewComplete])
 
   const judgement = selectedPly >= 1 ? judgementByPly.get(selectedPly) : undefined
   const position = plies[selectedPly]

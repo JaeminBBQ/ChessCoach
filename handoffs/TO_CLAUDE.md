@@ -1,15 +1,15 @@
 # To Claude
-**Task:** T009 (train-own-mistakes)
+**Task:** T012 (game plan: weekly tasks + progress tracking, `/plan`)
 **Status:** done
-**Report:** handoffs/reports/T009-report.md
-**Updated:** 2026-09-30 11:10
+**Report:** handoffs/reports/T012-report.md
+**Updated:** 2026-09-30 12:20
 
 ## In one paragraph
-`/train` is built and all acceptance criteria pass: lint, typecheck, 193 tests (22 files), and the build are clean; migration 0004 (`drill_cards` + `drill_reviews`) applied to the dev DB after a `.backup` to `data/chesscoach.db.bak-0004` (kept); `/train` → 200, `GET /api/train/queue` → JSON, review posts → 404 for a nonexistent card and 400 for a bad grade. The card builder implements all the fixed gates, the scheduler implements the fixed SM-2 numbers, cards sync on `/train` load and after every `saveAnalysis`, and the interactive session (drag/click with legality, promotion picker, solution arrow, Good/Easy/Next, session summary) works with the Coach page linking in. Real data: 265 analyzed games → 121 cards (52 blunder, 69 missed) from 467 candidates; the 15-point gap gate rejects 329 of them (see the report's example cards for verification).
+`/plan` is the home page: four auto-tracked weekly tasks (play quota, review losses with a last-3 fallback, train own positions, analyze new games), a focus of the week (top Coach finding, 90d → 1y fallback, stored per week in `plans`) with baseline vs this-week metric, a Sync & analyze button that syncs every account then analyzes the current + previous week's games in the browser (`?since=` on the queue), an Adjust plan disclosure (server action, validated), and an 8-week scorecard with sparklines and the focus-trend sentence. Also: migration 0005 (`user_settings`, `game_reviews`, `plans`), idempotent `POST /api/games/[id]/review`, "Mark reviewed ✓" + auto-mark on `/games/[id]`, `/` → `/plan`, nav reordered. All acceptance criteria pass: lint/typecheck/build clean, **246 tests (27 files)**, migration applied after a `.backup`, redirect/review-API verified with curl, and the real-data section (owner's plan + scorecard) is in the report.
 
 ## Needs Claude's attention
-1. Real-data surprise (reported, not changed): the gap gate rejects 70% of candidates — with MultiPV 2 the second move is usually nearly as good as the best. If the deck ever feels thin, that's the lever.
-2. `buildCardsDetailed` (extra export) provides the per-gate rejection tallies the report asked for; `buildCards` delegates to it.
-3. `trainingStats` gained `nextDue` to render the "All caught up. Next card due …" state; also added a third empty state for "analyzed games exist but every candidate failed a gate".
-4. The solution is sent to the client with the queue (spec's client-side grading flow); a stricter server-side grading design is possible later.
-5. **The working tree also contains your in-progress T006 work** (motifs.ts, motifs.test.ts, the `pv` field, ROADMAP/BOARD edits). Tell the user how to split the commits.
+1. **`weeklyMetrics` has an extra `settings` argument** beyond the spec signature — the tasks-completed column needs the weekly targets. Historical settings aren't stored, so current settings apply to past weeks.
+2. **`plans.baseline` JSON stores `{ focus, metric }`** (focus snapshot + baseline), not just the baseline metric, so stored weeks render without recomputation; `focusId` is nullable for no-finding weeks.
+3. **Focus-metric detectors in `plan.ts` mirror coach.ts internals** (~60 lines: phase rule, missed-chance rule, conversion peak, termination codes). No coach formulas changed. Want me to export those helpers from `coach.ts` instead, as a follow-up?
+4. Scorecard uses **rated games only** (Coach default); the Play task counts casual games too. Rating-at-week-end lookback is capped at 1 year.
+5. Full details and the real-data table: `handoffs/reports/T012-report.md`. Your T007 repertoire files in the tree were untouched.

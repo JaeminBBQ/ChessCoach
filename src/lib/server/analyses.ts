@@ -1,4 +1,4 @@
-import { and, count, desc, eq, inArray, isNull } from 'drizzle-orm'
+import { and, count, desc, eq, gte, inArray, isNull } from 'drizzle-orm'
 
 import { classifyMoves, gameSummary } from '../analysis/classify'
 import { validateAnalysis, type GameAnalysis } from '../analysis/game-analysis'
@@ -53,6 +53,8 @@ export function saveAnalysis(db: Db, userId: number, gameId: number, analysis: u
 export interface QueueFilters {
   speed?: Speed
   accountId?: number
+  /** Only games played at or after this epoch ms (e.g. Sync & analyze's window). */
+  since?: number
 }
 
 /** Unanalyzed games, newest first: what a batch run should work through next. */
@@ -67,6 +69,7 @@ export function analysisQueue(
     isNull(analyses.id),
     filters.speed ? eq(games.speed, filters.speed) : undefined,
     filters.accountId ? eq(games.accountId, filters.accountId) : undefined,
+    filters.since !== undefined ? gte(games.playedAt, filters.since) : undefined,
   )
   const remaining =
     db.select({ n: count() }).from(games).leftJoin(analyses, eq(analyses.gameId, games.id)).where(where).get()?.n ?? 0
