@@ -24,5 +24,14 @@ Milestones are ordered; tasks inside them are refined as we learn. The live stat
 - T013 LLM coach explanations for moments and plans (Claude)
 - T014 Opponent scouting / game plan from an opponent's public finished games (DeepSeek, Claude spec)
 
+## M4.5: Close the loop (owner feedback, 2026-09-30)
+Goal: see the mistake → know its pattern → train that pattern → measure whether it stops happening.
+- T006 Motif tagging: hanging piece, fork, allowed mate, missed free piece/fork/mate; each weakness says which patterns dominate, with Lichess theme links (Claude)
+- T016 Inline replay boards on Coach examples: step through the moves around each mistake without leaving the page (DeepSeek)
+- T017 Notation trainer: name-the-square and play-the-written-move drills with timing and history (DeepSeek)
+- T019 Auto-analyze new games after sync while the app is open (DeepSeek), so progress data keeps flowing
+- T018 Progress page: each weakness's cost per month/window vs training volume per pattern vs rating; honest "correlation, not proof" framing and minimum-sample gates (Claude spec)
+- Later: import Lichess's CC0 puzzle database so themed puzzles live in-app (scales to other users)
+
 ## M5: Other users
 - Lichess OAuth login, Postgres, deploy, per-user sync queue, privacy page, naming/domain

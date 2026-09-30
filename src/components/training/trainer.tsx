@@ -22,9 +22,22 @@ interface TrainCard {
 type Attempt = { status: 'correct' } | { status: 'wrong' }
 type Grade = 'again' | 'good' | 'easy'
 
-const PROMPTS: Record<TrainCard['kind'], string> = {
-  missed: 'Your opponent just made a mistake. Find the move that punishes it.',
-  blunder: 'Find a better move than the one you played.',
+/** The card's instruction, including what the user actually played in the game (red arrow on the board). */
+function prompt(card: TrainCard): string {
+  const played = `In the game you played ${card.playedSan} (red arrow; your win chance after it: ${Math.round(card.playedWin)}%).`
+  return card.kind === 'missed'
+    ? `Your opponent just made a mistake. ${played} Find the move that punishes it.`
+    : `${played} Find a better move.`
+}
+
+/** From/to squares of the move the user played in the game, or null if it can't be replayed. */
+function playedSquares(card: TrainCard): { from: string; to: string } | null {
+  try {
+    const move = new Chess(card.fen).move(card.playedSan)
+    return { from: move.from, to: move.to }
+  } catch {
+    return null
+  }
 }
 
 /** One training session: loads the queue, then walks the cards one at a time. */
@@ -155,9 +168,12 @@ function CardView({ card, onGraded, busy }: { card: TrainCard; onGraded: (attemp
   }
   if (selected) squareStyles[selected] = { backgroundColor: 'rgba(14, 165, 233, 0.4)' }
 
-  // After a wrong answer, show the solution as an arrow.
-  const arrows =
-    attempt?.status === 'wrong'
+  // The move played in the game is always shown in red; after a wrong answer
+  // the solution is added in green.
+  const played = playedSquares(card)
+  const arrows = [
+    ...(played ? [{ startSquare: played.from, endSquare: played.to, color: 'rgba(239, 68, 68, 0.7)' }] : []),
+    ...(attempt?.status === 'wrong'
       ? [
           {
             startSquare: card.solutionUci.slice(0, 2),
@@ -165,7 +181,8 @@ function CardView({ card, onGraded, busy }: { card: TrainCard; onGraded: (attemp
             color: 'rgba(16, 185, 129, 0.75)',
           },
         ]
-      : []
+      : []),
+  ]
 
   const buttonClass =
     'rounded-md border border-black/10 px-3 py-1.5 text-sm font-medium transition-colors hover:bg-black/5 disabled:opacity-40 dark:border-white/15 dark:hover:bg-white/10'
@@ -173,7 +190,7 @@ function CardView({ card, onGraded, busy }: { card: TrainCard; onGraded: (attemp
   return (
     <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
       <div className="relative w-full max-w-[520px] shrink-0">
-        <p className="mb-2 text-sm text-zinc-600 dark:text-zinc-300">{PROMPTS[card.kind]}</p>
+        <p className="mb-2 text-sm text-zinc-600 dark:text-zinc-300">{prompt(card)}</p>
         <Chessboard
           options={{
             id: `train-card-${card.id}`,

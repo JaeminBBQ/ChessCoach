@@ -7,7 +7,8 @@
 | T003 | Sync service, Accounts + Games pages, `accountId` on games | DeepSeek | done | T002 |
 | T004 | Stockfish Web Worker + batch analysis runner, `analyses` table, `/analyze`, `/games/[id]` | Claude | done | T001 |
 | T005 | Move classification (win %), accuracy, key moments, review page (board, graph, move list) | Claude spec / DeepSeek | done | T004, T015 |
-| T006 | Motif tagging of mistakes/missed chances + Lichess theme links (motifs.ts + tests done; engine lines now stored; re-analysis of the 265 games runs after T009 migrates the dev DB; Coach integration spec after that) | Claude | in-progress | T005, T009 |
+| T006 | Motif tagging (`motifs.ts`), engine lines stored in analyses, 265 games re-analyzed | Claude | done | T005 |
+| T006b | Patterns on Coach (table + Lichess links), Train `?motif=`, Plan focus/pattern task, review labels | DeepSeek | ready (after T012) | T006, T012 |
 | T007 | Verified repertoire trees for the owner's openings (content for the opening test) | Claude | next | T001 |
 | T008 | Repertoire explorer + deviation detection | DeepSeek | planned | T003, T007 |
 | T009 | Train: puzzles from own mistakes + missed chances, SM-2 spaced repetition, `/train` | Claude spec / DeepSeek | done | T011 |

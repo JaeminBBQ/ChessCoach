@@ -10,7 +10,15 @@ export interface EngineMove {
   san: string
   /** Evaluation after playing this move, White's point of view. */
   eval: Score
+  /**
+   * The engine's principal variation starting with this move (UCI, up to
+   * PV_LENGTH plies). Optional: analyses made before 2026-09-30 don't have it.
+   */
+  pv?: string[]
 }
+
+/** Plies of each principal variation kept in stored analyses (for motif detection). */
+export const PV_LENGTH = 12
 
 export interface PlyAnalysis {
   /** 0 = start position; n = the position after the n-th half-move. */
@@ -95,7 +103,7 @@ async function analyzePosition(
   const toMove = (line: (typeof lines)[number] | undefined): EngineMove | null => {
     if (!line) return null
     const uci = line.pv[0]
-    return { uci, san: uciToSan(position.fen, uci), eval: toWhitePov(line.score, side) }
+    return { uci, san: uciToSan(position.fen, uci), eval: toWhitePov(line.score, side), pv: line.pv.slice(0, PV_LENGTH) }
   }
   const best = toMove(lines[0])
   return {

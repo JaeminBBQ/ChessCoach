@@ -64,6 +64,7 @@ public/engine/         vendored Stockfish WASM worker (GPLv3, unmodified)
   - `engine/browser.ts` (Web Worker) and `engine/node.ts` (in-process, for tests/tooling; it restores `globalThis.fetch`, which the Emscripten loader nulls under Node).
 - **Analysis:** `analysis/game-analysis.ts` `analyzeGame(pgn, engine)` replays the PGN and searches every non-terminal position at **150k nodes, MultiPV 2**. It stores per ply: fen, the move that led there, eval (**White POV**), best + second-best move with evals, depth, and terminal (checkmate/stalemate/draw). Fixed nodes keep effort deterministic across devices; it runs about 0.2 s/position in Node.
 - **Flow:** `/analyze` (batch, newest unanalyzed first) or the button on `/games/[id]` runs the engine in the browser, then `PUT /api/games/[id]/analysis`. The server re-validates the analysis against the stored PGN (ply count + every FEN) before saving, and a re-analysis replaces the old one.
+- **Patterns (T006):** `analysis/motifs.ts` tags each user mistake by the opponent's best reply, and each missed chance by the user's best move: hanging piece → fork → material along the engine line (≥ 2 pawns at the first quiet point within 8 plies) → king attack (≥ 2 checks) → other. Mate lines come first. Each tag maps to a Lichess puzzle theme.
 - **Next (T005):** win-probability conversion, move classification, and the review UI read `analyses.data`; no re-analysis is needed.
 
 ## Analysis pipeline (planned, engine milestone)
