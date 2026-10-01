@@ -11,7 +11,8 @@
     "test": "vitest run",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "node scripts/migrate.mjs",
-    "content:repertoire": "vitest run --config vitest.content.config.mts"
+    "content:repertoire": "vitest run --config vitest.content.config.mts shard",
+    "repertoire:import": "vitest run --config vitest.content.config.mts import"
   },
   "dependencies": {
     "better-sqlite3": "^13.0.3",

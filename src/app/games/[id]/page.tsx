@@ -10,8 +10,10 @@ import { isMissedChance } from '@/lib/analysis/coach'
 import { parsePly, type GameAnalysis } from '@/lib/analysis/game-analysis'
 import { mistakeMotif, missedMotif, MOTIF_LABEL } from '@/lib/analysis/motifs'
 import { getDb } from '@/lib/db/client'
+import { moveNo, type GameMatch } from '@/lib/repertoire/match'
 import { getAnalysis, getGameForUser } from '@/lib/server/analyses'
 import { getReview } from '@/lib/server/plan'
+import { ensureGameMatch, getNodePath, getRepertoireById } from '@/lib/server/repertoire'
 import { getCurrentUserId } from '@/lib/server/session'
 
 /** Game review: classification runs on the server; the client gets judgements, series, and plies. */
@@ -40,6 +42,14 @@ export default async function GamePage({
   const reviewedAt = getReview(db, userId, game.id)
   const motifLabels = analysis ? motifLabelsFor(analysis, judgements, game.userColor) : undefined
 
+  const match = ensureGameMatch(db, userId, game.id)
+  const repertoire = match && match.repertoireId !== null ? getRepertoireById(db, userId, match.repertoireId) : undefined
+  const deviationPositionId =
+    match && (match.status === 'user-left' || match.status === 'opponent-left') && match.leftPly !== null && match.leftPly >= 2
+      ? match.positions[match.leftPly - 2]
+      : undefined
+  const linePath = deviationPositionId !== undefined ? getNodePath(db, userId, deviationPositionId) : undefined
+
   return (
     <main className="mx-auto w-full max-w-5xl space-y-4 px-4 py-6">
       <div className="space-y-1">
@@ -66,6 +76,16 @@ export default async function GamePage({
         )}
       </div>
 
+      {match && match.repertoireId !== null && repertoire && (
+        <BookBanner
+          match={match}
+          repertoire={repertoire}
+          linePath={linePath ?? null}
+          gameId={game.id}
+          judgement={match.leftPly !== null ? judgements.find((j) => j.ply === match.leftPly) : undefined}
+        />
+      )}
+
       <AnalyzeButton gameId={game.id} label={analysis ? 'Re-analyze' : 'Analyze with Stockfish'} />
 
       <ReviewPanel
@@ -91,6 +111,81 @@ export default async function GamePage({
 
 function countText(count: number, noun: string, plural: string = `${noun}s`): string {
   return `${count} ${count === 1 ? noun : plural}`
+}
+
+const bannerClass = 'rounded-lg border border-black/10 px-3 py-2 text-sm dark:border-white/10'
+
+/**
+ * The one-line "where did this game leave your book" banner. The move links
+ * jump the review board to that ply; Explore opens the book at the position.
+ */
+function BookBanner({
+  match,
+  repertoire,
+  linePath,
+  gameId,
+  judgement,
+}: {
+  match: GameMatch
+  repertoire: { name: string; slug: string }
+  linePath: string | null
+  gameId: number
+  judgement: MoveJudgement | undefined
+}) {
+  if (match.status === 'book-end') {
+    const ply = match.leftPly
+    return (
+      <div className={bannerClass}>
+        Followed your book to the end
+        {ply !== null && (
+          <a href={`/games/${gameId}?ply=${ply}`} className="underline underline-offset-2">
+            {' '}
+            (move {ply})
+          </a>
+        )}
+        .
+      </div>
+    )
+  }
+  if (match.status === 'game-ended') {
+    return <div className={bannerClass}>Game ended inside your book.</div>
+  }
+  const ply = match.leftPly
+  if (ply === null || match.leftSan === null) return null
+  const moveLabel = `${moveNo(ply)}${match.leftSan}`
+  const moveLink = (
+    <a href={`/games/${gameId}?ply=${ply}`} className="font-mono underline underline-offset-2">
+      {moveLabel}
+    </a>
+  )
+  const explore =
+    linePath !== null ? (
+      <Link
+        href={`/repertoire/${repertoire.slug}?path=${encodeURIComponent(linePath)}`}
+        className="text-sky-700 underline underline-offset-2 hover:text-foreground dark:text-sky-400"
+      >
+        Explore →
+      </Link>
+    ) : null
+  const judged =
+    judgement !== undefined
+      ? ` · ${judgement.judgement}${judgement.drop >= 0.5 ? `, −${Math.round(judgement.drop)}%` : ''}`
+      : ''
+  if (match.status === 'user-left') {
+    const book = (match.bookSans ?? []).map((san) => moveNo(ply) + san).join(', ')
+    return (
+      <div className={bannerClass}>
+        <strong>You left your book</strong> at {moveLink}
+        {book && <> (book: {book})</>} — {repertoire.name}
+        {judged}. {explore}
+      </div>
+    )
+  }
+  return (
+    <div className={bannerClass}>
+      <strong>Your opponent left your book</strong> at {moveLink}: no prepared answer here. {explore}
+    </div>
+  )
 }
 
 /** Pattern labels for the user's mistakes and missed chances, by ply. */

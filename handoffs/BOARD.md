@@ -10,7 +10,8 @@
 | T006 | Motif tagging (`motifs.ts`), engine lines stored in analyses, 265 games re-analyzed | Claude | done | T005 |
 | T006b | Patterns on Coach (table + Lichess links), Train `?motif=`, Plan focus/pattern task, review labels | DeepSeek | done | T006, T012 |
 | T007 | Verified repertoire trees for the owner's openings (content for the opening test) | Claude | done | T001 |
-| T008 | Repertoire explorer + where each game left the book (import trees to DB, matcher, `/repertoire`, game banner) | DeepSeek | ready | T003, T007 |
+| T008 | Repertoire explorer + where each game left the book (import trees to DB, matcher, `/repertoire`, game banner) | DeepSeek | done | T003, T007 |
+| T008a | Deviations on the shared root moves in tables + banners (Sicilian, Caro, 3.Bc4…) | DeepSeek | ready | T008 |
 | T009 | Train: puzzles from own mistakes + missed chances, SM-2 spaced repetition, `/train` | Claude spec / DeepSeek | done | T011 |
 | T009b | Opening test: repertoire drills (SRS), registers a plan task | DeepSeek | planned | T007, T012 |
 | T010 | Gap finder + score per line by rating band | DeepSeek | planned | T008 |

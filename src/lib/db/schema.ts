@@ -1,4 +1,4 @@
-import { integer, real, sqliteTable, text, unique } from 'drizzle-orm/sqlite-core'
+import { index, integer, real, sqliteTable, text, unique } from 'drizzle-orm/sqlite-core'
 
 export const platforms = ['lichess', 'chesscom'] as const
 export type Platform = (typeof platforms)[number]
@@ -145,6 +145,78 @@ export const drillReviews = sqliteTable('drill_reviews', {
   grade: text('grade', { enum: grades }).notNull(),
   correct: integer('correct', { mode: 'boolean' }).notNull(),
   reviewedAt: integer('reviewed_at').notNull(),
+})
+
+// The repertoire trees imported from content/repertoire (T008). One row per
+// tree file; `root` is the JSON SAN array where the tree starts.
+export const repertoires = sqliteTable(
+  'repertoires',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    userId: integer('user_id')
+      .notNull()
+      .references(() => users.id),
+    slug: text('slug').notNull(),
+    name: text('name').notNull(),
+    color: text('color', { enum: userColors }).notNull(),
+    root: text('root').notNull(),
+    engine: text('engine').notNull(),
+    generatedAt: integer('generated_at').notNull(),
+    importedAt: integer('imported_at').notNull(),
+  },
+  (t) => [unique('repertoires_userId_slug_unique').on(t.userId, t.slug)],
+)
+
+export const repertoireBy = ['user', 'opponent'] as const
+export type RepertoireBy = (typeof repertoireBy)[number]
+
+// Every position of a repertoire, including the synthesized root-path prefix
+// nodes (eval null). `eval` is the JSON Score (White POV), null when terminal.
+export const repertoireNodes = sqliteTable(
+  'repertoire_nodes',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    repertoireId: integer('repertoire_id')
+      .notNull()
+      .references(() => repertoires.id, { onDelete: 'cascade' }),
+    userId: integer('user_id')
+      .notNull()
+      .references(() => users.id),
+    path: text('path').notNull(),
+    san: text('san').notNull(),
+    by: text('by', { enum: repertoireBy }).notNull(),
+    fen: text('fen').notNull(),
+    fenKey: text('fen_key').notNull(),
+    eval: text('eval'),
+    punish: integer('punish', { mode: 'boolean' }).notNull().default(false),
+    note: text('note'),
+  },
+  (t) => [
+    unique('repertoire_nodes_repertoireId_path_unique').on(t.repertoireId, t.path),
+    index('repertoire_nodes_userId_fenKey_idx').on(t.userId, t.fenKey),
+  ],
+)
+
+export const matchStatuses = ['book-end', 'user-left', 'opponent-left', 'game-ended'] as const
+export type MatchStatus = (typeof matchStatuses)[number]
+
+// The cached book match of one game (T008). `positions` is the JSON array of
+// canonical node ids visited in order (index i = the position after ply i+1);
+// canonical ids change on re-import, so the import clears this table.
+export const gameRepertoire = sqliteTable('game_repertoire', {
+  gameId: integer('game_id')
+    .primaryKey()
+    .references(() => games.id, { onDelete: 'cascade' }),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
+  status: text('status', { enum: matchStatuses }).notNull(),
+  repertoireId: integer('repertoire_id').references(() => repertoires.id, { onDelete: 'set null' }),
+  leftPly: integer('left_ply'),
+  leftSan: text('left_san'),
+  bookSans: text('book_sans'),
+  positions: text('positions').notNull(),
+  computedAt: integer('computed_at').notNull(),
 })
 
 // Plan settings; one row per user, created lazily with defaults on first read.

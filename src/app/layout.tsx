@@ -47,6 +47,9 @@ export default function RootLayout({
             <Link href="/train" className={navLinkClass}>
               Train
             </Link>
+            <Link href="/repertoire" className={navLinkClass}>
+              Repertoire
+            </Link>
             <Link href="/games" className={navLinkClass}>
               Games
             </Link>
