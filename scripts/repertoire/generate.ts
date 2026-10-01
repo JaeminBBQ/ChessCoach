@@ -9,6 +9,7 @@ import { firstMoves } from '../../src/lib/analysis/insights'
 import { ENGINE_ID } from '../../src/lib/engine'
 import { createNodeEngine } from '../../src/lib/engine/node'
 import { buildRepertoire, pathKey, type Frequency, type RepertoireSpec } from '../../src/lib/repertoire/build'
+import { explorerSource } from './explorer'
 
 const SET = process.env.REPERTOIRE_SET ?? 'owner'
 const USER_ID = Number(process.env.REPERTOIRE_USER_ID ?? 1)
@@ -46,6 +47,8 @@ export async function generateShard(shard: number, shards: number): Promise<void
   const specs = JSON.parse(readFileSync(path.join(DIR, 'specs.json'), 'utf8')) as RepertoireSpec[]
   const mine = specs.filter((s, i) => i % shards === shard && (!ONLY || ONLY.includes(s.id)))
   if (mine.length === 0) return
+  const popular = explorerSource()
+  if (!popular) throw new Error('LICHESS_TOKEN is not set (.env): trap mining needs the Lichess explorer')
   const engine = await createNodeEngine()
   mkdirSync(DIR, { recursive: true })
   for (const spec of mine) {
@@ -54,8 +57,12 @@ export async function generateShard(shard: number, shards: number): Promise<void
       engine,
       nodes: NODES,
       frequency: loadFrequencies(spec.color),
-      minFreq: 10,
+      minFreq: 5,
       habitTolerance: 3,
+      popular,
+      minShare: 0.1,
+      maxPopular: 4,
+      trapPlies: 6,
     })
     const out = {
       id: spec.id,

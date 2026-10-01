@@ -1,14 +1,14 @@
 # To Claude
-**Task:** T008 (repertoire-explorer)
+**Task:** T008a (root-deviations)
 **Status:** done
-**Report:** handoffs/reports/T008-report.md
-**Updated:** 2026-09-30 18:40
+**Report:** handoffs/reports/T008a-report.md
+**Updated:** 2026-09-30 19:25
 
 ## In one paragraph
-Imported the repertoire trees into per-user rows (migration 0007, applied to the dev DB after a backup), built the fenKey matcher with transposition support and the lazy per-game match cache, and shipped `/repertoire` (cards, both deviation tables, Never-in-book), the `/repertoire/[slug]?path=…` explorer (book replies with win % and Punish!, off-book here, your games, green arrow board), and the game-page banner with judgement + win-% drop. All acceptance criteria pass: lint/typecheck/294 tests/build clean; two imports give identical counts (5 repertoires, 2,403 nodes); all four URLs 200; cold `/repertoire` 2.11 s (fills all 5,712 matches), warm 0.37 s; the report has the real-data tables and the 5 banner game ids (1539, 1542, 1541, 1545, 2479) for you to verify by hand.
+Root-path deviations now count everywhere: the tables show 1...c5 (232, 55%), 1...c6, 2...d6, (start) 1.e3/1.Nf3 and the strays 3.Bc4 vs 3.c3 (123), 2.Qh5 vs 2.Nf3 (120), with Explore links through the root-prefix nodes and no link for ply-1 rows; the banner shows for these games without a repertoire name (verified on 1540 and 42); "Never in book" collapsed to one line (White 1,714 · Black 540); tables at top 10; and all user-deviation copy now says "strayed" per the owner's choice, with bucket labels extracted into `match.ts` plus a source-string copy test. lint/typecheck/300 tests/build all pass.
 
 ## Needs Claude's attention
-1. `buildBookIndex` takes the repertoire roots as a second argument (needed to compute "past the root path" for `repertoireId`); the spec sketched only `buildBookIndex(nodes)`.
-2. The explorer carries the Coach filter params through its links so its counts match the filtered `/repertoire` view — confirm or drop (spec didn't mention filters there).
-3. Root-only deviations (1.c4 vs the black book, 1...c5 vs the white book) get no banner and land in "Never in book" — confirm that reading.
-4. Real-data findings worth your product eye: opponents play 6.Nc3 in the Englund Qb4+ line 17 times (53% for the user) and 4.Be2/4.d4 after 3...Nc6 in the Two Knights lines; the user themselves habitually varies with 2...Bc5 (162 games, 44%) and 2...Nc6 vs the Petrov move order (107 games, 49%).
+1. I picked up the spec's point 6 (stray wording) — it was added to `handoffs/tasks/T008a-root-deviations.md` after I started; I implemented it as written (table "Where you stray from your book", column "You played vs book", cells "3.Bc4 vs 3.c3", banner "You strayed from your book", card split "strayed").
+2. Counts are over rated games (the established default filter); rated + casual reconciles to your spec numbers (232 + 4 = 236 for 1...c5, 162 + 2 = 164 for 2...Bc5).
+3. I left your in-flight files alone (`build.ts`, `generate.ts`, `scripts/repertoire/explorer.ts`, `.gitignore`) — they're still modified in the working tree alongside my changes, so the commit will mix them; you may want the user to split commits.
+4. Minor: game 6 shows "(book: 3.Nxe5)" for a White 3.Bc4 against the Petrov — book-correct; game 42 is the 3.Bc4-vs-3.c3 example you asked for.

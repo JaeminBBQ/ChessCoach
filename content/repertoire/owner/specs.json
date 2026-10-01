@@ -3,33 +3,59 @@
     "id": "white-ponziani",
     "name": "White: Ponziani (1.e4 e5 2.Nf3 Nc6 3.c3)",
     "color": "white",
-    "root": ["e4", "e5", "Nf3", "Nc6"],
+    "root": [
+      "e4",
+      "e5",
+      "Nf3",
+      "Nc6"
+    ],
     "maxPly": 14,
-    "deeper": { "e4 e5 Nf3 Nc6 c3 d5": 16, "e4 e5 Nf3 Nc6 c3 Nf6 d4 Nxe4": 16 },
-    "prefer": { "e4 e5 Nf3 Nc6": "c3" }
+    "deeper": {
+      "e4 e5 Nf3 Nc6 c3 d5": 16,
+      "e4 e5 Nf3 Nc6 c3 Nf6 d4 Nxe4": 16
+    },
+    "prefer": {
+      "e4 e5 Nf3 Nc6": "c3"
+    }
   },
   {
     "id": "white-vs-petrov-stafford",
     "name": "White: against the Petrov and the Stafford (1.e4 e5 2.Nf3 Nf6)",
     "color": "white",
-    "root": ["e4", "e5", "Nf3", "Nf6"],
+    "root": [
+      "e4",
+      "e5",
+      "Nf3",
+      "Nf6"
+    ],
     "maxPly": 14,
-    "deeper": { "e4 e5 Nf3 Nf6 Nxe5 Nc6 Nxc6 dxc6": 18 },
-    "prefer": { "e4 e5 Nf3 Nf6": "Nxe5" }
+    "deeper": {
+      "e4 e5 Nf3 Nf6 Nxe5 Nc6 Nxc6 dxc6": 18
+    },
+    "prefer": {
+      "e4 e5 Nf3 Nf6": "Nxe5"
+    }
   },
   {
     "id": "white-vs-scandinavian",
     "name": "White: against the Scandinavian (1.e4 d5)",
     "color": "white",
-    "root": ["e4", "d5"],
+    "root": [
+      "e4",
+      "d5"
+    ],
     "maxPly": 12,
-    "prefer": { "e4 d5": "exd5" }
+    "prefer": {
+      "e4 d5": "exd5"
+    }
   },
   {
     "id": "black-vs-e4",
     "name": "Black: 1.e4 e5 with 2...Nf6 (Petrov, Stafford, Traxler) and the other second moves",
     "color": "black",
-    "root": ["e4"],
+    "root": [
+      "e4"
+    ],
     "maxPly": 10,
     "deeper": {
       "e4 e5 Nf3 Nf6": 12,
@@ -56,15 +82,23 @@
     "include": [
       "e4 e5 Nf3 Nf6 Nxe5 Nc6 Nxc6 dxc6 d3 Bc5 Bg5 Nxe4 Bxd8 Bxf2+ Ke2 Bg4#",
       "e4 e5 Nf3 Nf6 Nxe5 Nc6 Nxc6 dxc6 e5 Ne4 d3 Bc5 dxe4 Bxf2+ Ke2 Bg4+"
+    ],
+    "traps": [
+      "e4 e5 Nf3 Nf6 Nxe5 Nc6 Nxc6 dxc6 d3 Bc5 Bg5 Nxe4 Bxd8",
+      "e4 e5 Nf3 Nf6 Nxe5 Nc6 Nxc6 dxc6 e5 Ne4 d3 Bc5 dxe4"
     ]
   },
   {
     "id": "black-englund",
     "name": "Black: Englund Gambit (1.d4 e5)",
     "color": "black",
-    "root": ["d4"],
+    "root": [
+      "d4"
+    ],
     "maxPly": 10,
-    "deeper": { "d4 e5 dxe5 Nc6 Nf3 Qe7 Bf4 Qb4+ Bd2 Qxb2 Bc3 Bb4": 18 },
+    "deeper": {
+      "d4 e5 dxe5 Nc6 Nf3 Qe7 Bf4 Qb4+ Bd2 Qxb2 Bc3 Bb4": 18
+    },
     "prefer": {
       "d4": "e5",
       "d4 e5 dxe5": "Nc6",
@@ -75,6 +109,11 @@
       "d4 e5 dxe5 Nc6 Nf3 Qe7 Bf4 Qb4+ Bd2 Qxb2 Bc3 Bb4 Qd2": "Bxc3",
       "d4 e5 dxe5 Nc6 Nf3 Qe7 Bf4 Qb4+ Bd2 Qxb2 Bc3 Bb4 Qd2 Bxc3 Qxc3": "Qc1#"
     },
-    "include": ["d4 e5 dxe5 Nc6 Nf3 Qe7 Bf4 Qb4+ Bd2 Qxb2 Bc3 Bb4 Qd2 Bxc3 Qxc3 Qc1#"]
+    "include": [
+      "d4 e5 dxe5 Nc6 Nf3 Qe7 Bf4 Qb4+ Bd2 Qxb2 Bc3 Bb4 Qd2 Bxc3 Qxc3 Qc1#"
+    ],
+    "traps": [
+      "d4 e5 dxe5 Nc6 Nf3 Qe7 Bf4 Qb4+ Bd2 Qxb2 Bc3 Bb4 Qd2 Bxc3 Qxc3"
+    ]
   }
 ]

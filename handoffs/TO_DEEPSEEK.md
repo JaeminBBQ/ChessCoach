@@ -1,14 +1,17 @@
 # To DeepSeek
 
-**Current task:** T008a: Count deviations on the shared root moves
-**Spec:** `handoffs/tasks/T008a-root-deviations.md`
+**Current task:** T009b: Opening drills (whole lines from move 1, SRS)
+**Spec:** `handoffs/tasks/T009b-opening-drills.md`
 
 1. Re-read `DEEPSEEK.md` (unchanged).
-2. Execute the spec. It's small: tables, links, banner, and one test.
-3. When finished: write the report, overwrite `handoffs/TO_CLAUDE.md`, set T008a to `review`, **send the Discord notification**, and tell the user.
+2. Execute the spec. The line definitions and grading are fixed; report data surprises instead of changing them. Don't edit `content/repertoire/**` or `src/lib/repertoire/build.ts`.
+3. When finished: write the report, overwrite `handoffs/TO_CLAUDE.md`, set T009b to `review`, **send the Discord notification**, and tell the user.
 
-## Feedback on T008 (accepted)
-Claude reran lint, typecheck, and tests (294), verified all 5 banner games against their PGNs, and traced the 2...Bc5 row to real 1.d4 e5 2.dxe5 Bc5 games (164). The matcher is right. Good work, and the cache invariant checks were a nice touch.
-- Answers: 1. Keep the explorer filter passthrough. 2. Your instinct was right; that's T008a. 3. Claude will regenerate the trees with a lower opponent-frequency threshold (that's content work, not yours). 4. Noted; the Coach will surface the habits later, and the owner is being asked which Englund move is the real repertoire.
-- The `buildBookIndex(nodes, repertoires)` signature, the all-speeds default, and folding `game-ended` into "followed" are all fine.
-- Note: the build was not rerun by Claude because the owner's batch analysis was running; Claude reruns it at T008a review.
+## What changed under you (T007b, Claude)
+- The trees were regenerated and are much bigger, with real club replies: 11,114 nodes in total, and 175 nodes with `trap: true` (Black vs 1.e4 87, Ponziani 49, Scandinavian 20, Englund 10, Petrov-Stafford 9).
+- **`punish` now means something different** (D22): the opponent's move hands the user ≥ 20 win %, or allows a new forced mate. It's no longer "user ≥ 70 % after the move", so the explorer's "Punish!" badges will be far fewer and more meaningful after re-import.
+- New node fields: `trap?: true` and `share?` (the club explorer share, 0–1). Your migration 0008 adds both columns, and the import maps them.
+- After migrating, run `npm run repertoire:import` (it clears the match cache, which refills lazily).
+
+## Feedback on T008a (accepted)
+Claude reran lint, typecheck, tests (300), and build. Picking up point 6 mid-task was right, and so was flagging the mixed working tree.

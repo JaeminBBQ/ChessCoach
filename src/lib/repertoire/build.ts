@@ -28,6 +28,11 @@ export interface RepertoireSpec {
   notes?: Record<string, string>
   /** Lines to always include (space-separated SAN from the start), e.g. traps opponents rarely fall into. */
   include?: string[]
+  /**
+   * Hand-picked trap moves: the path to the opponent move that springs the
+   * trap. Always flagged `punish` + `trap`, whatever the eval jump.
+   */
+  traps?: string[]
 }
 
 export interface Frequency {
@@ -46,8 +51,19 @@ export interface RepertoireNode {
   eval: Score | null
   /** How often the user reached this position, from their own games. */
   freq: Frequency | null
-  /** For opponent moves that are clear mistakes (user win % ≥ 70 after it). */
+  /**
+   * For opponent moves that are clear mistakes: the move hands the user at
+   * least PUNISH_JUMP win % points and leaves the user at ≥ PUNISH_MIN win %.
+   */
   punish?: boolean
+  /**
+   * A trap: a `punish` move that people actually play (club-level explorer
+   * share ≥ `trapShare`, or seen ≥ `trapFreq` times in the user's games, or on
+   * an `include` line). Its refutation is spelled out `trapPlies` past the limit.
+   */
+  trap?: boolean
+  /** Share of club-level games choosing this opponent move at its position (0–1), when known. */
+  share?: number
   note?: string
 }
 
@@ -63,17 +79,35 @@ export interface BuildOptions {
   minFreq: number
   /** Keep the user's habitual move if it's within this many win % points of the engine's best. */
   habitTolerance: number
+  /**
+   * Human move choices at a position (e.g. the Lichess explorer at club
+   * ratings): SAN + share of games (0–1). Optional; without it only the
+   * engine and the user's own games pick opponent replies.
+   */
+  popular?: (fen: string) => Promise<{ san: string; share: number }[]>
+  /** Popular opponent replies with at least this share are included (default 0.1). */
+  minShare?: number
+  /** At most this many popular replies per position (default 4). */
+  maxPopular?: number
+  /** Plies of refutation added past a trap, following the engine's best line (default 0 = off). */
+  trapPlies?: number
+  /** Explorer share that makes a punishable move a trap (default 0.05). */
+  trapShare?: number
+  /** Own-games count that makes a punishable move a trap (default 3). */
+  trapFreq?: number
 }
+
+/** An opponent move is punishable when it gives the user ≥ 20 win % points... */
+export const PUNISH_JUMP = 20
+/** ...and leaves the user at ≥ 60 win %. */
+export const PUNISH_MIN = 60
 
 export async function buildRepertoire(spec: RepertoireSpec, opts: BuildOptions): Promise<RepertoireNode[]> {
   const nodes: RepertoireNode[] = []
   const start = new Chess()
   for (const san of spec.root) start.move(san)
   const userColor = spec.color === 'white' ? 'w' : 'b'
-  await expand(spec.root, start.fen(), null)
-  for (const n of nodes) {
-    if (n.by === 'opponent' && n.eval && userWinPercent(n.eval, userColor) >= 70) n.punish = true
-  }
+  await expand(spec.root, start.fen(), null, 0, null)
   return nodes
 
   /**
@@ -81,23 +115,47 @@ export async function buildRepertoire(spec: RepertoireSpec, opts: BuildOptions):
    * (`owner`) and the source of the next moves. Positions past the depth limit
    * are analyzed only for the eval.
    */
-  async function expand(path: string[], fen: string, owner: RepertoireNode | null): Promise<void> {
+  /** `before` is the eval (White POV) of the position before `owner`'s move. */
+  async function expand(
+    path: string[],
+    fen: string,
+    owner: RepertoireNode | null,
+    extendTo: number,
+    before: Score | null,
+  ): Promise<void> {
     const key = path.join(' ')
     const chess = new Chess(fen)
     if (chess.isGameOver()) return
     const side = chess.turn()
     const atLimit = path.length >= limitFor(spec, key)
     const lines = await opts.engine.analyze(fen, { nodes: opts.nodes, multiPv: atLimit ? 1 : 3 })
-    if (owner && lines[0]) owner.eval = toWhitePov(lines[0].score, side)
-    // Past the depth limit, only `include` lines continue (one move each, no branching).
-    const onLine = atLimit ? includeNext(spec.include ?? [], key) : []
-    if ((atLimit && onLine.length === 0) || lines.length === 0) return
+    const here = lines[0] ? toWhitePov(lines[0].score, side) : null
+    if (owner) owner.eval = here
+    const named = owner !== null && (spec.traps ?? []).some((t) => pathKey(t) === pathKey(owner.path))
+    if (owner && owner.by === 'opponent' && (named || isPunishable(before, here, userColor))) {
+      owner.punish = true
+      if (isPopular(owner, spec, opts)) {
+        owner.trap = true
+        extendTo = Math.max(extendTo, path.length + (opts.trapPlies ?? 0))
+      }
+    }
+    if (lines.length === 0) return
 
-    const moves = atLimit
-      ? onLine
-      : side === userColor
-        ? [spec.prefer?.[key] ?? chooseUserMove(fen, key, lines, side, opts)]
-        : opponentReplies(fen, key, lines, opts, spec.include ?? [])
+    let moves: string[]
+    let shares = new Map<string, number>()
+    if (atLimit) {
+      // Past the depth limit, only `include` lines and trap refutations continue
+      // (one move each, no branching): the refutation follows the engine's best.
+      const next = new Set(includeNext(spec.include ?? [], key))
+      if (path.length < extendTo) next.add(spec.prefer?.[key] ?? sanOf(fen, lines[0].pv[0]))
+      moves = [...next]
+      if (moves.length === 0) return
+    } else if (side === userColor) {
+      moves = [spec.prefer?.[key] ?? chooseUserMove(fen, key, lines, side, opts)]
+    } else {
+      shares = await popularShares(fen, opts)
+      moves = opponentReplies(fen, key, lines, opts, spec.include ?? [], shares)
+    }
     for (const san of moves) {
       const child = play(fen, san)
       const full = [...path, child.san]
@@ -109,10 +167,12 @@ export async function buildRepertoire(spec: RepertoireSpec, opts: BuildOptions):
         eval: null,
         freq: opts.frequency(full.join(' ')),
       }
+      const share = shares.get(child.san)
+      if (share !== undefined) n.share = share
       const note = spec.notes?.[n.path]
       if (note) n.note = note
       nodes.push(n)
-      await expand(full, child.fen, n)
+      await expand(full, child.fen, n, extendTo, here)
     }
   }
 }
@@ -169,11 +229,62 @@ function chooseUserMove(fen: string, key: string, lines: EngineLine[], side: 'w'
 }
 
 /**
- * Opponent replies: the engine's top 2, any legal move the user's opponents
- * played at least `minFreq` times, and moves on `include` lines.
+ * The opponent's move handed the user ≥ PUNISH_JUMP win % and left them at
+ * ≥ PUNISH_MIN, or it allowed a forced mate that wasn't there before (the
+ * classic trap ending, e.g. the Englund's 8.Qxc3?? Qc1#, even when the user
+ * was already winning).
  */
-function opponentReplies(fen: string, key: string, lines: EngineLine[], opts: BuildOptions, include: string[]): string[] {
+export function isPunishable(before: Score | null, after: Score | null, userColor: 'w' | 'b'): boolean {
+  if (!before || !after) return false
+  const userMates = (s: Score) => s.type === 'mate' && (userColor === 'w' ? s.value > 0 : s.value < 0)
+  if (userMates(after) && !userMates(before)) return true
+  const won = userWinPercent(after, userColor)
+  return won >= PUNISH_MIN && won - userWinPercent(before, userColor) >= PUNISH_JUMP
+}
+
+/** People actually play it: club explorer share, the user's own opponents, or an `include` line. */
+function isPopular(node: RepertoireNode, spec: RepertoireSpec, opts: BuildOptions): boolean {
+  if ((spec.traps ?? []).some((t) => pathKey(t) === pathKey(node.path))) return true
+  if ((node.share ?? 0) >= (opts.trapShare ?? 0.05)) return true
+  if ((node.freq?.n ?? 0) >= (opts.trapFreq ?? 3)) return true
+  const k = pathKey(node.path)
+  return (spec.include ?? []).some((line) => {
+    const l = pathKey(line)
+    return l === k || l.startsWith(k + ' ')
+  })
+}
+
+/** Popular human moves at `fen` (SAN → share), legal ones only, at least `minShare`, top `maxPopular`. */
+async function popularShares(fen: string, opts: BuildOptions): Promise<Map<string, number>> {
+  const shares = new Map<string, number>()
+  if (!opts.popular) return shares
+  const legal = new Set(legalSans(fen))
+  const ranked = (await opts.popular(fen)).filter((m) => legal.has(m.san)).sort((a, b) => b.share - a.share)
+  for (const m of ranked) shares.set(m.san, m.share)
+  return shares
+}
+
+/**
+ * Opponent replies: the engine's top 2, any legal move the user's opponents
+ * played at least `minFreq` times, popular human moves (share ≥ `minShare`,
+ * top `maxPopular`), and moves on `include` lines.
+ */
+function opponentReplies(
+  fen: string,
+  key: string,
+  lines: EngineLine[],
+  opts: BuildOptions,
+  include: string[],
+  shares: ReadonlyMap<string, number>,
+): string[] {
   const replies = new Set<string>(lines.slice(0, 2).map((l) => sanOf(fen, l.pv[0])))
+  const minShare = opts.minShare ?? 0.1
+  let popular = 0
+  for (const [san, share] of shares) {
+    if (share < minShare || popular >= (opts.maxPopular ?? 4)) break
+    replies.add(san)
+    popular++
+  }
   for (const san of legalSans(fen)) {
     const path = key ? `${key} ${san}` : san
     const f = opts.frequency(path)

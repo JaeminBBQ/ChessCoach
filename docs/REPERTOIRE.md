@@ -56,3 +56,16 @@ Files: `content/repertoire/owner/*.json`, generated from `specs.json` by `npm ru
 - **Trees:** Ponziani 461 nodes · vs Petrov/Stafford 211 · vs Scandinavian 285 · Black vs 1.e4 1,095 · Englund 339.
 - **Checks done:** every `prefer`/`include` line is present, with evals; the only user moves that cost more than 8 win % are the deliberate gambit choices (3...Nc6 Stafford +1.72, 5...Ne4 vs 5.e5 +2.28, 4...Bc5 Traxler +0.97). Traps verified: Stafford 5.d3 Bc5 6.Bg5? Nxe4! 7.Bxd8?? Bxf2+ 8.Ke2 Bg4#; Stafford 5.e5 Ne4 6.d3 Bc5 7.dxe4?? Bxf2+ 8.Ke2 Bg4+ (wins the queen); Englund 4.Bf4 Qb4+ 5.Bd2 Qxb2 6.Bc3? (−5.2) Bb4 7.Qd2 Bxc3 8.Qxc3?? Qc1#, with 8.Nxc3 as White's correct reply in the tree.
 - **Not yet:** coaching notes per position (`notes`), which the opening test (T009b) and the explorer (T008) will show. These get written against these trees, not from memory.
+
+## Trap mining (T007b, 2026-09-30)
+The owner's choice: the book is the trap repertoire, and their habits (Englund 2...Bc5, 3.Bc4, 2.Qh5) are **strays** to drill away. The trees were regenerated to cover the traps they will actually meet:
+- **Opponent replies** are the engine's top 2, plus anything the owner's opponents played ≥ 5 times, plus **club moves**: the Lichess explorer (lichess games, 1000–1600, blitz + rapid) moves with ≥ 10 % share (top 4). The explorer is queried with the owner's token (`LICHESS_TOKEN` in `.env`), serialized across shards, and cached forever in `content/repertoire/explorer-cache.json` (2,291 positions).
+- **`punish`** (changed): the opponent's move hands the user ≥ 20 win % points and leaves them at ≥ 60 %, **or** it allows a forced mate that wasn't there before. It used to mean "user ≥ 70 % after it", which flagged every reply once the user was already better.
+- **`trap`** = `punish` + people play it (explorer share ≥ 5 %, own opponents ≥ 3 times, on an `include` line, or named in the spec's `traps`). A trap's refutation is spelled out 6 plies past the depth limit along the engine's best line.
+- **Named traps** (`traps` in `specs.json`): Englund 8.Qxc3?? Qc1#; Stafford 7.Bxd8?? Bxf2+ 8.Ke2 Bg4# and 7.dxe4?? Bxf2+.
+- **Result:** Ponziani 2,730 nodes / 49 traps · vs Petrov-Stafford 976 / 9 · vs Scandinavian 1,230 / 20 · Black vs 1.e4 5,113 / 87 · Englund 1,065 / 10. About 1 h 50 min of generation.
+- **Spot-checked against known theory:**
+  - Ponziani: 8...Qxd4?? 9.Bxc6+ (club choice 73 %); ...Bxf3?? Bxf7+ Kd7 Qe6#.
+  - Englund: 2.Bf4?? exf4 (17 of the owner's games); 5.c3? Qxf4; 6.Bc3?.
+  - Stafford: 5.f3 Be6 6.c3 Nxe4 7.fxe4?? Qh4+.
+  - Traxler: 7.Ke3 Qh4 8.Nxh8??; 6.Bd5 d6 7.Nf7 Qf8 8.Nxh8?? Bxf2+.

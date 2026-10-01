@@ -10,10 +10,11 @@
 | T006 | Motif tagging (`motifs.ts`), engine lines stored in analyses, 265 games re-analyzed | Claude | done | T005 |
 | T006b | Patterns on Coach (table + Lichess links), Train `?motif=`, Plan focus/pattern task, review labels | DeepSeek | done | T006, T012 |
 | T007 | Verified repertoire trees for the owner's openings (content for the opening test) | Claude | done | T001 |
+| T007b | Trap mining: Lichess explorer (club ratings) + own games pick opponent replies; traps flagged and refutations spelled out 6 plies | Claude | done | T007, T008 |
 | T008 | Repertoire explorer + where each game left the book (import trees to DB, matcher, `/repertoire`, game banner) | DeepSeek | done | T003, T007 |
-| T008a | Deviations on the shared root moves in tables + banners (Sicilian, Caro, 3.Bc4…) | DeepSeek | ready | T008 |
+| T008a | Deviations on the shared root moves in tables + banners (Sicilian, Caro, 3.Bc4…) | DeepSeek | done | T008 |
 | T009 | Train: puzzles from own mistakes + missed chances, SM-2 spaced repetition, `/train` | Claude spec / DeepSeek | done | T011 |
-| T009b | Opening test: repertoire drills (SRS), registers a plan task | DeepSeek | planned | T007, T012 |
+| T009b | Opening drills: whole lines from move 1 (trap / stray fix / main), SRS, plan task, stray metric | DeepSeek | ready | T007b, T008a |
 | T010 | Gap finder + score per line by rating band | DeepSeek | planned | T008 |
 | T015 | Insights v0: openings by moves, terminations, rating bands, sessions/tilt, rating trend | DeepSeek | done | T003 |
 | T020 | Polish: show `queued` while a sync waits on the platform lock | DeepSeek | planned | T003 |
