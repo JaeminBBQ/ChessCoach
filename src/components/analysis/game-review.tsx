@@ -14,6 +14,8 @@ export interface GameReviewProps {
   userColor: 'white' | 'black'
   /** The ply to open on (deep links); clamped to the game's range. */
   initialPly?: number
+  /** Pattern labels for the user's mistakes and missed chances, by ply. */
+  motifLabels?: ReadonlyMap<number, string>
   /** Called once when every key moment has been visited, or the last ply when there are none. */
   onReviewComplete?: () => void
 }
@@ -39,7 +41,7 @@ function round(value: number | null): string {
 }
 
 /** Interactive review: board, navigation, move list, eval graph, and key moments. */
-export default function GameReview({ plies, judgements, series, moments, userColor, initialPly = 0, onReviewComplete }: GameReviewProps) {
+export default function GameReview({ plies, judgements, series, moments, userColor, initialPly = 0, motifLabels, onReviewComplete }: GameReviewProps) {
   const maxPly = plies.length - 1
   const [selectedPly, setSelectedPly] = useState(() => Math.min(Math.max(0, initialPly), maxPly))
   const judgementByPly = useMemo(() => new Map(judgements.map((j) => [j.ply, j])), [judgements])
@@ -154,13 +156,13 @@ export default function GameReview({ plies, judgements, series, moments, userCol
           </span>
         </div>
 
-        <CurrentMovePanel position={position} judgement={judgement} userColor={userColor} />
+        <CurrentMovePanel position={position} judgement={judgement} userColor={userColor} motifLabels={motifLabels} />
 
         <EvalGraph series={series} judgements={judgements} userColor={userColor} selectedPly={selectedPly} onSelect={setSelectedPly} />
 
         <MoveList plies={plies} judgements={judgements} selectedPly={selectedPly} onSelect={setSelectedPly} />
 
-        <KeyMoments moments={moments} onSelect={setSelectedPly} />
+        <KeyMoments moments={moments} onSelect={setSelectedPly} motifLabels={motifLabels} />
       </div>
     </div>
   )
@@ -170,10 +172,12 @@ function CurrentMovePanel({
   position,
   judgement,
   userColor,
+  motifLabels,
 }: {
   position: PlyAnalysis
   judgement: MoveJudgement | undefined
   userColor: 'white' | 'black'
+  motifLabels?: ReadonlyMap<number, string>
 }) {
   if (position.ply === 0) {
     return (
@@ -184,6 +188,7 @@ function CurrentMovePanel({
   }
   const terminal = position.terminal === 'checkmate' ? 'Checkmate' : position.terminal === 'stalemate' ? 'Stalemate' : null
   const label = judgement ? (judgement.color === userColor ? 'You played' : 'Opponent played') : 'Move'
+  const motif = judgement !== undefined ? motifLabels?.get(position.ply) : undefined
   return (
     <div className="rounded-lg border border-black/10 p-3 dark:border-white/10">
       <div className="text-xs uppercase tracking-wide text-zinc-500 dark:text-zinc-400">{label}</div>
@@ -201,6 +206,7 @@ function CurrentMovePanel({
             </span>
           )
         )}
+        {motif !== undefined && <span className="ml-2 text-zinc-500 dark:text-zinc-400">· {motif}</span>}
       </div>
       {judgement && (
         <div className="mt-1 text-xs text-zinc-600 tabular-nums dark:text-zinc-300">
@@ -400,7 +406,15 @@ function MoveList({
   )
 }
 
-function KeyMoments({ moments, onSelect }: { moments: KeyMoment[]; onSelect: (ply: number) => void }) {
+function KeyMoments({
+  moments,
+  onSelect,
+  motifLabels,
+}: {
+  moments: KeyMoment[]
+  onSelect: (ply: number) => void
+  motifLabels?: ReadonlyMap<number, string>
+}) {
   return (
     <div className="rounded-lg border border-black/10 dark:border-white/10">
       <div className="border-b border-black/10 px-3 py-2 text-xs uppercase tracking-wide text-zinc-500 dark:border-white/10 dark:text-zinc-400">
@@ -435,6 +449,7 @@ function KeyMoments({ moments, onSelect }: { moments: KeyMoment[]; onSelect: (pl
                   {' '}
                   — win chance {round(moment.winBefore)}% → {round(moment.winAfter)}%
                   {moment.bestSan && ` · Best was ${moment.bestSan}`}
+                  {motifLabels?.get(moment.ply) && ` · ${motifLabels.get(moment.ply)}`}
                 </span>
               </button>
             </li>

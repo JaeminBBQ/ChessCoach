@@ -1,7 +1,10 @@
-import { classifyMoves, positionWin } from '../analysis/classify'
+import { classifyMoves } from '../analysis/classify'
+import { winningPeak } from '../analysis/coach'
 import type { GameAnalysis } from '../analysis/game-analysis'
+import type { Motif } from '../analysis/motifs'
+import type { TopPattern } from '../analysis/patterns'
 import { speeds, type Result, type Speed } from '../db/schema'
-import { buildPlan } from './plan'
+import { buildPlan, patternFocusMetric } from './plan'
 import type { PlanSettings } from './types'
 import { weekRange, lastNWeeks } from './week'
 
@@ -22,6 +25,12 @@ export interface WeeklyMetricsArgs {
   reviews: { gameId: number; reviewedAt: number }[]
   drillReviews: { reviewedAt: number }[]
   settings: PlanSettings
+  /** The current focus's top pattern (finding id + motif), for the pattern column. */
+  pattern: { focusId: string; motif: Motif } | null
+  /** Each week's stored plan pattern, for that week's manual task in the x/y count. */
+  plans: { weekStart: number; pattern: TopPattern | null }[]
+  /** Manual Done checks, per week. */
+  taskChecks: { weekStart: number; taskId: string }[]
 }
 
 export interface WeekRow {
@@ -43,6 +52,8 @@ export interface WeekRow {
   missedPerGame: number | null
   /** Share of winning positions (win % ≥ 85) not won; null when none reached. */
   conversionPct: number | null
+  /** The focus's top pattern per analyzed game; null when there is none. */
+  patternPerGame: number | null
   puzzlesSolved: number
   reviewsDone: number
   tasksDone: number
@@ -107,7 +118,7 @@ function rowForWeek(
       const previous = byPly.get(j.ply - 1)
       if (previous !== undefined && previous.drop >= 20 && j.judgement !== 'best' && j.drop >= 10) missed++
     }
-    if (reachedWinning(game, analysisByGame.get(game.id)!)) {
+    if (winningPeak(analysisByGame.get(game.id)!, game.userColor) !== null) {
       winningReached++
       if (game.result !== 'win') winningNotWon++
     }
@@ -117,7 +128,9 @@ function rowForWeek(
   const reviewsDone = args.reviews.filter((r) => r.reviewedAt >= start && r.reviewedAt < end).length
 
   // Task completion for this week, as buildPlan would show it: the review
-  // task counts only reviews made before the week ended.
+  // task counts only reviews made before the week ended, the manual Lichess
+  // task comes from that week's stored plan pattern and its Done check.
+  const weekPattern = args.plans.find((entry) => entry.weekStart === weekStart)?.pattern ?? null
   const plan = buildPlan({
     settings: args.settings,
     weekGames,
@@ -131,6 +144,10 @@ function rowForWeek(
     ),
     drillReviews: puzzlesSolved,
     focus: null,
+    pattern: weekPattern,
+    manualChecks: new Set(
+      args.taskChecks.filter((check) => check.weekStart === weekStart).map((check) => check.taskId),
+    ),
   })
 
   return {
@@ -146,6 +163,17 @@ function rowForWeek(
     mistakesPerGame: analyzedGames.length === 0 ? null : mistakes / analyzedGames.length,
     missedPerGame: analyzedGames.length === 0 ? null : missed / analyzedGames.length,
     conversionPct: winningReached === 0 ? null : (winningNotWon / winningReached) * 100,
+    patternPerGame:
+      args.pattern === null
+        ? null
+        : patternFocusMetric(
+            args.pattern.focusId,
+            args.pattern.motif,
+            analyzedGames.map((game) => ({
+              userColor: game.userColor,
+              analysis: analysisByGame.get(game.id)!,
+            })),
+          )?.value ?? null,
     puzzlesSolved,
     reviewsDone,
     tasksDone: plan.tasks.filter((task) => task.complete).length,
@@ -161,16 +189,4 @@ function ratingAtEnd(games: MetricGame[], speed: Speed, end: number): number | n
     if (best === undefined || game.playedAt > best.playedAt) best = game
   }
   return best?.userRating ?? null
-}
-
-/** The game reached a winning position (user win % ≥ 85 after ply 10, not terminal). */
-function reachedWinning(game: MetricGame, analysis: GameAnalysis): boolean {
-  for (let ply = 11; ply < analysis.plies.length; ply++) {
-    if (analysis.plies[ply].terminal !== null) continue
-    const white = positionWin(analysis.plies[ply])
-    if (white === null) continue
-    const win = game.userColor === 'white' ? white : 100 - white
-    if (win >= 85) return true
-  }
-  return false
 }

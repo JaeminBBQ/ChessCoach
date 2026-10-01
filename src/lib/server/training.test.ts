@@ -6,7 +6,7 @@ import { winPercent } from '../analysis/classify'
 import type { GameAnalysis, PlyAnalysis } from '../analysis/game-analysis'
 import type { Score } from '../engine/uci'
 import { analyses, drillCards, drillReviews, games, linkedAccounts, users } from '../db/schema'
-import { newCardsToday, reviewCard, syncDrillCards, trainingQueue, trainingStats } from './training'
+import { motifCardCounts, newCardsToday, reviewCard, syncDrillCards, trainingQueue, trainingStats } from './training'
 
 const DAY = 24 * 60 * 60 * 1000
 // 12:00 UTC — safely mid-day in any likely local timezone, so "since local
@@ -241,5 +241,48 @@ describe('trainingStats', () => {
       accuracy7d: 50,
       nextDue: NOW + 3 * DAY,
     })
+  })
+})
+
+describe('motifs', () => {
+  it('stores the motif on new cards and backfills nulls, idempotently', () => {
+    const good = insertGame()
+    insertAnalysis(userId, good, passingAnalysis())
+    syncDrillCards(db, userId, NOW)
+    const card = db.select().from(drillCards).where(eq(drillCards.userId, userId)).get()!
+    expect(card.motif).toBe('other')
+
+    // A legacy card without a motif gets it from the stored analysis.
+    db.update(drillCards).set({ motif: null }).where(eq(drillCards.id, card.id)).run()
+    expect(syncDrillCards(db, userId, NOW)).toBe(0) // backfill only, no new cards
+    expect(db.select().from(drillCards).where(eq(drillCards.id, card.id)).get()!.motif).toBe('other')
+
+    // Idempotent: running again rewrites nothing and adds nothing.
+    db.update(drillCards).set({ motif: null }).where(eq(drillCards.id, card.id)).run()
+    syncDrillCards(db, userId, NOW)
+    expect(db.select().from(drillCards).where(eq(drillCards.id, card.id)).get()!.motif).toBe('other')
+    expect(db.select().from(drillCards).where(eq(drillCards.userId, userId)).all()).toHaveLength(1)
+  })
+
+  it('filters the queue by motif with the same due/new rules', () => {
+    const good = insertGame()
+    insertAnalysis(userId, good, passingAnalysis())
+    syncDrillCards(db, userId, NOW) // motif 'other'
+    const hanging = insertCard(insertGame(), { motif: 'hangingPiece' })
+
+    // Both are new; newest game first.
+    expect(trainingQueue(db, userId, NOW, 0).map((c) => c.id)).toEqual([hanging, db.select().from(drillCards).where(eq(drillCards.motif, 'other')).get()!.id])
+    expect(trainingQueue(db, userId, NOW, 0, 'hangingPiece').map((c) => c.id)).toEqual([hanging])
+    expect(trainingQueue(db, userId, NOW, 0, 'fork')).toEqual([])
+    // The new-per-day cap still applies inside the filter.
+    expect(trainingQueue(db, userId, NOW, 10, 'hangingPiece')).toEqual([])
+  })
+
+  it('counts cards per motif for the coach links', () => {
+    insertCard(insertGame(), { motif: 'hangingPiece' })
+    insertCard(insertGame(), { motif: 'hangingPiece' })
+    insertCard(insertGame(), { motif: 'fork' })
+    insertCard(insertGame()) // null motif → excluded
+    expect(motifCardCounts(db, userId)).toEqual(new Map([['hangingPiece', 2], ['fork', 1]]))
   })
 })

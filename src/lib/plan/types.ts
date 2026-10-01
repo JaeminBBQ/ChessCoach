@@ -1,3 +1,4 @@
+import type { TopPattern } from '../analysis/patterns'
 import type { Result, Speed } from '../db/schema'
 
 // Types shared by the plan builder, the task providers, and the scorecard.
@@ -28,6 +29,8 @@ export interface PlanTask {
   links: { href: string; label: string }[]
   /** done >= target. */
   complete: boolean
+  /** Manual tasks (the only one so far: Lichess puzzles) complete via a Done toggle. */
+  manual?: boolean
 }
 
 export interface FocusInfo {
@@ -48,6 +51,10 @@ export interface PlanActivity {
   /** Drill reviews this week. */
   drillReviews: number
   focus: FocusInfo | null
+  /** The focus's top pattern, when the focus is mistakes-* or missed-chances. */
+  pattern: TopPattern | null
+  /** Task ids whose manual Done toggle is checked this week. */
+  manualChecks: ReadonlySet<string>
 }
 
 /** A task provider returns its task, or null when it should not be shown. `buildPlan` computes `complete`. */

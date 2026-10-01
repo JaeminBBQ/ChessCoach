@@ -11,6 +11,7 @@ import {
   focusTrendSentence,
   FOCUS_MIN_ANALYZED,
   formatMetric,
+  patternFocusMetric,
   pickFocus,
   type FocusMetric,
 } from './plan'
@@ -100,6 +101,8 @@ describe('buildPlan tasks', () => {
     reviewedIds: new Set(),
     drillReviews: 0,
     focus: { id: 'mistakes-middlegame', title: 'Mistakes in the middlegame', habit: 'blunder check' },
+    pattern: null,
+    manualChecks: new Set(),
   }
 
   it('play task counts this week’s games at the plan speed', () => {
@@ -197,10 +200,44 @@ describe('buildPlan tasks', () => {
   })
 
   it('registry: the built-in providers run in order and the focus passes through', () => {
-    expect(taskProviders).toHaveLength(4)
+    expect(taskProviders).toHaveLength(5)
     const plan = buildPlan({ ...baseActivity, weekGames: [{ id: 1, playedAt: NOW, speed: 'rapid', result: 'win', opponentName: null }] })
     expect(plan.tasks.map((task) => task.id)).toEqual(['play', 'review-losses', 'train', 'analyze'])
     expect(plan.focus).toEqual(baseActivity.focus)
+  })
+
+  it('lichess puzzle task: manual Done toggle, only when the focus has a pattern with a theme', () => {
+    // Without a pattern the task is not shown.
+    expect(buildPlan(baseActivity).tasks.map((task) => task.id)).not.toContain('lichess-theme-puzzles')
+
+    const withPattern = buildPlan({
+      ...baseActivity,
+      pattern: {
+        motif: 'hangingPiece',
+        label: 'Left a piece hanging',
+        count: 20,
+        theme: 'hangingPiece',
+        themeUrl: 'https://lichess.org/training/hangingPiece',
+      },
+    })
+    const task = withPattern.tasks.find((t) => t.id === 'lichess-theme-puzzles')!
+    expect(task).toMatchObject({
+      title: 'Do 15 hanging piece puzzles on Lichess',
+      target: 15,
+      done: 0,
+      unit: 'puzzles',
+      manual: true,
+      links: [{ href: 'https://lichess.org/training/hangingPiece', label: 'Lichess theme' }],
+      complete: false,
+    })
+
+    // The Done check (not the puzzle count) completes it.
+    const checked = buildPlan({
+      ...baseActivity,
+      pattern: { motif: 'hangingPiece', label: 'Left a piece hanging', count: 20, theme: 'hangingPiece', themeUrl: 'https://lichess.org/training/hangingPiece' },
+      manualChecks: new Set(['lichess-theme-puzzles']),
+    })
+    expect(checked.tasks.find((t) => t.id === 'lichess-theme-puzzles')).toMatchObject({ done: 1, complete: true })
   })
 })
 
@@ -321,6 +358,19 @@ describe('focusMetric', () => {
 
   it('returns null when no game in the sample has an analysis', () => {
     expect(focusMetric('mistakes-opening', [coachGame()])).toBeNull()
+  })
+
+  it('patternFocusMetric: the focus pattern per analyzed game', () => {
+    const game = coachGame()
+    game.analysis = withUserMistake(quietAnalysis(4), 1) // mistake at ply 1, motif 'other'
+    const metric = patternFocusMetric('mistakes-opening', 'other', [game])!
+    expect(metric.label).toBe('Other mistakes/game')
+    expect(metric.value).toBe(1)
+    expect(metric.sample).toBe(1)
+    // A different motif has nothing to count.
+    expect(patternFocusMetric('mistakes-opening', 'hangingPiece', [game])!.value).toBe(0)
+    // No analysis → null.
+    expect(patternFocusMetric('mistakes-opening', 'other', [coachGame()])).toBeNull()
   })
 
   it('focusMetricForWeek restricts to games played inside the week', () => {

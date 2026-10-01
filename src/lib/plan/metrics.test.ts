@@ -70,6 +70,9 @@ function analysisWithMissedChance(): GameAnalysis {
 
 const settings: PlanSettings = { timezone: TZ, weeklyGames: 5, planSpeed: 'rapid', puzzlesPerWeek: 50 }
 
+/** The new pattern/plans/taskChecks args, empty for the base fixtures. */
+const NO_PATTERN_ARGS = { pattern: null, plans: [], taskChecks: [] }
+
 // The week anchors (Monday 00:00 UTC): Oct 26 is the newest row.
 const W_OCT26 = 1_792_972_800_000
 const W_OCT19 = W_OCT26 - 7 * DAY
@@ -104,7 +107,7 @@ const FIXTURE_DRILL_REVIEWS = [
 
 describe('weeklyMetrics', () => {
   it('returns 8 rows, newest first, starting on the last 8 Mondays', () => {
-    const rows = weeklyMetrics({ games: FIXTURE_GAMES, analyses: FIXTURE_ANALYSES, reviews: FIXTURE_REVIEWS, drillReviews: FIXTURE_DRILL_REVIEWS, settings }, TZ, NOW)
+    const rows = weeklyMetrics({ ...NO_PATTERN_ARGS, games: FIXTURE_GAMES, analyses: FIXTURE_ANALYSES, reviews: FIXTURE_REVIEWS, drillReviews: FIXTURE_DRILL_REVIEWS, settings }, TZ, NOW)
     expect(rows).toHaveLength(8)
     expect(rows.map((row) => row.weekStart)).toEqual([
       W_OCT26, W_OCT19, W_OCT12, W_OCT12 - 7 * DAY, W_OCT12 - 14 * DAY, W_OCT12 - 21 * DAY, W_OCT12 - 28 * DAY, W_OCT12 - 35 * DAY,
@@ -112,7 +115,7 @@ describe('weeklyMetrics', () => {
   })
 
   it('computes the current week: games by speed, score, ratings, engine metrics, puzzles, reviews, tasks', () => {
-    const rows = weeklyMetrics({ games: FIXTURE_GAMES, analyses: FIXTURE_ANALYSES, reviews: FIXTURE_REVIEWS, drillReviews: FIXTURE_DRILL_REVIEWS, settings }, TZ, NOW)
+    const rows = weeklyMetrics({ ...NO_PATTERN_ARGS, games: FIXTURE_GAMES, analyses: FIXTURE_ANALYSES, reviews: FIXTURE_REVIEWS, drillReviews: FIXTURE_DRILL_REVIEWS, settings }, TZ, NOW)
     const current = rows[0]
     expect(current).toMatchObject({
       totalGames: 3,
@@ -133,7 +136,7 @@ describe('weeklyMetrics', () => {
   })
 
   it('shows — (null) for engine metrics without analyzed games and for empty weeks', () => {
-    const rows = weeklyMetrics({ games: FIXTURE_GAMES, analyses: FIXTURE_ANALYSES, reviews: FIXTURE_REVIEWS, drillReviews: FIXTURE_DRILL_REVIEWS, settings }, TZ, NOW)
+    const rows = weeklyMetrics({ ...NO_PATTERN_ARGS, games: FIXTURE_GAMES, analyses: FIXTURE_ANALYSES, reviews: FIXTURE_REVIEWS, drillReviews: FIXTURE_DRILL_REVIEWS, settings }, TZ, NOW)
     const prev = rows[1] // Oct 19: one unanalyzed loss
     expect(prev).toMatchObject({
       totalGames: 1,
@@ -166,7 +169,7 @@ describe('weeklyMetrics', () => {
 
   it('carries the rating at week end over from earlier weeks', () => {
     const rows = weeklyMetrics(
-      { games: FIXTURE_GAMES, analyses: [], reviews: [], drillReviews: [], settings: { ...settings, planSpeed: 'blitz' } },
+      { ...NO_PATTERN_ARGS, games: FIXTURE_GAMES, analyses: [], reviews: [], drillReviews: [], settings: { ...settings, planSpeed: 'blitz' } },
       TZ,
       NOW,
     )
@@ -181,18 +184,54 @@ describe('weeklyMetrics', () => {
       game({ playedAt: W_OCT26 - 1, result: 'win' }), // last second of Oct 19's week
       game({ playedAt: W_OCT26, result: 'win' }), // first second of Oct 26's week
     ]
-    const rows = weeklyMetrics({ games: edgeGames, analyses: [], reviews: [], drillReviews: [], settings }, TZ, NOW)
+    const rows = weeklyMetrics({ ...NO_PATTERN_ARGS, games: edgeGames, analyses: [], reviews: [], drillReviews: [], settings }, TZ, NOW)
     expect(rows[1].totalGames).toBe(1)
     expect(rows[0].totalGames).toBe(1)
   })
 
   it('counts plan tasks per week: play quota, reviewed losses, puzzles, and analysis', () => {
-    const rows = weeklyMetrics({ games: FIXTURE_GAMES, analyses: FIXTURE_ANALYSES, reviews: FIXTURE_REVIEWS, drillReviews: FIXTURE_DRILL_REVIEWS, settings }, TZ, NOW)
+    const rows = weeklyMetrics({ ...NO_PATTERN_ARGS, games: FIXTURE_GAMES, analyses: FIXTURE_ANALYSES, reviews: FIXTURE_REVIEWS, drillReviews: FIXTURE_DRILL_REVIEWS, settings }, TZ, NOW)
     // Oct 12: play 1 < 5, no losses (fallback targets the rapid win, unreviewed), 0 puzzles, 2 unanalyzed.
     expect(rows[2]).toMatchObject({ tasksDone: 0, tasksTotal: 4 })
     // Oct 19: the single loss is reviewed → 1 of 4.
     expect(rows[1]).toMatchObject({ tasksDone: 1, tasksTotal: 4 })
     // Oct 26: loss reviewed, but play (2 < 5), train (2 < 50), and analyze (2 of 3) are open.
     expect(rows[0]).toMatchObject({ tasksDone: 1, tasksTotal: 4 })
+  })
+
+  it('computes the focus pattern column and counts the manual task from the stored plan and its check', () => {
+    const pattern = {
+      motif: 'other' as const,
+      label: 'Other (positional or deeper tactic)',
+      count: 3,
+      theme: 'advantage',
+      themeUrl: 'https://lichess.org/training/advantage',
+    }
+    const rows = weeklyMetrics(
+      {
+        ...NO_PATTERN_ARGS,
+        games: FIXTURE_GAMES,
+        analyses: FIXTURE_ANALYSES,
+        reviews: FIXTURE_REVIEWS,
+        drillReviews: FIXTURE_DRILL_REVIEWS,
+        settings,
+        pattern: { focusId: 'mistakes-opening', motif: 'other' },
+        plans: [{ weekStart: W_OCT26, pattern }],
+        taskChecks: [{ weekStart: W_OCT26, taskId: 'lichess-theme-puzzles' }],
+      },
+      TZ,
+      NOW,
+    )
+    // g1's mistake at ply 3 is 'other': 1 pattern move over 2 analyzed games.
+    expect(rows[0].patternPerGame).toBeCloseTo(0.5, 6)
+    // The manual task counts toward the current week's x/y (checked → done).
+    expect(rows[0].tasksTotal).toBe(5)
+    expect(rows[0].tasksDone).toBe(2) // review-losses + lichess puzzles
+    // Other weeks have no stored plan pattern → no manual task; no analyzed games → null column.
+    expect(rows[1].tasksTotal).toBe(4)
+    expect(rows[1].patternPerGame).toBeNull()
+    // No pattern at all → the column is absent from the row's data.
+    const base = weeklyMetrics({ ...NO_PATTERN_ARGS, games: FIXTURE_GAMES, analyses: FIXTURE_ANALYSES, reviews: FIXTURE_REVIEWS, drillReviews: FIXTURE_DRILL_REVIEWS, settings }, TZ, NOW)
+    expect(base[0].patternPerGame).toBeNull()
   })
 })

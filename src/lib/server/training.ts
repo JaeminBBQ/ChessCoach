@@ -1,6 +1,7 @@
 import { and, count, eq, gte, isNotNull, isNull, lte, min, or } from 'drizzle-orm'
 
 import type { GameAnalysis } from '../analysis/game-analysis'
+import { mistakeMotif, missedMotif } from '../analysis/motifs'
 import type { getDb } from '../db/client'
 import { analyses, drillCards, drillReviews, games, grades, type Grade } from '../db/schema'
 import { buildCards } from '../training/cards'
@@ -11,9 +12,11 @@ type Db = ReturnType<typeof getDb>
 const DAY_MS = 24 * 60 * 60 * 1000
 
 /**
- * Builds drill cards for every analyzed game of the user that has none yet.
- * Idempotent: games with at least one card are skipped, and the unique
- * (gameId, ply) index guards the rest. Returns the number of cards created.
+ * Builds drill cards for every analyzed game of the user that has none yet,
+ * and backfills the motif on cards that predate the motif column (computed
+ * from the stored analysis, once per card). Idempotent: games with at least
+ * one card are skipped, and the unique (gameId, ply) index guards the rest.
+ * Returns the number of cards created.
  */
 export function syncDrillCards(db: Db, userId: number, now = Date.now()): number {
   const rows = db
@@ -41,6 +44,7 @@ export function syncDrillCards(db: Db, userId: number, now = Date.now()): number
           playedSan: card.playedSan,
           playedWin: card.playedWin,
           lastMoveUci: card.lastMoveUci,
+          motif: card.motif,
           ease: 2.5,
           intervalDays: 0,
           reps: 0,
@@ -54,7 +58,40 @@ export function syncDrillCards(db: Db, userId: number, now = Date.now()): number
       created++
     }
   }
+  backfillMotifs(db, userId)
   return created
+}
+
+/** Fills `motif` on cards that predate the column, from their game's stored analysis. */
+function backfillMotifs(db: Db, userId: number): void {
+  const rows = db
+    .select({
+      id: drillCards.id,
+      ply: drillCards.ply,
+      kind: drillCards.kind,
+      data: analyses.data,
+    })
+    .from(drillCards)
+    .innerJoin(games, eq(games.id, drillCards.gameId))
+    .innerJoin(analyses, and(eq(analyses.gameId, games.id), eq(analyses.userId, userId)))
+    .where(and(eq(drillCards.userId, userId), isNull(drillCards.motif)))
+    .all()
+  for (const row of rows) {
+    const analysis = JSON.parse(row.data) as GameAnalysis
+    const motif = (row.kind === 'missed' ? missedMotif(analysis, row.ply) : mistakeMotif(analysis, row.ply)).motif
+    db.update(drillCards).set({ motif }).where(eq(drillCards.id, row.id)).run()
+  }
+}
+
+/** Drill cards per motif, for the Coach pattern links ("Your positions (N)"). */
+export function motifCardCounts(db: Db, userId: number): Map<string, number> {
+  const rows = db
+    .select({ motif: drillCards.motif, n: count() })
+    .from(drillCards)
+    .where(and(eq(drillCards.userId, userId), isNotNull(drillCards.motif)))
+    .groupBy(drillCards.motif)
+    .all()
+  return new Map(rows.filter((row) => row.motif !== null).map((row) => [row.motif!, row.n]))
 }
 
 /** How many new cards were introduced today: cards whose first review is since local midnight. */
@@ -69,14 +106,25 @@ export function newCardsToday(db: Db, userId: number, now: number): number {
   return db.select({ n: count() }).from(firsts).where(gte(firsts.firstAt, midnight)).get()?.n ?? 0
 }
 
-/** The session queue: due cards first, then new cards within today's allowance, capped. */
-export function trainingQueue(db: Db, userId: number, now: number, newToday: number): QueueCard[] {
+/**
+ * The session queue: due cards first, then new cards within today's allowance,
+ * capped. When `motif` is given, only cards with that pattern are considered
+ * (same due/new rules, and the new-per-day cap still applies).
+ */
+export function trainingQueue(
+  db: Db,
+  userId: number,
+  now: number,
+  newToday: number,
+  motif?: string,
+): QueueCard[] {
   const cards = db
     .select()
     .from(drillCards)
     .where(
       and(
         eq(drillCards.userId, userId),
+        motif !== undefined ? eq(drillCards.motif, motif) : undefined,
         or(
           and(isNotNull(drillCards.lastReviewedAt), lte(drillCards.due, now)),
           isNull(drillCards.lastReviewedAt),

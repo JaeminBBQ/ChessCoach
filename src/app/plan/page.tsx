@@ -1,12 +1,14 @@
 import { connection } from 'next/server'
 
 import AdjustPlan from '@/components/plan/adjust-plan'
+import PlanTaskCheck from '@/components/plan/plan-task-check'
 import Scorecard from '@/components/plan/scorecard'
 import SyncAnalyze from '@/components/plan/sync-analyze'
 import { getDb } from '@/lib/db/client'
-import { buildPlan, focusMetricForWeek, focusTrendSentence, formatMetric, FOCUS_MIN_WEEK_ANALYZED, type FocusMetric, type TrendPoint } from '@/lib/plan/plan'
+import { buildPlan, focusMetricForWeek, focusTrendSentence, formatMetric, patternFocusMetric, FOCUS_MIN_WEEK_ANALYZED, type FocusMetric, type TrendPoint } from '@/lib/plan/plan'
 import { weeklyMetrics } from '@/lib/plan/metrics'
 import type { PlanTask } from '@/lib/plan/types'
+import { MOTIF_METRIC_LABEL } from '@/lib/analysis/patterns'
 import { lastNWeeks, weekRange, weekStart } from '@/lib/plan/week'
 import { loadCoachGames } from '@/lib/server/coach'
 import { listAccounts } from '@/lib/server/games'
@@ -15,8 +17,11 @@ import {
   getOrCreatePlan,
   getSettings,
   listDrillReviews,
+  listPlanPatterns,
   listReviews,
+  listTaskChecks,
   recentGames,
+  taskChecksForWeek,
 } from '@/lib/server/plan'
 import { getCurrentUserId } from '@/lib/server/session'
 import { currentTimeMs } from '@/lib/server/training'
@@ -43,6 +48,7 @@ export default async function PlanPage() {
   const drillsThisWeek = drillReviewsThisWeek(db, userId, week)
 
   const weekGames = coachGames.filter((game) => game.playedAt >= week.start && game.playedAt < week.end)
+  const storedPattern = stored.pattern
   const plan = buildPlan({
     settings: { timezone, weeklyGames, planSpeed, puzzlesPerWeek },
     weekGames: weekGames.map((game) => ({
@@ -57,12 +63,27 @@ export default async function PlanPage() {
     reviewedIds: new Set(reviews.map((review) => review.gameId)),
     drillReviews: drillsThisWeek,
     focus: stored.focus,
+    pattern:
+      storedPattern === null
+        ? null
+        : {
+            motif: storedPattern.motif,
+            label: storedPattern.label,
+            count: storedPattern.count,
+            theme: storedPattern.theme,
+            themeUrl: storedPattern.themeUrl,
+          },
+    manualChecks: taskChecksForWeek(db, userId, week.start),
   })
 
   // The focus metric live for this week (the focus itself is fixed by the plan row).
   const focusId = stored.focus?.id ?? null
   const thisWeekMetric = focusId === null ? null : focusMetricForWeek(focusId, coachGames, week)
   const analyzedThisWeek = weekGames.filter((game) => game.analysis !== null).length
+  const thisWeekPatternMetric =
+    focusId === null || storedPattern === null
+      ? null
+      : patternFocusMetric(focusId, storedPattern.motif, weekGames)
   const trendPoints: TrendPoint[] = scorecardWeeks.map((start) => {
     const metric = focusId === null ? null : focusMetricForWeek(focusId, coachGames, weekRange(start, timezone))
     return metric === null ? { value: null, sample: 0 } : { value: metric.value, sample: metric.sample }
@@ -87,6 +108,9 @@ export default async function PlanPage() {
       reviews,
       drillReviews,
       settings: { timezone, weeklyGames, planSpeed, puzzlesPerWeek },
+      pattern: focusId !== null && storedPattern !== null ? { focusId, motif: storedPattern.motif } : null,
+      plans: listPlanPatterns(db, userId, metricsSince),
+      taskChecks: listTaskChecks(db, userId, metricsSince),
     },
     timezone,
     now,
@@ -118,13 +142,15 @@ export default async function PlanPage() {
         baseline={stored.metric}
         thisWeek={thisWeekMetric}
         analyzedThisWeek={analyzedThisWeek}
+        pattern={storedPattern}
+        thisWeekPattern={thisWeekPatternMetric}
       />
 
       <section className="mt-6">
         <h2 className="text-lg font-semibold tracking-tight">This week</h2>
         <ul className="mt-3 space-y-2">
           {plan.tasks.map((task) => (
-            <TaskRow key={task.id} task={task} />
+            <TaskRow key={task.id} task={task} weekStart={week.start} />
           ))}
         </ul>
       </section>
@@ -133,7 +159,14 @@ export default async function PlanPage() {
         <AdjustPlan weeklyGames={weeklyGames} planSpeed={planSpeed} puzzlesPerWeek={puzzlesPerWeek} timezone={timezone} />
       </div>
 
-      <Scorecard rows={scorecard} planSpeed={planSpeed} trendSentence={trendSentence} />
+      <Scorecard
+        rows={scorecard}
+        planSpeed={planSpeed}
+        trendSentence={trendSentence}
+        patternLabel={
+          storedPattern === null ? null : `${MOTIF_METRIC_LABEL[storedPattern.motif]}/game`
+        }
+      />
     </main>
   )
 }
@@ -143,11 +176,15 @@ function FocusCard({
   baseline,
   thisWeek,
   analyzedThisWeek,
+  pattern,
+  thisWeekPattern,
 }: {
   focus: { id: string; title: string; habit: string } | null
   baseline: FocusMetric | null
   thisWeek: FocusMetric | null
   analyzedThisWeek: number
+  pattern: { label: string; metric: FocusMetric | null } | null
+  thisWeekPattern: FocusMetric | null
 }) {
   const enoughGames = analyzedThisWeek >= FOCUS_MIN_WEEK_ANALYZED
   return (
@@ -179,22 +216,48 @@ function FocusCard({
               <span className="text-zinc-500 dark:text-zinc-400">no data yet</span>
             )}
           </p>
+          {pattern !== null && (
+            <p className="mt-2 text-sm tabular-nums">
+              <span className="text-zinc-500 dark:text-zinc-400">Top pattern: {pattern.label} — </span>
+              {pattern.metric !== null ? (
+                <>
+                  {formatMetric(pattern.metric)} <span className="text-zinc-500 dark:text-zinc-400">({pattern.metric.sample} games) → </span>
+                </>
+              ) : (
+                <span className="text-zinc-500 dark:text-zinc-400">no baseline → </span>
+              )}
+              {!enoughGames ? (
+                <span className="text-zinc-500 dark:text-zinc-400">not enough games yet</span>
+              ) : thisWeekPattern !== null ? (
+                <>
+                  {formatMetric(thisWeekPattern)}{' '}
+                  <span className="text-zinc-500 dark:text-zinc-400">({thisWeekPattern.sample} games)</span>
+                </>
+              ) : (
+                <span className="text-zinc-500 dark:text-zinc-400">no data yet</span>
+              )}
+            </p>
+          )}
         </>
       )}
     </section>
   )
 }
 
-function TaskRow({ task }: { task: PlanTask }) {
+function TaskRow({ task, weekStart }: { task: PlanTask; weekStart: number }) {
   return (
     <li className="flex flex-wrap items-baseline gap-x-3 gap-y-1 rounded-lg border border-black/10 p-3 dark:border-white/10">
       <span className="text-base" aria-hidden>
         {task.complete ? '✓' : '○'}
       </span>
       <span className="text-sm font-medium">{task.title}</span>
-      <span className={`text-sm tabular-nums ${task.complete ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-500 dark:text-zinc-400'}`}>
-        {task.done}/{task.target} {task.unit}
-      </span>
+      {task.manual === true ? (
+        <PlanTaskCheck weekStart={weekStart} taskId={task.id} done={task.complete} />
+      ) : (
+        <span className={`text-sm tabular-nums ${task.complete ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-500 dark:text-zinc-400'}`}>
+          {task.done}/{task.target} {task.unit}
+        </span>
+      )}
       {task.links.length > 0 && (
         <span className="flex flex-wrap gap-x-3 gap-y-1 text-sm">
           {task.links.map((link) => (

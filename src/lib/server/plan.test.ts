@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { eq } from 'drizzle-orm'
 
 import { createTestDb, type TestDb } from '../../../test/helpers/db'
-import { drillCards, drillReviews, gameReviews, games, linkedAccounts, plans, userSettings, users } from '../db/schema'
+import { drillCards, drillReviews, gameReviews, games, linkedAccounts, plans, planTaskChecks, userSettings, users } from '../db/schema'
 import { weekRange } from '../plan/week'
 import {
   drillReviewsThisWeek,
@@ -11,9 +11,13 @@ import {
   getSettings,
   isValidTimezone,
   listDrillReviews,
+  listPlanPatterns,
   listReviews,
+  listTaskChecks,
   markReviewed,
   recentGames,
+  taskChecksForWeek,
+  toggleTaskCheck,
   updateSettings,
 } from './plan'
 
@@ -238,5 +242,169 @@ describe('recentGames', () => {
       expect.objectContaining({ id: g1, opponentName: 'old' }),
     ])
     expect(recentGames(db, userId, 2)).toHaveLength(2)
+  })
+})
+
+describe('manual task checks', () => {
+  it('toggles a check on and off, scoped to user and week', () => {
+    const week = weekRange(NOW, 'UTC')
+    expect(taskChecksForWeek(db, userId, week.start).size).toBe(0)
+
+    toggleTaskCheck(db, userId, week.start, 'lichess-theme-puzzles', NOW)
+    expect(taskChecksForWeek(db, userId, week.start)).toEqual(new Set(['lichess-theme-puzzles']))
+    expect(listTaskChecks(db, userId, week.start)).toEqual([
+      { weekStart: week.start, taskId: 'lichess-theme-puzzles' },
+    ])
+
+    // Toggling again unchecks.
+    toggleTaskCheck(db, userId, week.start, 'lichess-theme-puzzles', NOW + 1)
+    expect(taskChecksForWeek(db, userId, week.start).size).toBe(0)
+
+    // Other users and other weeks have their own checks.
+    toggleTaskCheck(db, userId, week.start, 'lichess-theme-puzzles', NOW)
+    expect(taskChecksForWeek(db, otherId, week.start).size).toBe(0)
+    expect(taskChecksForWeek(db, userId, week.end).size).toBe(0)
+    expect(listTaskChecks(db, userId, week.start + 7 * DAY)).toEqual([])
+    expect(db.select().from(planTaskChecks).all()).toHaveLength(1)
+  })
+})
+
+describe('plan pattern snapshot', () => {
+  const FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+  const cp = (value: number) => ({ type: 'cp' as const, value })
+
+  /** An analyzed game whose only move is the engine's best (no findings). */
+  function quietGame(playedAt: number) {
+    return {
+      id: insertGame({ playedAt, pgn: '1. d4 1-0' }),
+      platform: 'lichess' as const,
+      playedAt,
+      userColor: 'white' as const,
+      result: 'win' as const,
+      termination: null,
+      speed: 'rapid' as const,
+      rated: true,
+      userRating: null,
+      opponentRating: null,
+      opponentName: null,
+      accountId,
+      pgn: '1. d4 1-0',
+      analysis: {
+        version: 1,
+        engine: 'test',
+        nodes: 1,
+        plies: [
+          { ply: 0, fen: FEN, move: null, eval: cp(0), terminal: null, best: { uci: 'd2d4', san: 'd4', eval: cp(0) }, second: null, depth: 10 },
+          { ply: 1, fen: FEN, move: { san: 'd4', uci: 'd2d4' }, eval: cp(0), terminal: null, best: { uci: 'e2e4', san: 'e4', eval: cp(0) }, second: null, depth: 10 },
+        ],
+      },
+    }
+  }
+
+  /** A White-user mistake at ply 1 (motif 'other': the best reply is quiet) inside an analyzed game. */
+  function mistakeGame(playedAt: number) {
+    return {
+      ...quietGame(playedAt),
+      result: 'loss' as const,
+      pgn: '1. a3 e5 0-1',
+      analysis: {
+        version: 1,
+        engine: 'test',
+        nodes: 1,
+        plies: [
+          { ply: 0, fen: FEN, move: null, eval: cp(0), terminal: null, best: { uci: 'd2d4', san: 'd4', eval: cp(0) }, second: null, depth: 10 },
+          { ply: 1, fen: FEN, move: { san: 'a3', uci: 'a2a3' }, eval: cp(-300), terminal: null, best: { uci: 'e2e4', san: 'e4', eval: cp(0) }, second: null, depth: 10 },
+        ],
+      },
+    }
+  }
+
+  /** A White-user mistake at ply 1 where Black's best reply takes the knight: motif 'hangingPiece'. */
+  function hangingGame(playedAt: number) {
+    const after = 'rnbqkb1r/ppp2ppp/3p1n2/4N3/4P3/8/PPPP1PPP/RNBQKB1R b KQkq - 2 4'
+    return {
+      ...quietGame(playedAt),
+      result: 'loss' as const,
+      pgn: '1. e4 0-1',
+      analysis: {
+        version: 1,
+        engine: 'test',
+        nodes: 1,
+        plies: [
+          { ply: 0, fen: after, move: null, eval: cp(0), terminal: null, best: { uci: 'd2d4', san: 'd4', eval: cp(0) }, second: null, depth: 10 },
+          { ply: 1, fen: after, move: { san: 'Ne5', uci: 'f3e5' }, eval: cp(-300), terminal: null, best: { uci: 'd6e5', san: 'dxe5', eval: cp(-300) }, second: null, depth: 10 },
+        ],
+      },
+    }
+  }
+
+  it("stores no pattern when every mistake is 'other'", () => {
+    const week = weekRange(NOW, 'UTC')
+    const games = [
+      ...Array.from({ length: 20 }, (_, i) => quietGame(week.start + i * 3600_000)),
+      ...Array.from({ length: 5 }, (_, i) => mistakeGame(week.start + (30 + i) * 3600_000)),
+    ]
+    const row = getOrCreatePlan(db, userId, week.start, games, 'UTC', NOW)
+    expect(row.focusId).toBe('mistakes-opening')
+    expect(row.baseline.pattern).toBeNull()
+  })
+
+  it('stores the top pattern with the focus and backfills rows without one', () => {
+    const week = weekRange(NOW, 'UTC')
+    // Coach needs ≥ 20 analyzed games for engine findings and ≥ 5 mistakes for
+    // the finding itself: 20 quiet games + 5 with a mistake.
+    const games = [
+      ...Array.from({ length: 20 }, (_, i) => quietGame(week.start + i * 3600_000)),
+      ...Array.from({ length: 5 }, (_, i) => hangingGame(week.start + (30 + i) * 3600_000)),
+    ]
+
+    // New plan: the focus is mistakes-opening and the pattern snapshot is stored.
+    const row = getOrCreatePlan(db, userId, week.start, games, 'UTC', NOW)
+    expect(row.focusId).toBe('mistakes-opening')
+    expect(row.baseline.pattern).toMatchObject({
+      motif: 'hangingPiece',
+      label: 'Left a piece hanging',
+      count: 5,
+      theme: 'hangingPiece',
+      themeUrl: 'https://lichess.org/training/hangingPiece',
+    })
+    expect(row.baseline.pattern?.metric).toBeNull() // no games in the previous 4 weeks
+
+    // A pre-T006b row without the pattern gets backfilled on read.
+    db.update(plans)
+      .set({ baseline: JSON.stringify({ focus: row.baseline.focus, metric: null }) })
+      .where(eq(plans.id, row.id))
+      .run()
+    const backfilled = getOrCreatePlan(db, userId, week.start, games, 'UTC', NOW)
+    expect(backfilled.baseline.pattern).toMatchObject({ motif: 'hangingPiece' })
+    expect(db.select().from(plans).all()).toHaveLength(1)
+
+    expect(listPlanPatterns(db, userId, week.start)).toEqual([
+      { weekStart: week.start, pattern: expect.objectContaining({ motif: 'hangingPiece' }) },
+    ])
+    expect(listPlanPatterns(db, userId, week.end)).toEqual([])
+  })
+
+  it('non-pattern findings (e.g. early-abandon) store no pattern', () => {
+    const week = weekRange(NOW, 'UTC')
+    const abandoned = {
+      id: insertGame({ platform: 'chesscom', result: 'loss', termination: 'abandoned', playedAt: week.start + DAY, pgn: '1. e4 e5 0-1' }),
+      platform: 'chesscom' as const,
+      playedAt: week.start + DAY,
+      userColor: 'white' as const,
+      result: 'loss' as const,
+      termination: 'abandoned',
+      speed: 'rapid' as const,
+      rated: true,
+      userRating: null,
+      opponentRating: null,
+      opponentName: null,
+      accountId,
+      pgn: '1. e4 e5 0-1',
+      analysis: null,
+    }
+    const row = getOrCreatePlan(db, userId, week.start, Array.from({ length: 6 }, () => abandoned), 'UTC', NOW)
+    expect(row.focusId).toBe('early-abandon')
+    expect(row.baseline.pattern).toBeNull()
   })
 })

@@ -5,6 +5,8 @@ import { useMemo, useState } from 'react'
 import { Chess, type Move, type Square } from 'chess.js'
 import { Chessboard } from 'react-chessboard'
 
+import { MOTIF_LABEL, type Motif } from '@/lib/analysis/motifs'
+
 interface TrainCard {
   id: number
   gameId: number
@@ -17,6 +19,7 @@ interface TrainCard {
   playedSan: string
   playedWin: number
   lastMoveUci: string | null
+  motif: Motif | null
 }
 
 type Attempt = { status: 'correct' } | { status: 'wrong' }
@@ -41,7 +44,7 @@ function playedSquares(card: TrainCard): { from: string; to: string } | null {
 }
 
 /** One training session: loads the queue, then walks the cards one at a time. */
-export default function Trainer() {
+export default function Trainer({ motif }: { motif: string | null }) {
   const [cards, setCards] = useState<TrainCard[] | null>(null)
   const [index, setIndex] = useState(0)
   const [right, setRight] = useState(0)
@@ -49,7 +52,7 @@ export default function Trainer() {
 
   async function start() {
     setBusy(true)
-    const response = await fetch('/api/train/queue')
+    const response = await fetch(`/api/train/queue${motif !== null ? `?motif=${motif}` : ''}`)
     const { cards } = (await response.json()) as { cards: TrainCard[] }
     setCards(cards)
     setIndex(0)
@@ -245,6 +248,9 @@ function CardView({ card, onGraded, busy }: { card: TrainCard; onGraded: (attemp
             <p className="font-medium text-emerald-700 dark:text-emerald-400">
               Correct: {card.solutionSan} (win chance {Math.round(card.solutionWin)}%)
             </p>
+            {card.motif && (
+              <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">Pattern: {MOTIF_LABEL[card.motif]}</p>
+            )}
             <div className="mt-2 flex gap-2">
               <button type="button" className={buttonClass} onClick={() => onGraded(attempt, 'good')} disabled={busy}>
                 Good
@@ -262,6 +268,9 @@ function CardView({ card, onGraded, busy }: { card: TrainCard; onGraded: (attemp
               Best was {card.solutionSan} ({Math.round(card.solutionWin)}%). In the game you played {card.playedSan} (
               {Math.round(card.playedWin)}%).
             </p>
+            {card.motif && (
+              <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">Pattern: {MOTIF_LABEL[card.motif]}</p>
+            )}
             <div className="mt-2">
               <button type="button" className={buttonClass} onClick={() => onGraded(attempt, 'again')} disabled={busy}>
                 Next

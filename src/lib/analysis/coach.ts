@@ -2,6 +2,7 @@ import type { Platform, UserColor } from '../db/schema'
 import { classifyMoves, positionWin, type MoveJudgement } from './classify'
 import type { GameAnalysis } from './game-analysis'
 import { byOpening, firstMoves, type InsightGame } from './insights'
+import { mistakeMotif, missedMotif, MOTIF_LABEL, type Motif } from './motifs'
 
 /**
  * A game with its engine analysis. `platform` is needed because the two
@@ -93,9 +94,9 @@ export function coach(games: readonly CoachGame[]): CoachResult {
 /** Detectors that read analyses: mistakes by phase, missed chances, conversion, abandonment, time losses. */
 function engineFindings(games: readonly CoachGame[]): Finding[] {
   const analyzedGames = games.filter((game) => game.analysis !== null).length
-  const mistakes = new Map<Phase, Array<{ gameId: number; j: MoveJudgement; hanging: boolean }>>()
+  const mistakes = new Map<Phase, Array<{ gameId: number; j: MoveJudgement; hanging: boolean; motif: string }>>()
   for (const phase of PHASES) mistakes.set(phase, [])
-  const missed: Array<{ gameId: number; j: MoveJudgement }> = []
+  const missed: Array<{ gameId: number; j: MoveJudgement; motif: string }> = []
   const conversions: Array<Conversion> = []
   let conversionReached = 0
   const abandoned: Array<{ gameId: number; finalPly: number; finalWin: number }> = []
@@ -117,13 +118,13 @@ function engineFindings(games: readonly CoachGame[]): Finding[] {
         // Left something hanging: the opponent's best reply in the position
         // after the user's move (not the user's own best move) is a capture.
         const hanging = a.plies[j.ply]?.best?.san.includes('x') ?? false
-        mistakes.get(phases.get(j.ply)!)!.push({ gameId: game.id, j, hanging })
+        mistakes.get(phases.get(j.ply)!)!.push({ gameId: game.id, j, hanging, motif: mistakeMotif(a, j.ply).motif })
       }
       // A missed chance: the opponent just dropped ≥ 20 win % and the reply
       // neither plays the best move nor punishes the mistake (own drop ≥ 10).
       const previous = byPly.get(j.ply - 1)
-      if (previous !== undefined && previous.drop >= 20 && j.judgement !== 'best' && j.drop >= 10) {
-        missed.push({ gameId: game.id, j })
+      if (isMissedChance(previous, j)) {
+        missed.push({ gameId: game.id, j, motif: missedMotif(a, j.ply).motif })
       }
     }
 
@@ -166,8 +167,11 @@ function phasesOf(a: GameAnalysis): Map<number, Phase> {
   return phases
 }
 
-/** Moves 1–10 are the opening; later, endgame once few pieces remain. */
-function phaseAt(fen: string, ply: number): Phase {
+/**
+ * Moves 1–10 are the opening; later, endgame once few pieces remain.
+ * Exported so the Plan focus metrics classify phases by the same rule.
+ */
+export function phaseAt(fen: string, ply: number): Phase {
   if (ply <= 20) return 'opening'
   return countPieces(fen) <= 6 ? 'endgame' : 'middlegame'
 }
@@ -179,6 +183,16 @@ function countPieces(fen: string): number {
   return count
 }
 
+/**
+ * The missed-chance rule, shared by the Coach findings, the Plan focus
+ * metrics, and the drill-card builder: the opponent's previous move dropped
+ * ≥ 20 win % and the user's reply neither plays the best move nor punishes
+ * it (the user's own drop ≥ 10).
+ */
+export function isMissedChance(previous: MoveJudgement | undefined, j: MoveJudgement): boolean {
+  return previous !== undefined && previous.drop >= 20 && j.judgement !== 'best' && j.drop >= 10
+}
+
 /** The user's win % at a ply (0–100), or null when the position has no eval. */
 function userWinAt(a: GameAnalysis, ply: number, userColor: UserColor): number | null {
   const white = positionWin(a.plies[ply])
@@ -186,16 +200,36 @@ function userWinAt(a: GameAnalysis, ply: number, userColor: UserColor): number |
 }
 
 /**
+ * The peak winning position a game reached: the highest user win % ≥ 85 at a
+ * non-terminal position after ply 10, or null when it never got there.
+ * Exported so the Plan conversion metric uses the same definition.
+ */
+export function winningPeak(a: GameAnalysis, userColor: UserColor): { ply: number; win: number } | null {
+  let peakPly = -1
+  let peakWin = 0
+  for (let ply = 11; ply < a.plies.length; ply++) {
+    if (a.plies[ply].terminal !== null) continue
+    const win = userWinAt(a, ply, userColor)
+    if (win !== null && win >= 85 && win > peakWin) {
+      peakPly = ply
+      peakWin = win
+    }
+  }
+  return peakPly === -1 ? null : { ply: peakPly, win: peakWin }
+}
+
+/**
  * A loss where the user left and the opponent claimed the win: Chess.com
  * `abandoned`, Lichess `timeout`. Lichess `outoftime` is a normal flag.
+ * Exported so the Plan abandonment metrics use the same codes.
  */
-function isAbandonedLoss(game: CoachGame): boolean {
+export function isAbandonedLoss(game: CoachGame): boolean {
   if (game.result !== 'loss') return false
   return game.platform === 'chesscom' ? game.termination === 'abandoned' : game.termination === 'timeout'
 }
 
 /** A loss on the clock: Chess.com `timeout`, Lichess `outoftime`. */
-function isTimeLoss(game: CoachGame): boolean {
+export function isTimeLoss(game: CoachGame): boolean {
   if (game.result !== 'loss') return false
   return game.platform === 'chesscom' ? game.termination === 'timeout' : game.termination === 'outoftime'
 }
@@ -206,7 +240,7 @@ function totalPlies(game: CoachGame): number {
 }
 
 /** The number of plies made by the user's color. */
-function userMoveCount(game: CoachGame): number {
+export function userMoveCount(game: CoachGame): number {
   const n = totalPlies(game)
   return game.userColor === 'white' ? Math.ceil(n / 2) : Math.floor(n / 2)
 }
@@ -219,7 +253,7 @@ function moveLabel(j: MoveJudgement): string {
 
 function mistakesFinding(
   phase: Phase,
-  moves: Array<{ gameId: number; j: MoveJudgement; hanging: boolean }>,
+  moves: Array<{ gameId: number; j: MoveJudgement; hanging: boolean; motif: string }>,
   analyzedGames: number,
 ): Finding | null {
   if (moves.length < MIN_EVIDENCE) return null
@@ -228,24 +262,37 @@ function mistakesFinding(
   const pointsPer100 = (points / analyzedGames) * 100
   const captures = moves.filter((m) => m.hanging).length
   const worst = [...moves].sort((x, y) => y.j.drop - x.j.drop).slice(0, 3)
+  const evidence = [
+    `${moves.length} ${moves.length === 1 ? 'mistake or blunder' : 'mistakes and blunders'} in the ${phase} over ${analyzedGames} analyzed games (${perGame.toFixed(1)} per game).`,
+    `Together they cost ${pointsPer100.toFixed(1)} points per 100 games.`,
+    `In ${Math.round((captures / moves.length) * 100)}% of them, the opponent's best reply was a capture: something was left hanging.`,
+    topPatternsLine(moves.map((m) => m.motif)),
+  ]
   return {
     id: `mistakes-${phase}`,
     title: `Mistakes in the ${phase}`,
     pointsPer100,
     sample: { kind: 'analyzed', games: analyzedGames },
     headline: `${moves.length} ${moves.length === 1 ? 'mistake or blunder' : 'mistakes and blunders'} in the ${phase} — ${perGame.toFixed(1)} per game, worth ${pointsPer100.toFixed(1)} points per 100 games.`,
-    evidence: [
-      `${moves.length} ${moves.length === 1 ? 'mistake or blunder' : 'mistakes and blunders'} in the ${phase} over ${analyzedGames} analyzed games (${perGame.toFixed(1)} per game).`,
-      `Together they cost ${pointsPer100.toFixed(1)} points per 100 games.`,
-      `In ${Math.round((captures / moves.length) * 100)}% of them, the opponent's best reply was a capture: something was left hanging.`,
-    ],
+    evidence,
     examples: worst.map(({ gameId, j }) => ({ gameId, ply: j.ply, label: moveLabel(j) })),
     training: TRAINING[`mistakes-${phase}`],
   }
 }
 
+/** "Mostly: left a piece hanging (41%), lost material to a combination (15%)". */
+function topPatternsLine(motifs: readonly string[]): string {
+  const counts = new Map<string, number>()
+  for (const motif of motifs) counts.set(motif, (counts.get(motif) ?? 0) + 1)
+  const top = [...counts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 2)
+    .map(([motif, count]) => `${MOTIF_LABEL[motif as Motif] ?? motif} (${Math.round((count / motifs.length) * 100)}%)`)
+  return `Mostly: ${top.join(', ')}.`
+}
+
 function missedChancesFinding(
-  missed: Array<{ gameId: number; j: MoveJudgement }>,
+  missed: Array<{ gameId: number; j: MoveJudgement; motif: string }>,
   analyzedGames: number,
 ): Finding | null {
   if (missed.length < MIN_EVIDENCE) return null
@@ -261,6 +308,7 @@ function missedChancesFinding(
     evidence: [
       `${missed.length} times your opponent's move dropped at least 20 win % and your reply gave most of it back (your own drop ≥ 10).`,
       `Those replies cost ${pointsPer100.toFixed(1)} points per 100 games.`,
+      topPatternsLine(missed.map((m) => m.motif)),
     ],
     examples: worst.map(({ gameId, j }) => ({ gameId, ply: j.ply, label: moveLabel(j) })),
     training: TRAINING['missed-chances'],
@@ -283,18 +331,9 @@ interface Conversion {
  * when the game never got to 85 %.
  */
 function conversionOf(game: CoachGame, a: GameAnalysis): Conversion | null {
-  let peakPly = -1
-  let peakWin = 0
-  for (let ply = 11; ply < a.plies.length; ply++) {
-    if (a.plies[ply].terminal !== null) continue
-    const win = userWinAt(a, ply, game.userColor)
-    if (win !== null && win >= 85 && win > peakWin) {
-      peakPly = ply
-      peakWin = win
-    }
-  }
-  if (peakPly === -1) return null
-  for (let ply = peakPly + 1; ply < a.plies.length; ply++) {
+  const peak = winningPeak(a, game.userColor)
+  if (peak === null) return null
+  for (let ply = peak.ply + 1; ply < a.plies.length; ply++) {
     const win = userWinAt(a, ply, game.userColor)
     if (win !== null && win < 60) {
       return {
@@ -302,7 +341,7 @@ function conversionOf(game: CoachGame, a: GameAnalysis): Conversion | null {
         points: game.result === 'draw' ? 0.5 : 1,
         examplePly: ply,
         exampleSan: a.plies[ply].move?.san ?? '—',
-        peakWin,
+        peakWin: peak.win,
         dropWin: win,
       }
     }
@@ -313,8 +352,8 @@ function conversionOf(game: CoachGame, a: GameAnalysis): Conversion | null {
     points: game.result === 'draw' ? 0.5 : 1,
     examplePly: last.ply,
     exampleSan: last.move?.san ?? '—',
-    peakWin,
-    dropWin: userWinAt(a, last.ply, game.userColor) ?? peakWin,
+    peakWin: peak.win,
+    dropWin: userWinAt(a, last.ply, game.userColor) ?? peak.win,
   }
 }
 

@@ -2,7 +2,7 @@
 
 import { getDb } from '@/lib/db/client'
 import { speeds, type Speed } from '@/lib/db/schema'
-import { getSettings, isValidTimezone, updateSettings } from '@/lib/server/plan'
+import { getSettings, isValidTimezone, toggleTaskCheck, updateSettings } from '@/lib/server/plan'
 import { getCurrentUserId } from '@/lib/server/session'
 
 export type PlanSettingsState = { ok: true } | { ok: false; error: string } | null
@@ -29,4 +29,13 @@ export async function savePlanSettingsAction(_prev: PlanSettingsState, formData:
 
   updateSettings(db, userId, { weeklyGames, puzzlesPerWeek, planSpeed: planSpeed as Speed, timezone })
   return { ok: true }
+}
+
+const MANUAL_TASKS = new Set(['lichess-theme-puzzles'])
+
+/** Toggles a manual plan task's Done check for the week. */
+export async function togglePlanTaskAction(weekStart: number, taskId: string): Promise<void> {
+  if (!MANUAL_TASKS.has(taskId)) return
+  const db = getDb()
+  toggleTaskCheck(db, getCurrentUserId(db), weekStart, taskId)
 }

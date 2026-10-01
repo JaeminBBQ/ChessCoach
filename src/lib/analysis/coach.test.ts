@@ -123,7 +123,9 @@ function mistakeGame(
 function blackMistakeGame(ply: number, fen?: string): CoachGame {
   const specs = Array<PlySpec>(ply + 1).fill({})
   specs[ply - 1] = { eval: cp(0), bestSan: 'Nc3', bestUci: 'b1c3', fen }
-  specs[ply] = { eval: cp(400), san: 'Qd7', uci: 'd8d7', fen }
+  // In a custom endgame FEN the default e2e4 reply isn't legal; Kg1 is (the
+  // white king stands on h1). The motif detector replays the reply.
+  specs[ply] = { eval: cp(400), san: 'Qd7', uci: 'd8d7', fen, ...(fen ? { bestSan: 'Kg1', bestUci: 'h1g1' } : {}) }
   return game({ userColor: 'black', analysis: analysisFor(specs) })
 }
 
@@ -152,6 +154,8 @@ describe('coach mistakes by phase', () => {
     expect(byId.get('mistakes-middlegame')?.evidence[0]).toContain('5 mistakes')
     expect(byId.get('mistakes-endgame')?.evidence[0]).toContain('5 mistakes')
     expect(byId.get('mistakes-opening')?.title).toBe('Mistakes in the opening')
+    // The pattern bullet names the top 2 motifs (all fixtures resolve to 'other').
+    expect(byId.get('mistakes-opening')?.evidence[3]).toBe('Mostly: Other (positional or deeper tactic) (100%).')
   })
 
   it("reports the share of mistakes where the opponent's best reply was a capture", () => {
@@ -206,6 +210,7 @@ describe('coach missed chances', () => {
     const finding = coach(games).findings.find((f) => f.id === 'missed-chances')
     expect(finding).toBeDefined()
     expect(finding!.evidence[0]).toContain('5 times')
+    expect(finding!.evidence[2]).toBe('Mostly: Other (positional or deeper tactic) (100%).')
     expect(finding!.pointsPer100).toBeCloseTo((5 * drop) / 28, 6) // 20 quiet + 8 crafted games analyzed
   })
 })

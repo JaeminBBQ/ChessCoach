@@ -1,6 +1,7 @@
 import type { UserColor } from '../db/schema'
 import { classifyMoves, winPercent } from '../analysis/classify'
 import type { GameAnalysis } from '../analysis/game-analysis'
+import { mistakeMotif, missedMotif, type Motif } from '../analysis/motifs'
 
 export type CardKind = 'missed' | 'blunder'
 
@@ -20,6 +21,8 @@ export interface CardDraft {
   playedWin: number
   /** The opponent's move that led to the position, for highlighting. */
   lastMoveUci: string | null
+  /** The tactical pattern behind the mistake (motifs.ts). */
+  motif: Motif
 }
 
 export interface CardGateCounts {
@@ -117,6 +120,7 @@ export function buildCardsDetailed(
       playedSan: j.san,
       playedWin: j.winAfter,
       lastMoveUci: before.move?.uci ?? null,
+      motif: (missed ? missedMotif(analysis, i) : mistakeMotif(analysis, i)).motif,
     })
   }
   return { cards, gates }

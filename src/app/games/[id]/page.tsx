@@ -5,8 +5,10 @@ import { connection } from 'next/server'
 import AnalyzeButton from '@/components/analysis/analyze-button'
 import EngineCredit from '@/components/analysis/engine-credit'
 import ReviewPanel from '@/components/review/review-panel'
-import { classifyMoves, evalSeries, gameSummary, keyMoments } from '@/lib/analysis/classify'
-import { parsePly } from '@/lib/analysis/game-analysis'
+import { classifyMoves, evalSeries, gameSummary, keyMoments, type MoveJudgement } from '@/lib/analysis/classify'
+import { isMissedChance } from '@/lib/analysis/coach'
+import { parsePly, type GameAnalysis } from '@/lib/analysis/game-analysis'
+import { mistakeMotif, missedMotif, MOTIF_LABEL } from '@/lib/analysis/motifs'
 import { getDb } from '@/lib/db/client'
 import { getAnalysis, getGameForUser } from '@/lib/server/analyses'
 import { getReview } from '@/lib/server/plan'
@@ -36,6 +38,7 @@ export default async function GamePage({
   const series = analysis ? evalSeries(analysis) : []
   const initialPly = analysis ? parsePly(sp.ply, analysis.plies.length - 1) : 0
   const reviewedAt = getReview(db, userId, game.id)
+  const motifLabels = analysis ? motifLabelsFor(analysis, judgements, game.userColor) : undefined
 
   return (
     <main className="mx-auto w-full max-w-5xl space-y-4 px-4 py-6">
@@ -70,7 +73,7 @@ export default async function GamePage({
         reviewedAt={reviewedAt}
         review={
           analysis
-            ? { plies: analysis.plies, judgements, series, moments, userColor: game.userColor, initialPly }
+            ? { plies: analysis.plies, judgements, series, moments, userColor: game.userColor, initialPly, motifLabels }
             : undefined
         }
       />
@@ -88,4 +91,24 @@ export default async function GamePage({
 
 function countText(count: number, noun: string, plural: string = `${noun}s`): string {
   return `${count} ${count === 1 ? noun : plural}`
+}
+
+/** Pattern labels for the user's mistakes and missed chances, by ply. */
+function motifLabelsFor(
+  analysis: GameAnalysis,
+  judgements: MoveJudgement[],
+  userColor: 'white' | 'black',
+): Map<number, string> {
+  const labels = new Map<number, string>()
+  const byPly = new Map(judgements.map((j) => [j.ply, j]))
+  for (const j of judgements) {
+    if (j.color !== userColor) continue
+    const previous = byPly.get(j.ply - 1)
+    if (isMissedChance(previous, j)) {
+      labels.set(j.ply, MOTIF_LABEL[missedMotif(analysis, j.ply).motif])
+    } else if (j.judgement === 'mistake' || j.judgement === 'blunder') {
+      labels.set(j.ply, MOTIF_LABEL[mistakeMotif(analysis, j.ply).motif])
+    }
+  }
+  return labels
 }

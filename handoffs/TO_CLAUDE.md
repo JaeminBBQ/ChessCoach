@@ -1,14 +1,13 @@
 # To Claude
-**Task:** T006b (mistake patterns on Coach, Train, Plan, and the review page) + step 0 (coach/plan dedup)
+**Task:** T016 (inline replay boards on Coach examples)
 **Status:** done
-**Report:** handoffs/reports/T006b-report.md
-**Updated:** 2026-09-30 13:10
+**Report:** handoffs/reports/T016-report.md
+**Updated:** 2026-09-30 17:15
 
 ## In one paragraph
-Patterns are everywhere: drill cards store a motif (new cards at build, legacy cards backfilled idempotently from stored analyses — 0 nulls over 132 cards), the Coach page leads with the mistake/missed pattern tables (counts, shares, pts/100, Lichess theme links, "Your positions (N)" → `/train?motif=`), findings carry a top-2-patterns bullet, `/train?motif=X` filters the session with a "Practicing: … · clear" header and per-answer pattern labels, the Plan shows the focus's top pattern as a second metric (baseline vs this week, stored in `plans`), a pattern scorecard column, and a manual "Do 15 hanging piece puzzles on Lichess" task with a per-week Done toggle, and the review page labels key moments and the current move. Step 0 done first: `plan.ts`/`metrics.ts` now import the phase/missed-chance/conversion/termination helpers from `coach.ts` (no formula changes, all existing tests pass unchanged), and the owner's `/plan` focus numbers are identical before/after (0.6/game (9) → 1.4/game (10), trend 0.8 → 0.6). All acceptance criteria pass: lint/typecheck/build clean, **265 tests (28 files)**, migration 0006 applied after `.backup`, all four pages 200, real-data tables in the report — the owner's #1 pattern renders exactly as your T006 numbers said (Left a piece hanging: 90, 31%, 14.6 pts/100).
+Every Coach example is now an inline replay chip: click it and a small board opens below the row (one panel per finding, the #1 finding's first example open on load) showing the decision position with red/green played-vs-best arrows, stepping through the 4-lead-up + played + 6-follow window, with a Game | Engine's-line toggle (PV from the stored analysis, capped at 12, `[best.uci]` fallback), a clickable SAN move list, a win-chance status line, and "Open full review →". Pure `replayWindow` in `src/lib/analysis/replay.ts` builds everything from the PGNs and analyses the page already loaded — no new queries, no browser engines, unreadable PGNs keep the plain link. All acceptance criteria pass: lint/typecheck/build clean, **277 tests (29 files)**, `/coach` and `/coach?range=all` 200, HTML +85.6 KB (defaults) / ~106 KB (range=all) against a 96 KB baseline — within the ~150 KB budget. The real-data section (owner's #1 finding and the conversion finding: windows, decisionIndex, played vs best, engine lines) is in the report.
 
 ## Needs Claude's attention
-1. **motifs.ts untouched** per spec, but its `isFork`/`materialGain`/`checksBy` throw on illegal moves — real analyses are always legal, so I fixed the hand-built test fixtures instead (legal best moves in their FENs). Proposing a try/catch there if you ever want hand-built positions through the detectors (question 1 in the report).
-2. **`plans.baseline` now stores `{ focus, metric, pattern }`** — the pattern snapshot (motif, label, count, theme, themeUrl, previous-4-weeks metric) is backfilled deterministically for pre-T006b rows on read; the baseline inputs can't change, so it can't drift.
-3. **Manual task in the scorecard x/y** uses each week's stored plan pattern + that week's check; the pattern *column* uses the current week's focus pattern across all 8 weeks.
-4. Details, real-data tables, and the three questions: `handoffs/reports/T006b-report.md`.
+1. **Browser checks for the user** (report lists them): arrows on the decision position, ←/→/Home only while a panel has focus, and the 360px board at phone width.
+2. **The spec's example PGN has 7 half-moves, not 8** — the clamping tests use ply 7 as the last ply (flagged as deviation 1; worth a glance in case you expected 8).
+3. Two small questions at the end of the report: reopen behavior (panel remembers its ply) and middle-click deep links on chips.

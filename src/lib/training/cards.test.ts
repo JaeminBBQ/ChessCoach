@@ -8,6 +8,8 @@ import { createNodeEngine } from '../engine/node'
 import { buildCards, buildCardsDetailed } from './cards'
 
 const QUIET_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+// After 1.e4 e5 2.Bc4 — Qd1-h5 is a legal move here (the motif detector replays it).
+const SCHOLAR_FEN = 'rnbqkbnr/pppp1ppp/8/4p3/2B1P3/8/PPPP1PPP/RNBQK1NR w KQkq - 2 3'
 
 const cp = (value: number): Score => ({ type: 'cp', value })
 const mate = (value: number): Score => ({ type: 'mate', value })
@@ -60,7 +62,15 @@ function analysisFor(specs: PlySpec[]): GameAnalysis {
  */
 function whiteBlunderAnalysis(
   ply: number,
-  opts: { bestEval?: Score; secondEval?: Score; hasSecond?: boolean; terminal?: PlyAnalysis['terminal'] } = {},
+  opts: {
+    bestEval?: Score
+    secondEval?: Score
+    hasSecond?: boolean
+    terminal?: PlyAnalysis['terminal']
+    fen?: string
+    replySan?: string
+    replyUci?: string
+  } = {},
 ): GameAnalysis {
   const specs = Array<PlySpec>(ply + 1).fill({})
   specs[ply - 2] = { eval: cp(200) }
@@ -75,7 +85,13 @@ function whiteBlunderAnalysis(
     hasSecond: opts.hasSecond,
     terminal: opts.terminal,
   }
-  specs[ply] = { eval: cp(-200), san: 'Qd7', uci: 'd8d7' }
+  specs[ply] = {
+    eval: cp(-200),
+    san: 'Qd7',
+    uci: 'd8d7',
+    fen: opts.fen,
+    ...(opts.replySan && opts.replyUci ? { bestSan: opts.replySan, bestUci: opts.replyUci } : {}),
+  }
   return analysisFor(specs)
 }
 
@@ -95,8 +111,10 @@ function missedAnalysis(ply: number, opts: { bestEval?: Score; secondEval?: Scor
     secondUci: 'b1c3',
     secondSan: 'Nc3',
     secondEval: opts.secondEval ?? cp(-60),
+    // Qh5 must be legal in the position the motif detector replays it from.
+    fen: SCHOLAR_FEN,
   }
-  specs[ply] = { eval: cp(0), san: 'Qd7', uci: 'd8d7' }
+  specs[ply] = { eval: cp(0), san: 'Qd7', uci: 'd8d7', fen: SCHOLAR_FEN }
   return analysisFor(specs)
 }
 
@@ -172,6 +190,27 @@ describe('buildCards gates', () => {
     expect(cards[0].kind).toBe('missed')
   })
 
+  it('tags both kinds with the tactical pattern behind the mistake', () => {
+    // Missed card: the best move Qh5 mates → missedMate.
+    const [missed] = buildCards(game, missedAnalysis(7))
+    expect(missed.motif).toBe('missedMate')
+
+    // Blunder card: the opponent's best reply captures the hanging knight.
+    const [blunder] = buildCards(
+      game,
+      whiteBlunderAnalysis(7, {
+        fen: 'rnbqkb1r/ppp2ppp/3p1n2/4N3/4P3/8/PPPP1PPP/RNBQKB1R b KQkq - 2 4',
+        replySan: 'dxe5',
+        replyUci: 'd6e5',
+      }),
+    )
+    expect(blunder.motif).toBe('hangingPiece')
+
+    // Without a recognizable pattern the tag falls back to other.
+    const [other] = buildCards(game, whiteBlunderAnalysis(7))
+    expect(other.motif).toBe('other')
+  })
+
   it('converts win % to the user’s point of view and fills every field', () => {
     const [card] = buildCards(blackGame, blackBlunderAnalysis(8))
     expect(card).toEqual({
@@ -185,6 +224,7 @@ describe('buildCards gates', () => {
       playedSan: 'Qd7',
       playedWin: 100 - win(cp(200)),
       lastMoveUci: 'e2e4',
+      motif: 'other',
     })
   })
 })

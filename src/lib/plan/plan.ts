@@ -1,7 +1,19 @@
 import { classifyMoves, positionWin } from '../analysis/classify'
-import { coach, type CoachGame, type Finding } from '../analysis/coach'
+import {
+  coach,
+  isAbandonedLoss,
+  isMissedChance,
+  isTimeLoss,
+  phaseAt,
+  userMoveCount,
+  winningPeak,
+  type CoachGame,
+  type Finding,
+} from '../analysis/coach'
 import type { GameAnalysis } from '../analysis/game-analysis'
-import { byOpening, firstMoves } from '../analysis/insights'
+import { byOpening } from '../analysis/insights'
+import type { Motif } from '../analysis/motifs'
+import { MOTIF_METRIC_LABEL, patternCounts, type PatternGame } from '../analysis/patterns'
 import { taskProviders } from './tasks'
 import type { WeekRange } from './week'
 import type { FocusInfo, PlanActivity, PlanTask } from './types'
@@ -22,12 +34,15 @@ export interface Plan {
   tasks: PlanTask[]
 }
 
-/** Builds the week's task list; `done` comes from data, never from checkboxes. */
+/** Builds the week's task list; `done` comes from data (or a manual toggle), never from checkboxes. */
 export function buildPlan(activity: PlanActivity): Plan {
   const tasks = taskProviders
     .map((provider) => provider(activity))
     .filter((task) => task !== null)
-    .map((task) => ({ ...task, complete: task.target > 0 && task.done >= task.target }))
+    .map((task) => ({
+      ...task,
+      complete: task.manual === true ? task.done > 0 : task.target > 0 && task.done >= task.target,
+    }))
   return { focus: activity.focus, tasks }
 }
 
@@ -112,6 +127,21 @@ export function focusMetricForWeek(findingId: string, games: readonly CoachGame[
   return focusMetric(findingId, games.filter((game) => game.playedAt >= week.start && game.playedAt < week.end))
 }
 
+/**
+ * The focus's top pattern as a per-analyzed-game metric (e.g. "Hanging pieces/game"),
+ * using the same detectors as the Coach pattern tables. Null when nothing is analyzed.
+ */
+export function patternFocusMetric(
+  findingId: string,
+  motif: Motif,
+  games: readonly PatternGame[],
+): FocusMetric | null {
+  const analyzed = games.filter((game) => game.analysis !== null).length
+  if (analyzed === 0) return null
+  const count = patternCounts(findingId, games).get(motif) ?? 0
+  return { label: `${MOTIF_METRIC_LABEL[motif]}/game`, value: count / analyzed, kind: 'perGame', sample: analyzed }
+}
+
 export interface TrendPoint {
   value: number | null
   sample: number
@@ -149,7 +179,8 @@ function perAnalyzed(label: string, count: number, games: readonly CoachGame[], 
   return { label, value: count / analyzed, kind, sample: analyzed }
 }
 
-// --- Focus metric detectors (mirror coach.ts; don't change the formulas) ---
+// --- Focus metric detectors (phase rule, missed-chance rule, conversion
+// peak, and termination codes all come from coach.ts) ---
 
 type Phase = 'opening' | 'middlegame' | 'endgame'
 
@@ -161,30 +192,6 @@ function analyzedGames(games: readonly CoachGame[]): CoachGame[] {
   return games.filter((game) => game.analysis !== null) as CoachGame[]
 }
 
-/** Moves 1–10 are the opening; later, endgame once few pieces remain. Same rule as coach.ts. */
-function phaseAt(fen: string, ply: number): Phase {
-  if (ply <= 20) return 'opening'
-  return countPieces(fen) <= 6 ? 'endgame' : 'middlegame'
-}
-
-function countPieces(fen: string): number {
-  let count = 0
-  for (const ch of fen.split(' ')[0]) if ('nbrqNBRQ'.includes(ch)) count++
-  return count
-}
-
-/** A loss where the user left and the opponent claimed the win (same codes as coach.ts). */
-function isAbandonedLoss(game: CoachGame): boolean {
-  if (game.result !== 'loss') return false
-  return game.platform === 'chesscom' ? game.termination === 'abandoned' : game.termination === 'timeout'
-}
-
-/** A loss on the clock: Chess.com `timeout`, Lichess `outoftime`. */
-function isTimeLoss(game: CoachGame): boolean {
-  if (game.result !== 'loss') return false
-  return game.platform === 'chesscom' ? game.termination === 'timeout' : game.termination === 'outoftime'
-}
-
 function userWinAt(a: GameAnalysis, ply: number, userColor: 'white' | 'black'): number | null {
   const white = positionWin(a.plies[ply])
   if (white === null) return null
@@ -194,11 +201,6 @@ function userWinAt(a: GameAnalysis, ply: number, userColor: 'white' | 'black'): 
 function userWinAtFinal(game: CoachGame): number {
   const a = game.analysis!
   return userWinAt(a, a.plies.length - 1, game.userColor) ?? 0
-}
-
-function userMoveCount(game: CoachGame): number {
-  const n = firstMoves(game.pgn, Infinity).length
-  return game.userColor === 'white' ? Math.ceil(n / 2) : Math.floor(n / 2)
 }
 
 function mistakesInPhase(games: readonly CoachGame[], phase: Phase): number {
@@ -220,31 +222,20 @@ function missedChances(games: readonly CoachGame[]): number {
     const byPly = new Map(judgements.map((j) => [j.ply, j]))
     for (const j of judgements) {
       if (j.color !== game.userColor) continue
-      const previous = byPly.get(j.ply - 1)
-      if (previous !== undefined && previous.drop >= 20 && j.judgement !== 'best' && j.drop >= 10) count++
+      if (isMissedChance(byPly.get(j.ply - 1), j)) count++
     }
   }
   return count
 }
 
-/** Games that reached a winning position (user win % ≥ 85 after ply 10), and of those, the ones not won. */
+/** Games that reached a winning position (win % ≥ 85 after ply 10), and of those, the ones not won. */
 function conversions(games: readonly CoachGame[]): { reached: number; notWon: number; analyzed: number } {
   let reached = 0
   let notWon = 0
   let analyzed = 0
   for (const game of analyzedGames(games)) {
     analyzed++
-    const a = game.analysis!
-    let winning = false
-    for (let ply = 11; ply < a.plies.length; ply++) {
-      if (a.plies[ply].terminal !== null) continue
-      const win = userWinAt(a, ply, game.userColor)
-      if (win !== null && win >= 85) {
-        winning = true
-        break
-      }
-    }
-    if (winning) {
+    if (winningPeak(game.analysis!, game.userColor) !== null) {
       reached++
       if (game.result !== 'win') notWon++
     }

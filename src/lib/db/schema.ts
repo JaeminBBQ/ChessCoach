@@ -119,6 +119,8 @@ export const drillCards = sqliteTable(
     playedWin: real('played_win').notNull(),
     /** The opponent's move that led to the position, for highlighting. */
     lastMoveUci: text('last_move_uci'),
+    /** Tactical pattern behind the mistake (motifs.ts); null until backfilled. */
+    motif: text('motif'),
     ease: real('ease').notNull(),
     intervalDays: real('interval_days').notNull(),
     reps: integer('reps').notNull(),
@@ -190,4 +192,21 @@ export const plans = sqliteTable(
     createdAt: integer('created_at').notNull(),
   },
   (t) => [unique('plans_userId_weekStart_unique').on(t.userId, t.weekStart)],
+)
+
+// Manual "Done" checks for plan tasks that can't be auto-tracked (e.g. the
+// Lichess puzzle task), one row per (user, week, task).
+export const planTaskChecks = sqliteTable(
+  'plan_task_checks',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    userId: integer('user_id')
+      .notNull()
+      .references(() => users.id),
+    /** Monday 00:00 (user time zone) of the plan's week, epoch ms. */
+    weekStart: integer('week_start').notNull(),
+    taskId: text('task_id').notNull(),
+    checkedAt: integer('checked_at').notNull(),
+  },
+  (t) => [unique('plan_task_checks_userId_weekStart_taskId_unique').on(t.userId, t.weekStart, t.taskId)],
 )

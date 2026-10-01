@@ -1,9 +1,11 @@
 import { and, count, desc, eq, gte } from 'drizzle-orm'
 
 import type { CoachGame } from '../analysis/coach'
+import type { Motif } from '../analysis/motifs'
+import { topPattern } from '../analysis/patterns'
 import type { getDb } from '../db/client'
-import { drillReviews, gameReviews, games, plans, userSettings, type Result, type Speed } from '../db/schema'
-import { focusMetric, pickFocus, type FocusMetric } from '../plan/plan'
+import { drillReviews, gameReviews, games, plans, planTaskChecks, userSettings, type Result, type Speed } from '../db/schema'
+import { focusMetric, patternFocusMetric, pickFocus, type FocusMetric } from '../plan/plan'
 import { lastNWeeks, weekRange, type WeekRange } from '../plan/week'
 
 type Db = ReturnType<typeof getDb>
@@ -124,11 +126,23 @@ export function drillReviewsThisWeek(db: Db, userId: number, week: WeekRange): n
 
 // --- Weekly plan (focus, fixed per week) ------------------------------------
 
+export interface StoredPattern {
+  motif: Motif
+  label: string
+  count: number
+  theme: string | null
+  themeUrl: string | null
+  /** The pattern metric over the previous 4 weeks, null when there was no data. */
+  metric: FocusMetric | null
+}
+
 export interface StoredBaseline {
   /** The focus snapshot (id, title, habit), null when the week had no findings. */
   focus: { id: string; title: string; habit: string } | null
   /** The focus metric over the previous 4 weeks, null when there was no data. */
   metric: FocusMetric | null
+  /** The focus's top pattern, when the focus is mistakes-* or missed-chances. */
+  pattern: StoredPattern | null
 }
 
 export interface PlanRow {
@@ -140,9 +154,15 @@ export interface PlanRow {
   createdAt: number
 }
 
+const isPatternFinding = (findingId: string): boolean =>
+  findingId.startsWith('mistakes-') || findingId === 'missed-chances'
+
 /**
  * The week's plan row: computes and stores the focus (and its baseline over
- * the previous 4 weeks) on first read, so it stays fixed for the week.
+ * the previous 4 weeks) on first read, so it stays fixed for the week. Rows
+ * stored before T006b get their pattern snapshot backfilled the same way —
+ * the inputs (previous 4 weeks, the 1-year pool) are stable, so the value
+ * can't drift.
  */
 export function getOrCreatePlan(
   db: Db,
@@ -157,13 +177,22 @@ export function getOrCreatePlan(
     .from(plans)
     .where(and(eq(plans.userId, userId), eq(plans.weekStart, weekStart)))
     .get()
-  if (existing) return { ...existing, baseline: JSON.parse(existing.baseline) as StoredBaseline }
+  if (existing) {
+    const baseline = JSON.parse(existing.baseline) as StoredBaseline
+    if (baseline.pattern === undefined && baseline.focus !== null && isPatternFinding(baseline.focus.id)) {
+      baseline.pattern = computePattern(baseline.focus.id, games, weekStart, timezone)
+      db.update(plans).set({ baseline: JSON.stringify(baseline) }).where(eq(plans.id, existing.id)).run()
+    }
+    return { ...existing, baseline }
+  }
 
   const focus = pickFocus(games, now)
   const metric = focus === null ? null : baselineFor(games, weekStart, timezone, focus.id)
+  const pattern = focus !== null && isPatternFinding(focus.id) ? computePattern(focus.id, games, weekStart, timezone) : null
   const baseline: StoredBaseline = {
     focus: focus === null ? null : { id: focus.id, title: focus.title, habit: focus.training },
     metric,
+    pattern,
   }
   const row = {
     userId,
@@ -176,6 +205,19 @@ export function getOrCreatePlan(
   return { ...row, id: inserted.id, baseline }
 }
 
+/** The focus's top pattern in the 1-year pool, with its previous-4-weeks baseline metric. */
+function computePattern(
+  focusId: string,
+  games: readonly CoachGame[],
+  weekStart: number,
+  timezone: string,
+): StoredPattern | null {
+  const top = topPattern(focusId, games)
+  if (top === null) return null
+  const metric = patternFocusMetric(focusId, top.motif, baselineGames(games, weekStart, timezone))
+  return { motif: top.motif, label: top.label, count: top.count, theme: top.theme, themeUrl: top.themeUrl, metric }
+}
+
 /** The focus metric over the 4 weeks before the plan's week. */
 function baselineFor(
   games: readonly CoachGame[],
@@ -183,6 +225,10 @@ function baselineFor(
   timezone: string,
   findingId: string,
 ): FocusMetric | null {
+  return focusMetric(findingId, baselineGames(games, weekStart, timezone))
+}
+
+function baselineGames(games: readonly CoachGame[], weekStart: number, timezone: string): CoachGame[] {
   const weeks = lastNWeeks(weekStart, timezone, 5).slice(0, 4)
   const inBaseline = (playedAt: number) => {
     for (const start of weeks) {
@@ -191,7 +237,65 @@ function baselineFor(
     }
     return false
   }
-  return focusMetric(findingId, games.filter((game) => inBaseline(game.playedAt)))
+  return games.filter((game) => inBaseline(game.playedAt))
+}
+
+// --- Manual task checks -----------------------------------------------------
+
+/** The task ids checked this week (the manual Done toggles). */
+export function taskChecksForWeek(db: Db, userId: number, weekStart: number): Set<string> {
+  const rows = db
+    .select({ taskId: planTaskChecks.taskId })
+    .from(planTaskChecks)
+    .where(and(eq(planTaskChecks.userId, userId), eq(planTaskChecks.weekStart, weekStart)))
+    .all()
+  return new Set(rows.map((row) => row.taskId))
+}
+
+/** All manual checks since `since`, for the scorecard's per-week task counts. */
+export function listTaskChecks(db: Db, userId: number, since: number): { weekStart: number; taskId: string }[] {
+  return db
+    .select({ weekStart: planTaskChecks.weekStart, taskId: planTaskChecks.taskId })
+    .from(planTaskChecks)
+    .where(and(eq(planTaskChecks.userId, userId), gte(planTaskChecks.weekStart, since)))
+    .all()
+}
+
+/** Toggles a manual task's Done check for the week: checked ↔ unchecked. */
+export function toggleTaskCheck(db: Db, userId: number, weekStart: number, taskId: string, now = Date.now()): void {
+  const existing = db
+    .select({ id: planTaskChecks.id })
+    .from(planTaskChecks)
+    .where(
+      and(
+        eq(planTaskChecks.userId, userId),
+        eq(planTaskChecks.weekStart, weekStart),
+        eq(planTaskChecks.taskId, taskId),
+      ),
+    )
+    .get()
+  if (existing) {
+    db.delete(planTaskChecks).where(eq(planTaskChecks.id, existing.id)).run()
+  } else {
+    db.insert(planTaskChecks).values({ userId, weekStart, taskId, checkedAt: now }).run()
+  }
+}
+
+/** Each week's stored plan pattern (if any), for the scorecard's manual-task column. */
+export function listPlanPatterns(
+  db: Db,
+  userId: number,
+  since: number,
+): { weekStart: number; pattern: StoredPattern | null }[] {
+  const rows = db
+    .select({ weekStart: plans.weekStart, baseline: plans.baseline })
+    .from(plans)
+    .where(and(eq(plans.userId, userId), gte(plans.weekStart, since)))
+    .all()
+  return rows.map((row) => {
+    const baseline = JSON.parse(row.baseline) as StoredBaseline
+    return { weekStart: row.weekStart, pattern: baseline.pattern ?? null }
+  })
 }
 
 /** The user's newest games, for the loss-review fallback ("your last 3 games"). */

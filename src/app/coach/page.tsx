@@ -2,13 +2,18 @@ import Link from 'next/link'
 import { connection } from 'next/server'
 
 import GamesFilters from '@/components/games-filters'
-import { coach, type CoachGame, type Finding } from '@/lib/analysis/coach'
+import ReplayBoards from '@/components/coach/replay-board'
+import { coach, type CoachGame, type Finding, type FindingExample } from '@/lib/analysis/coach'
+import { lichessThemeUrl } from '@/lib/analysis/motifs'
+import { mistakePatterns, patternTakeaway, type PatternRow } from '@/lib/analysis/patterns'
+import { replayWindow, type ReplayData } from '@/lib/analysis/replay'
 import { getDb } from '@/lib/db/client'
 import { speeds, type Speed } from '@/lib/db/schema'
 import { loadCoachGames } from '@/lib/server/coach'
 import { listAccounts } from '@/lib/server/games'
 import { ranges, type Range } from '@/lib/server/insights'
 import { getCurrentUserId } from '@/lib/server/session'
+import { motifCardCounts } from '@/lib/server/training'
 
 const selectClass =
   'rounded-md border border-black/10 bg-transparent px-2 py-1.5 text-sm dark:border-white/15'
@@ -58,6 +63,24 @@ export default async function CoachPage({
 
   const result = coach(games)
   const [top, rest] = [result.findings.slice(0, 3), result.findings.slice(3)]
+  const patterns = mistakePatterns(games)
+  const cardCounts = motifCardCounts(db, userId)
+  const takeaway = patternTakeaway(patterns)
+
+  // Inline replay data for every example, from the games already loaded.
+  const gameById = new Map(games.map((game) => [game.id, game]))
+  const exampleReplays = new Map<string, { replays: ReplayData[]; plain: FindingExample[] }>()
+  for (const finding of result.findings) {
+    const replays: ReplayData[] = []
+    const plain: FindingExample[] = []
+    for (const example of finding.examples) {
+      const game = gameById.get(example.gameId)
+      const replay = game !== undefined ? replayWindow(game, example) : null
+      if (replay !== null) replays.push(replay)
+      else plain.push(example)
+    }
+    exampleReplays.set(finding.id, { replays, plain })
+  }
 
   return (
     <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6">
@@ -122,6 +145,21 @@ export default async function CoachPage({
             </div>
           )}
 
+          {(patterns.mistakes.length > 0 || patterns.missed.length > 0) && (
+            <section className="mt-6">
+              <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                Your mistake patterns
+              </h2>
+              {takeaway !== null && (
+                <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">{takeaway}</p>
+              )}
+              <PatternTable rows={patterns.mistakes} cardCounts={cardCounts} kind="mistakes" />
+              {patterns.missed.length > 0 && (
+                <PatternTable rows={patterns.missed} cardCounts={cardCounts} kind="missed chances" compact />
+              )}
+            </section>
+          )}
+
           {result.findings.length === 0 ? (
             <p className="mt-8 text-sm text-zinc-500 dark:text-zinc-400">
               No clear weaknesses yet. Analyze more games.
@@ -129,8 +167,13 @@ export default async function CoachPage({
           ) : (
             <>
               <div className="mt-6 grid gap-4">
-                {top.map((finding) => (
-                  <FindingCard key={finding.id} finding={finding} />
+                {top.map((finding, i) => (
+                  <FindingCard
+                    key={finding.id}
+                    finding={finding}
+                    exampleReplays={exampleReplays.get(finding.id)!}
+                    openFirstExample={i === 0}
+                  />
                 ))}
               </div>
 
@@ -153,7 +196,7 @@ export default async function CoachPage({
                           </span>
                         </summary>
                         <div className="border-t border-black/10 px-3 py-3 dark:border-white/10">
-                          <FindingBody finding={finding} />
+                          <FindingBody finding={finding} exampleReplays={exampleReplays.get(finding.id)!} />
                         </div>
                       </details>
                     ))}
@@ -168,14 +211,27 @@ export default async function CoachPage({
   )
 }
 
-function FindingCard({ finding }: { finding: Finding }) {
+interface ExampleReplays {
+  replays: ReplayData[]
+  plain: FindingExample[]
+}
+
+function FindingCard({
+  finding,
+  exampleReplays,
+  openFirstExample = false,
+}: {
+  finding: Finding
+  exampleReplays: ExampleReplays
+  openFirstExample?: boolean
+}) {
   return (
     <section className="rounded-lg border border-black/10 p-4 dark:border-white/10">
       <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
         <h2 className="text-base font-semibold">{finding.title}</h2>
         <PointsPill finding={finding} />
       </div>
-      <FindingBody finding={finding} />
+      <FindingBody finding={finding} exampleReplays={exampleReplays} openFirstExample={openFirstExample} />
     </section>
   )
 }
@@ -188,7 +244,16 @@ function PointsPill({ finding }: { finding: Finding }) {
   )
 }
 
-function FindingBody({ finding }: { finding: Finding }) {
+function FindingBody({
+  finding,
+  exampleReplays,
+  openFirstExample = false,
+}: {
+  finding: Finding
+  exampleReplays: ExampleReplays
+  openFirstExample?: boolean
+}) {
+  const { replays, plain } = exampleReplays
   return (
     <>
       <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">{finding.headline}</p>
@@ -197,9 +262,10 @@ function FindingBody({ finding }: { finding: Finding }) {
           <li key={i}>{line}</li>
         ))}
       </ul>
-      {finding.examples.length > 0 && (
+      {replays.length > 0 && <ReplayBoards examples={replays} initialOpen={openFirstExample ? 0 : -1} />}
+      {plain.length > 0 && (
         <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm">
-          {finding.examples.map((example) => (
+          {plain.map((example) => (
             <li key={`${example.gameId}-${example.ply}`}>
               <Link
                 href={`/games/${example.gameId}?ply=${example.ply}`}
@@ -225,6 +291,72 @@ function FindingBody({ finding }: { finding: Finding }) {
         </p>
       )}
     </>
+  )
+}
+
+function PatternTable({
+  rows,
+  cardCounts,
+  kind,
+  compact = false,
+}: {
+  rows: PatternRow[]
+  cardCounts: Map<string, number>
+  kind: 'mistakes' | 'missed chances'
+  compact?: boolean
+}) {
+  const caption = compact ? 'Missed-chance patterns' : 'Mistake patterns'
+  return (
+    <div className="mt-3 overflow-x-auto rounded-lg border border-black/10 dark:border-white/10">
+      <table className="w-full min-w-[560px] text-sm">
+        <caption className="px-3 py-2 text-left text-xs uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+          {caption} · {kind}
+        </caption>
+        <thead>
+          <tr className="border-b border-black/10 text-left text-xs uppercase tracking-wide text-zinc-500 dark:border-white/10 dark:text-zinc-400">
+            <th className="px-3 py-2 font-medium">Pattern</th>
+            <th className="px-3 py-2 text-right font-medium">{kind === 'mistakes' ? 'Mistakes' : 'Missed'}</th>
+            <th className="px-3 py-2 text-right font-medium">Share</th>
+            <th className="px-3 py-2 text-right font-medium">Pts/100 games</th>
+            <th className="px-3 py-2 text-right font-medium">Practice</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => {
+            const themeUrl = lichessThemeUrl({ motif: row.motif })
+            const cardCount = cardCounts.get(row.motif) ?? 0
+            return (
+              <tr key={row.motif} className="border-b border-black/5 last:border-0 dark:border-white/5">
+                <td className="px-3 py-2">{row.label}</td>
+                <td className="px-3 py-2 text-right tabular-nums">{row.count}</td>
+                <td className="px-3 py-2 text-right tabular-nums">{Math.round(row.share * 100)}%</td>
+                <td className="px-3 py-2 text-right tabular-nums">{row.pointsPer100.toFixed(1)}</td>
+                <td className="px-3 py-2 text-right whitespace-nowrap">
+                  {themeUrl !== null && (
+                    <a
+                      href={themeUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="underline underline-offset-2 hover:text-foreground"
+                    >
+                      Lichess puzzles ↗
+                    </a>
+                  )}
+                  {cardCount > 0 && (
+                    <Link
+                      href={`/train?motif=${row.motif}`}
+                      className="ml-3 underline underline-offset-2 hover:text-foreground"
+                    >
+                      Your positions ({cardCount}) →
+                    </Link>
+                  )}
+                </td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+    </div>
   )
 }
 

@@ -92,10 +92,13 @@ export default function Scorecard({
   rows,
   planSpeed,
   trendSentence,
+  patternLabel,
 }: {
   rows: WeekRow[]
   planSpeed: Speed
   trendSentence: string | null
+  /** The focus's top pattern column label ("Hanging pieces/game"), or null to hide it. */
+  patternLabel: string | null
 }) {
   return (
     <section className="mt-6">
@@ -116,6 +119,9 @@ export default function Scorecard({
               <th className={thClass}>Analyzed</th>
               <MetricHeader label="Mistakes/game" values={rows.map((row) => row.mistakesPerGame)} />
               <MetricHeader label="Missed/game" values={rows.map((row) => row.missedPerGame)} />
+              {patternLabel !== null && (
+                <MetricHeader label={patternLabel} values={rows.map((row) => row.patternPerGame)} />
+              )}
               <MetricHeader label="Conversion" values={rows.map((row) => row.conversionPct)} />
               <MetricHeader label="Puzzles" values={rows.map((row) => row.puzzlesSolved)} />
               <MetricHeader label="Reviews" values={rows.map((row) => row.reviewsDone)} />
@@ -134,6 +140,8 @@ export default function Scorecard({
                 <td className={tdClass}>{row.analyzed}</td>
                 {metricCell(row.mistakesPerGame, `${row.analyzed} analyzed games`, (n) => n.toFixed(2))}
                 {metricCell(row.missedPerGame, `${row.analyzed} analyzed games`, (n) => n.toFixed(2))}
+                {patternLabel !== null &&
+                  metricCell(row.patternPerGame, `${row.analyzed} analyzed games`, (n) => n.toFixed(2))}
                 {metricCell(row.conversionPct, `${row.analyzed} analyzed games`, (n) => `${Math.round(n)}%`)}
                 <td className={tdClass}>{row.puzzlesSolved}</td>
                 <td className={tdClass}>{row.reviewsDone}</td>

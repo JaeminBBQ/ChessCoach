@@ -5,12 +5,18 @@ import { count, eq } from 'drizzle-orm'
 import Trainer from '@/components/training/trainer'
 import { getDb } from '@/lib/db/client'
 import { analyses } from '@/lib/db/schema'
+import { MOTIF_LABEL } from '@/lib/analysis/motifs'
 import { currentTimeMs, syncDrillCards, trainingStats } from '@/lib/server/training'
 import { getCurrentUserId } from '@/lib/server/session'
 
-export default async function TrainPage() {
+export default async function TrainPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}) {
   // The page reads the DB per request; never prerender it.
   await connection()
+  const sp = await searchParams
   const db = getDb()
   const userId = getCurrentUserId(db)
   const now = currentTimeMs()
@@ -18,12 +24,25 @@ export default async function TrainPage() {
   const stats = trainingStats(db, userId, now)
   const analyzed = db.select({ n: count() }).from(analyses).where(eq(analyses.userId, userId)).get()?.n ?? 0
 
+  // `?motif=X` limits the session to one pattern (Coach links here).
+  const motifParam = typeof sp.motif === 'string' ? sp.motif : null
+  const motif = motifParam !== null && Object.prototype.hasOwnProperty.call(MOTIF_LABEL, motifParam) ? motifParam : null
+
   return (
     <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6">
       <h1 className="text-2xl font-semibold tracking-tight">Train</h1>
-      <p className="mt-1 text-sm tabular-nums text-zinc-500 dark:text-zinc-400">
-        {stats.due} due · {stats.new} new · {stats.learned} learned · {stats.accuracy7d}% right (7 days)
-      </p>
+      {motif !== null ? (
+        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+          Practicing: {MOTIF_LABEL[motif as keyof typeof MOTIF_LABEL]} ·{' '}
+          <Link href="/train" className="underline underline-offset-2 hover:text-foreground">
+            clear
+          </Link>
+        </p>
+      ) : (
+        <p className="mt-1 text-sm tabular-nums text-zinc-500 dark:text-zinc-400">
+          {stats.due} due · {stats.new} new · {stats.learned} learned · {stats.accuracy7d}% right (7 days)
+        </p>
+      )}
 
       {analyzed === 0 ? (
         <p className="mt-8 text-sm text-zinc-500 dark:text-zinc-400">
@@ -44,7 +63,7 @@ export default async function TrainPage() {
           All caught up. Next card due {stats.nextDue !== null ? inFuture(stats.nextDue, now) : 'later'}.
         </p>
       ) : (
-        <Trainer />
+        <Trainer motif={motif} />
       )}
     </main>
   )
