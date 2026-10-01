@@ -142,13 +142,14 @@ export function ensureGameMatch(db: Db, userId: number, gameId: number): GameMat
   return loadGameMatches(db, userId, [gameId]).get(gameId)
 }
 
-/** The stored book path of a canonical node (for the game banner's Explore link). */
-export function getNodePath(db: Db, userId: number, nodeId: number): string | undefined {
+/** The book path and repertoire slug of a canonical node (for the banner's Explore link). */
+export function getNodeLine(db: Db, userId: number, nodeId: number): { slug: string; path: string } | undefined {
   return db
-    .select({ path: repertoireNodes.path })
+    .select({ slug: repertoires.slug, path: repertoireNodes.path })
     .from(repertoireNodes)
+    .innerJoin(repertoires, eq(repertoires.id, repertoireNodes.repertoireId))
     .where(and(eq(repertoireNodes.id, nodeId), eq(repertoireNodes.userId, userId)))
-    .get()?.path
+    .get()
 }
 
 /**

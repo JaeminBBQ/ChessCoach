@@ -18,11 +18,17 @@ Those games are exactly the prep to-do list, and today they're buried in "Never 
 3. **Game banner** also shows for root-path deviations, without the repertoire name: "**Your opponent left your book** at 1...c5: no prepared answer here." / "**You left your book** at 3.Bc4 (book: 3.c3)", plus judgement and drop when analyzed. The Explore link follows rule 2.
 4. **Remove the "Never in book" first-moves tables.** Replace them with one line under the cards: "Games that left your book on the shared first moves: White 1,714 · Black 540", using the same rule as today (`repertoireId = null`).
 5. Raise the deviation tables from top 8 to **top 10**.
+6. **"Stray" wording (owner's choice, 2026-09-30).** The book is the owner's chosen repertoire, and leaving it is a *stray* to fix, not a style choice. Rename user deviations everywhere:
+   - The table title becomes **"Where you stray from your book"**. Rename the column to "You played" vs "Book".
+   - The banner becomes "**You strayed from your book** at 3.Bc4 (book: 3.c3)" (+ judgement/drop when analyzed).
+   - Card split: "followed to the end 31% · strayed 22% · opponent left 47%".
+   Opponent deviations keep their wording.
 
 ## Scope: do not
 - No changes to the matcher (`matchGame`/`buildBookIndex`), the cache, or the schema.
 
 ## Tests
+- The page/banner copy uses "strayed" for user deviations (a render or string test is enough).
 - `topDeviations`: a root-path deviation (e.g. 1.e4 c5 against a White book whose trees start after 1.e4 e5) is counted with its line; a `leftPly = 1` deviation is counted with an empty line and `repertoireId` null.
 
 ## Acceptance criteria

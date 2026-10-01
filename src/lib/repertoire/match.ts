@@ -250,16 +250,31 @@ export function resultPoints(result: Result): number {
   return result === 'win' ? 1 : result === 'draw' ? 0.5 : 0
 }
 
+/** The three card buckets: stayed in the book, the user strayed, or the opponent left. */
+export function matchBucket(status: MatchStatus): 'followed' | 'strayed' | 'opponent-left' {
+  if (status === 'user-left') return 'strayed'
+  if (status === 'opponent-left') return 'opponent-left'
+  return 'followed' // book-end and game-ended: the game never left the book
+}
+
+/** Card split labels — the book is the owner's plan, so a user deviation is a "stray". */
+export const BUCKET_LABELS = {
+  followed: 'followed to the end',
+  strayed: 'strayed',
+  'opponent-left': 'opponent left',
+} as const
+
 /** The user's score (0–1) from win/draw/loss counts. */
 export function scoreOf(points: number, n: number): number {
   return n === 0 ? 0 : points / n
 }
 
 export interface Deviation {
-  /** Canonical node id of the position the deviation was played from. */
-  canonicalId: number
-  repertoireId: number
-  /** The book line (SANs) to that position, for display and the Explore link. */
+  /** Canonical node id of the position the deviation was played from; null for the start position. */
+  canonicalId: number | null
+  /** The canonical node's repertoire; null for the start position. */
+  repertoireId: number | null
+  /** The book line (SANs) to that position, for display and the Explore link; [] for the start position. */
   line: string[]
   san: string
   by: 'user' | 'opponent'
@@ -271,8 +286,9 @@ export interface Deviation {
 /**
  * The most common deviations, grouped by position + move, in two lists (what
  * opponents play off-book, and where the user left the book), each top-N by
- * count. Only matches with a repertoire are counted (root-path-only games
- * belong to the "Never in book" bucket instead).
+ * count. Deviations on the shared root moves count too: their position is a
+ * root-path node (or the start position for ply 1), so `repertoireId` can be
+ * null even though the game itself never entered a tree.
  */
 export function topDeviations(
   rows: readonly MatchRow[],
@@ -282,16 +298,23 @@ export function topDeviations(
   const lineByNode = new Map(nodes.map((n) => [n.id, n]))
   const groups = new Map<string, Deviation>()
   for (const { match, game } of rows) {
-    if (match.repertoireId === null || (match.status !== 'user-left' && match.status !== 'opponent-left')) continue
-    if (match.leftPly === null || match.leftSan === null || match.leftPly < 2) continue
-    const positionId = match.positions[match.leftPly - 2]
-    const node = positionId !== undefined ? lineByNode.get(positionId) : undefined
-    if (!node) continue
+    if (match.status !== 'user-left' && match.status !== 'opponent-left') continue
+    if (match.leftPly === null || match.leftSan === null) continue
+    const node = match.leftPly >= 2 ? lineByNode.get(match.positions[match.leftPly - 2]) : undefined
     const by: Deviation['by'] = match.status === 'user-left' ? 'user' : 'opponent'
-    const key = `${node.id} ${match.leftSan}`
+    const key = `${node?.id ?? 'start'} ${match.leftSan}`
     let row = groups.get(key)
     if (!row) {
-      row = { canonicalId: node.id, repertoireId: node.repertoireId, line: node.path.split(' '), san: match.leftSan, by, bookSans: match.bookSans ?? [], n: 0, score: 0 }
+      row = {
+        canonicalId: node?.id ?? null,
+        repertoireId: node?.repertoireId ?? null,
+        line: node ? node.path.split(' ') : [],
+        san: match.leftSan,
+        by,
+        bookSans: match.bookSans ?? [],
+        n: 0,
+        score: 0,
+      }
       groups.set(key, row)
     }
     row.n++

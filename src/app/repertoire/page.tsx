@@ -5,7 +5,17 @@ import GamesFilters from '@/components/games-filters'
 import { firstMoves } from '@/lib/analysis/insights'
 import { getDb } from '@/lib/db/client'
 import { speeds, type UserColor } from '@/lib/db/schema'
-import { formatLine, moveNo, resultPoints, scoreOf, topDeviations, type Deviation, type MatchRow } from '@/lib/repertoire/match'
+import {
+  BUCKET_LABELS,
+  formatLine,
+  matchBucket,
+  moveNo,
+  resultPoints,
+  scoreOf,
+  topDeviations,
+  type Deviation,
+  type MatchRow,
+} from '@/lib/repertoire/match'
 import { listAccounts } from '@/lib/server/games'
 import { ranges, type Range } from '@/lib/server/insights'
 import {
@@ -62,8 +72,11 @@ export default async function RepertoirePage({
 
   const query = filterQuery(sp)
   const slugById = new Map(repertoires.map((rep) => [rep.id, rep.slug]))
-  const deviations = topDeviations(rows, nodes, 8)
-  const neverInBook = neverInBookRows(rows)
+  const deviations = topDeviations(rows, nodes, 10)
+  const neverInBook: Record<UserColor, number> = { white: 0, black: 0 }
+  for (const row of rows) {
+    if (row.match.repertoireId === null) neverInBook[row.game.userColor]++
+  }
 
   return (
     <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6">
@@ -117,6 +130,10 @@ export default async function RepertoirePage({
             ))}
           </section>
 
+          <p className="mt-4 text-sm tabular-nums text-zinc-600 dark:text-zinc-300">
+            Games that left your book on the shared first moves: White {neverInBook.white} · Black {neverInBook.black}
+          </p>
+
           <DeviationSection
             title="Where opponents take you out of book"
             caption="Their move wasn't in your prep — this is what to study next."
@@ -126,34 +143,13 @@ export default async function RepertoirePage({
             query={query}
           />
           <DeviationSection
-            title="Where you leave your own book"
-            caption="You forgot or varied; the book move is shown for comparison."
+            title="Where you stray from your book"
+            caption="Habits to drill away — the book move is shown for comparison."
             rows={deviations.user}
             kind="user"
             slugById={slugById}
             query={query}
           />
-
-          <section className="mt-8">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-              Never in book
-            </h2>
-            {neverInBook.length === 0 ? (
-              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">Every game entered one of your repertoires.</p>
-            ) : (
-              <div className="mt-2 space-y-2">
-                {neverInBook.map((row) => (
-                  <div key={row.color} className="rounded-lg border border-black/10 p-3 text-sm dark:border-white/10">
-                    <p className="font-medium">{row.color === 'white' ? 'White' : 'Black'}: {row.n} games never in book</p>
-                    <p className="mt-1 tabular-nums text-zinc-600 dark:text-zinc-300">
-                      Most common starts:{' '}
-                      {row.openings.map((opening) => `${formatLine(opening.moves)} (${opening.n})`).join(' · ')}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </section>
         </>
       )}
     </main>
@@ -163,14 +159,8 @@ export default async function RepertoirePage({
 function RepertoireCard({ rep, rows, query }: { rep: RepertoireRow; rows: MatchRow[]; query: string }) {
   const entered = rows.filter((row) => row.match.repertoireId === rep.id)
   const points = entered.reduce((sum, row) => sum + resultPoints(row.game.result), 0)
-  let followed = 0
-  let youLeft = 0
-  let opponentLeft = 0
-  for (const row of entered) {
-    if (row.match.status === 'user-left') youLeft++
-    else if (row.match.status === 'opponent-left') opponentLeft++
-    else followed++ // book-end and game-ended: the game never left the book
-  }
+  const buckets: Record<'followed' | 'strayed' | 'opponent-left', number> = { followed: 0, strayed: 0, 'opponent-left': 0 }
+  for (const row of entered) buckets[matchBucket(row.match.status)]++
   const pct = (n: number) => (entered.length === 0 ? 0 : Math.round((n / entered.length) * 100))
   return (
     <section className="rounded-lg border border-black/10 p-4 dark:border-white/10">
@@ -179,7 +169,8 @@ function RepertoireCard({ rep, rows, query }: { rep: RepertoireRow; rows: MatchR
         {entered.length} games · score {Math.round(scoreOf(points, entered.length) * 100)}%
       </p>
       <p className="mt-1 text-sm tabular-nums text-zinc-600 dark:text-zinc-300">
-        followed to the end {pct(followed)}% · you left {pct(youLeft)}% · opponent left {pct(opponentLeft)}%
+        {BUCKET_LABELS.followed} {pct(buckets.followed)}% · {BUCKET_LABELS.strayed} {pct(buckets.strayed)}% ·{' '}
+        {BUCKET_LABELS['opponent-left']} {pct(buckets['opponent-left'])}%
       </p>
       <p className="mt-2 text-sm">
         <Link
@@ -220,7 +211,7 @@ function DeviationSection({
             <thead>
               <tr className="border-b border-black/10 text-left text-xs uppercase tracking-wide text-zinc-500 dark:border-white/10 dark:text-zinc-400">
                 <th className="px-3 py-2 font-medium">Line</th>
-                <th className="px-3 py-2 font-medium">{kind === 'opponent' ? 'Their move' : 'Your move vs the book'}</th>
+                <th className="px-3 py-2 font-medium">{kind === 'opponent' ? 'Their move' : 'You played vs Book'}</th>
                 <th className="px-3 py-2 text-right font-medium">Games</th>
                 <th className="px-3 py-2 text-right font-medium">Your score</th>
                 <th className="px-3 py-2 font-medium">Explore</th>
@@ -229,14 +220,15 @@ function DeviationSection({
             <tbody>
               {rows.map((row, i) => {
                 const ply = row.line.length + 1
+                const line = row.line.length === 0 ? '(start)' : formatLine(row.line)
                 const move =
                   kind === 'opponent' || row.bookSans.length === 0
                     ? `${moveNo(ply)}${row.san}`
-                    : `${moveNo(ply)}${row.san} (book: ${row.bookSans.map((san) => moveNo(ply) + san).join(', ')})`
-                const slug = slugById.get(row.repertoireId)
+                    : `${moveNo(ply)}${row.san} vs ${row.bookSans.map((san) => moveNo(ply) + san).join(', ')}`
+                const slug = row.repertoireId !== null ? slugById.get(row.repertoireId) : undefined
                 return (
                   <tr key={i} className="border-b border-black/5 last:border-0 dark:border-white/5">
-                    <td className="px-3 py-2 font-mono">{formatLine(row.line)}</td>
+                    <td className="px-3 py-2 font-mono">{line}</td>
                     <td className="px-3 py-2 font-mono">{move}</td>
                     <td className="px-3 py-2 text-right tabular-nums">{row.n}</td>
                     <td className="px-3 py-2 text-right tabular-nums">{Math.round(row.score * 100)}%</td>
@@ -259,27 +251,6 @@ function DeviationSection({
       )}
     </section>
   )
-}
-
-/** Per color: how many games never entered a repertoire, and their most common starts. */
-function neverInBookRows(rows: MatchRow[]): { color: UserColor; n: number; openings: { moves: string[]; n: number }[] }[] {
-  const out: { color: UserColor; n: number; openings: { moves: string[]; n: number }[] }[] = []
-  for (const color of ['white', 'black'] as const) {
-    const games = rows.filter((row) => row.match.repertoireId === null && row.game.userColor === color)
-    if (games.length === 0) continue
-    const byPair = new Map<string, { moves: string[]; n: number }>()
-    for (const row of games) {
-      const moves = row.game.sans.slice(0, 2)
-      if (moves.length === 0) continue
-      const key = moves.join(' ')
-      const entry = byPair.get(key) ?? { moves, n: 0 }
-      entry.n++
-      byPair.set(key, entry)
-    }
-    const openings = [...byPair.values()].sort((a, b) => b.n - a.n || a.moves.join(' ').localeCompare(b.moves.join(' '))).slice(0, 5)
-    out.push({ color, n: games.length, openings })
-  }
-  return out
 }
 
 /** The filter query string to carry into Explore links. */

@@ -184,9 +184,9 @@ describe('bookStats', () => {
 describe('topDeviations', () => {
   const nodes = [node(1, 1, 'e4 e5 Nf3 Nc6', 'opponent'), node(2, 1, 'e4 e5 Nf3 Nf6', 'opponent')]
 
-  function dev(positionId: number, leftPly: number, status: 'user-left' | 'opponent-left', san: string, bookSans: string[], result: Result): MatchRow {
-    const positions = [10, 11, 12, 13, 14]
-    positions[leftPly - 2] = positionId
+  function dev(positionId: number | null, leftPly: number, status: 'user-left' | 'opponent-left', san: string, bookSans: string[], result: Result): MatchRow {
+    const positions = Array.from({ length: leftPly - 1 }, (_, i) => i + 10)
+    if (leftPly >= 2 && positionId !== null) positions[leftPly - 2] = positionId
     return { match: { status, repertoireId: 1, leftPly, leftSan: san, bookSans, positions }, game: game(result) }
   }
 
@@ -209,6 +209,20 @@ describe('topDeviations', () => {
     const { opponent } = topDeviations(rows, nodes, 1)
     expect(opponent).toHaveLength(1)
     expect(opponent[0].san).toBe('a6')
+  })
+
+  it('counts root-path and start-position deviations', () => {
+    // White book whose trees start after 1.e4: 1...c5 deviates on the root move,
+    // and a Black book meeting 1.c4 deviates on the start position itself.
+    const rootNodes = [node(1, 1, 'e4', 'user'), node(2, 1, 'e4 e5', 'opponent')]
+    const rows: MatchRow[] = [
+      dev(1, 2, 'opponent-left', 'c5', ['e5'], 'loss'),
+      dev(null, 1, 'opponent-left', 'c4', ['e4', 'd4'], 'win'),
+    ]
+    const { opponent } = topDeviations(rows, rootNodes, 10)
+    expect(opponent).toHaveLength(2)
+    expect(opponent.find((d) => d.san === 'c5')).toMatchObject({ canonicalId: 1, repertoireId: 1, line: ['e4'] })
+    expect(opponent.find((d) => d.san === 'c4')).toMatchObject({ canonicalId: null, repertoireId: null, line: [] })
   })
 })
 

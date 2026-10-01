@@ -13,7 +13,7 @@ import { getDb } from '@/lib/db/client'
 import { moveNo, type GameMatch } from '@/lib/repertoire/match'
 import { getAnalysis, getGameForUser } from '@/lib/server/analyses'
 import { getReview } from '@/lib/server/plan'
-import { ensureGameMatch, getNodePath, getRepertoireById } from '@/lib/server/repertoire'
+import { ensureGameMatch, getNodeLine, getRepertoireById } from '@/lib/server/repertoire'
 import { getCurrentUserId } from '@/lib/server/session'
 
 /** Game review: classification runs on the server; the client gets judgements, series, and plies. */
@@ -48,7 +48,7 @@ export default async function GamePage({
     match && (match.status === 'user-left' || match.status === 'opponent-left') && match.leftPly !== null && match.leftPly >= 2
       ? match.positions[match.leftPly - 2]
       : undefined
-  const linePath = deviationPositionId !== undefined ? getNodePath(db, userId, deviationPositionId) : undefined
+  const nodeLine = deviationPositionId !== undefined ? getNodeLine(db, userId, deviationPositionId) : undefined
 
   return (
     <main className="mx-auto w-full max-w-5xl space-y-4 px-4 py-6">
@@ -76,11 +76,11 @@ export default async function GamePage({
         )}
       </div>
 
-      {match && match.repertoireId !== null && repertoire && (
+      {match && (
         <BookBanner
           match={match}
-          repertoire={repertoire}
-          linePath={linePath ?? null}
+          repertoireName={repertoire?.name}
+          nodeLine={nodeLine ?? null}
           gameId={game.id}
           judgement={match.leftPly !== null ? judgements.find((j) => j.ply === match.leftPly) : undefined}
         />
@@ -117,22 +117,26 @@ const bannerClass = 'rounded-lg border border-black/10 px-3 py-2 text-sm dark:bo
 
 /**
  * The one-line "where did this game leave your book" banner. The move links
- * jump the review board to that ply; Explore opens the book at the position.
+ * jump the review board to that ply; Explore opens the book at the position
+ * the deviation was played from. Deviations on the shared root moves show too
+ * (without a repertoire name); book-end and game-ended only show when the
+ * game actually entered a tree.
  */
 function BookBanner({
   match,
-  repertoire,
-  linePath,
+  repertoireName,
+  nodeLine,
   gameId,
   judgement,
 }: {
   match: GameMatch
-  repertoire: { name: string; slug: string }
-  linePath: string | null
+  repertoireName: string | undefined
+  nodeLine: { slug: string; path: string } | null
   gameId: number
   judgement: MoveJudgement | undefined
 }) {
   if (match.status === 'book-end') {
+    if (repertoireName === undefined) return null
     const ply = match.leftPly
     return (
       <div className={bannerClass}>
@@ -148,7 +152,7 @@ function BookBanner({
     )
   }
   if (match.status === 'game-ended') {
-    return <div className={bannerClass}>Game ended inside your book.</div>
+    return repertoireName === undefined ? null : <div className={bannerClass}>Game ended inside your book.</div>
   }
   const ply = match.leftPly
   if (ply === null || match.leftSan === null) return null
@@ -159,9 +163,9 @@ function BookBanner({
     </a>
   )
   const explore =
-    linePath !== null ? (
+    nodeLine !== null ? (
       <Link
-        href={`/repertoire/${repertoire.slug}?path=${encodeURIComponent(linePath)}`}
+        href={`/repertoire/${nodeLine.slug}?path=${encodeURIComponent(nodeLine.path)}`}
         className="text-sky-700 underline underline-offset-2 hover:text-foreground dark:text-sky-400"
       >
         Explore →
@@ -175,8 +179,9 @@ function BookBanner({
     const book = (match.bookSans ?? []).map((san) => moveNo(ply) + san).join(', ')
     return (
       <div className={bannerClass}>
-        <strong>You left your book</strong> at {moveLink}
-        {book && <> (book: {book})</>} — {repertoire.name}
+        <strong>You strayed from your book</strong> at {moveLink}
+        {book && <> (book: {book})</>}
+        {repertoireName !== undefined && <> — {repertoireName}</>}
         {judged}. {explore}
       </div>
     )
